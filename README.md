@@ -1,0 +1,68 @@
+- [ ] 81-760E/761E/763E (modding 760A)
+  - [x] GRKV
+      - [x] Logic
+      - [x] MFDU UI
+      - [x] Import model
+      <!-- - [ ] Modify model/material -->
+  - [ ] MFDU
+      - [x] Change root UI, temporary pages from 760
+      - [ ] New pages implementation
+      - [x] 1, 2, 3, 4, 5
+      - [ ] Main message
+      - [ ] Initialization
+  - [ ] BU-IK
+      - [x] Cabin Metrospectekhnika implementation
+      - [ ] Salon BNT
+      - [ ] Salon CIS
+      - [x] Skip message
+      - [x] Sarmat-like beep
+  - [ ] Doors
+      - [x] Blink and sound logic
+      - [x] Doors delay logic
+      - [x] Fasten move time
+      - [x] Reduce sound volume
+      - [x] Auto-reverse
+      - [x] Manual lock
+      - [x] Manual open
+      - [ ] Address door open button (.2)
+  - [x] Sounds
+      - [x] KATP-3
+      - [x] Door alarm
+  - [x] Materials
+      - [x] MosBrend
+      - [x] Skin Customization
+  - [ ] Models
+      - [x] Console (cringe)
+      - [x] Doors (good)
+      - [ ] Inter door LED (remake)
+      - [ ] Cabin PMV/PPZ
+      - [ ] Salon BNT
+      - [ ] Salon CIS
+  - [x] Console model (cringe)
+  - [ ] BUKP => SAU Skif
+      - [ ] ARS1/2, ATS1/2
+      - [ ] Xod => ARS work logic
+      - [ ] No assemble instead of disable drive in some cases
+      - [ ] Safety loop improvement
+      - [ ] Zero speed feature
+      - [ ] (after MFDU UI done) BUKP legacy cleanup, old UI removal
+  - [ ] Electric
+      - [ ] BS normalization
+      - [ ] PSN normalization
+      - [ ] No HV (ATZ)
+      - [ ] Short circuit (ATZ)
+      - [ ] kW/h normalization
+- [ ] 81-765/766/767/.2/.4 (modeling 765, maybe getting rest from 760A code, maybe dependencies (systems) too)
+  - [ ] Models
+      - [ ] Mask
+      - [ ] Body
+      - [ ] Cabin
+      - [ ] Console (remake)
+  - [ ] Improve sounds
+      - [ ] KATP-3
+      - [ ] Remove RUMBLE dependency
+      - [ ] Door Alarm
+      - [ ] Door drive
+      - [x] Early variant
+      - [ ] Improved variant
+  
