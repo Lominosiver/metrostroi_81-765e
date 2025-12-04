@@ -2556,11 +2556,11 @@ ENT.ButtonMap["BackPPZ"] = {
             tooltip = "SA17"
         },
         {
-            ID = "BatteryToggle",
+            ID = "BatteryStub",
             x = 361,
             y = 63,
             radius = 20,
-            tooltip = "Выключатель батареи",
+            tooltip = "Выключатель батареи (неисп.)",
             model = {
                 model = "models/metrostroi_train/81-760/81_760_switch_vb.mdl",
                 z = 6,

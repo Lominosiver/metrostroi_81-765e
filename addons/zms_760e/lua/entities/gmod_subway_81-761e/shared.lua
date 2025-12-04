@@ -234,6 +234,15 @@ function ENT:InitializeSounds()
     self.SoundNames["door_cab_close"] = {"subway_trains/720/door/door_torec_close.mp3", "subway_trains/720/door/door_torec_close2.mp3"}
     self.SoundNames["door_cab_roll"] = {"subway_trains/720/door/cabdoor_roll1.mp3", "subway_trains/720/door/cabdoor_roll2.mp3", "subway_trains/720/door/cabdoor_roll3.mp3", "subway_trains/720/door/cabdoor_roll4.mp3"}
 
+    self.SoundNames["battery_on_1"]   = "subway_trains/722/battery/battery_off_1.mp3"
+    self.SoundPositions["battery_on_1"] = {100,1e9,Vector(182,50,-75),0.5}
+    self.SoundNames["battery_off_1"]   = "subway_trains/722/battery/battery_off_1.mp3"
+    self.SoundPositions["battery_off_1"] = {100,1e9,Vector(182,50,-75),0.5}
+    self.SoundNames["battery_off_2"]   = "subway_trains/722/battery/battery_off_2.mp3"
+    self.SoundPositions["battery_off_2"] = {100,1e9,Vector(182,50,-75),0.5}
+    self.SoundNames["battery_pneumo"]   = "subway_trains/722/battery/battery_pneumo.mp3"
+    self.SoundPositions["battery_pneumo"] = {200,1e9,Vector(182,50,-75),0.1}
+
     self.SoundNames["rolling_10"] = {loop=true,"subway_trains/760/rolling/rolling_10.wav"}
     self.SoundNames["rolling_45"] = {loop=true,"subway_trains/760/rolling/rolling_45.wav"}
     self.SoundNames["rolling_60"] = {loop=true,"subway_trains/760/rolling/rolling_60.wav"}
@@ -365,7 +374,7 @@ function ENT:InitializeSystems()
     self:LoadSystem("TR", "TR_3B")
     self:LoadSystem("Electric", "81_760E_Electric")
     self:LoadSystem("AsyncInverter", "81_760_AsyncInverter")
-    self:LoadSystem("BUV", "81_761E_BUV")
+    self:LoadSystem("BUV", "81_760E_BUV")
     self:LoadSystem("BUD", "81_765_BUD")
     self:LoadSystem("Pneumatic", "81_760E_Pneumatic")
     self:LoadSystem("Panel", "81_761E_Panel")

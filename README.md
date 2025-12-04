@@ -45,6 +45,7 @@
       - [ ] No assemble instead of disable drive in some cases
       - [ ] Safety loop improvement
       - [ ] Zero speed feature
+      - [ ] PrOst KOS activation/deactivation logic improvement
       - [ ] (after MFDU UI done) BUKP legacy cleanup, old UI removal
   - [ ] Electric
       - [ ] BS normalization

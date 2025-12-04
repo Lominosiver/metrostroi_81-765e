@@ -10,8 +10,8 @@ TRAIN_SYSTEM.DontAccelerateSimulation = true
     -- Speedometer
 
 function TRAIN_SYSTEM:Initialize()
-    self.Position = 0
-    self.TargetPosition = 0
+    self.Position = -3
+    self.TargetPosition = -3
 
     self.Set1Pressed = false
     self.Set5Pressed = false

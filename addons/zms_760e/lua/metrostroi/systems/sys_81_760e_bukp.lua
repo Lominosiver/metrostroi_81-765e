@@ -193,6 +193,7 @@ function TRAIN_SYSTEM:Initialize()
     self.EmergencyBrake = 0
     self.BTB = 0
     self.CurrentSpeed = 0
+    self.ZeroSpeed = 0
     self.err11 = false
     self.Speed = 0
     self.CurTime = CurTime()
@@ -205,7 +206,7 @@ function TRAIN_SYSTEM:Initialize()
 end
 
 function TRAIN_SYSTEM:Outputs()
-    return {"State", "ControllerState", "EmergencyBrake", "BTB", "WagNum", "Prost", "Kos", "err", "CurrentSpeed", "InitTimer"}
+    return {"State", "ControllerState", "EmergencyBrake", "BTB", "WagNum", "Prost", "Kos", "err", "CurrentSpeed", "InitTimer", "ZeroSpeed"}
 end
 
 function TRAIN_SYSTEM:Inputs()
@@ -1478,8 +1479,8 @@ if SERVER then
             --self:CState("RVPB",--[[(Train.BARS.Speed < 1 and 1 or 0)*]] RV*Train.SA1.Value*Train:ReadTrainWire(35) > 0)--(1-Train.RV["KRO5-6"])*Train.SF2.Value > 0)
             self:CState("Ring", Train.Ring.Value > 0, "BUKP")
             self.ControllerState = stength
-            self:CState("DriveStrength", math.abs(stength))
-            self:CState("Brake", stength < 0 and 1 or 0)
+            self:CState("DriveStrength", Train.BARS.StillBrake == 0 and math.abs(stength) or 50)
+            self:CState("Brake", (Train.BARS.StillBrake == 1 or stength < 0) and 1 or 0)
             self:CState("StrongerBrake", stength < 0 and Train.KV765.Position < -1 and Train.BARS.StillBrake == 0 and 1 or 0)
             self:CState("PN1", Train.BARS.PN1)
             self:CState("PN2", Train.BARS.PN2 + (self.Slope and Train.RV.KROPosition ~= 0 and self.SlopeSpeed and 1 or 0))
@@ -1528,6 +1529,7 @@ if SERVER then
                 end
             end
 
+            self:CState("ZeroSpeed", self.ZeroSpeed == 1)
             self:CState("PowerOff", self.PowerOff)
             self:CState("TP1", Train.SA16.Value * Train.SF6.Value > 0)
             self:CState("TP2", Train.SA17.Value * Train.SF6.Value > 0)
@@ -1578,6 +1580,8 @@ if SERVER then
             end
             Train:SetNW2String("VityazLineName", line)
         end
+
+        self.ZeroSpeed = self.State == 5 and Train:GetNW2Int("VityazMainMsg", 0) == 0 and Train.Speed < 1.8 and 1 or 0
 
         if self.State > 0 and self.Reset and self.Reset == 1 then self.Reset = false end
     end

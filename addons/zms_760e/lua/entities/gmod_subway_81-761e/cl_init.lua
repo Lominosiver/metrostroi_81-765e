@@ -318,12 +318,12 @@ ENT.ButtonMap["Battery"] = {
     hideseat = 0.2,
     buttons = {
         {
-            ID = "BatteryToggle",
+            ID = "BatteryStub",
             x = 0,
             y = 0,
             w = 80,
             h = 80,
-            tooltip = "Батарея",
+            tooltip = "Батарея (неисп.)",
             model = {
                 var = "Battery", --sndid = "batt_on",
                 speed = 9,

@@ -4,7 +4,7 @@
 Metrostroi.DefineSystem("81_761E_Panel")
 TRAIN_SYSTEM.DontAccelerateSimulation = false
 function TRAIN_SYSTEM:Initialize()
-    self.Train:LoadSystem("Battery", "Relay", "Switch", {bass = true})
+    self.Train:LoadSystem("Battery", "Relay", "Switch", {bass = true, normally_closed = true})
 
     self.Train:LoadSystem("PowerOn", "Relay", "Switch", {bass = true})
 

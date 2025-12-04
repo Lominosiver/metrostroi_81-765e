@@ -23,11 +23,10 @@ function TRAIN_SYSTEM:Initialize()
         self.AutoReverse = {}
         self.StuckPass = {}
         self.WasManual = {}
-        local start = math.Rand(0.4, 0.8)
-        self.DoorSpeedMain = math.Rand(start, math.Rand(start + 0.1, start + 0.5))
+        self.DoorSpeedMain = math.Rand(1.1, math.Rand(1.3, 1.6))
         for i = 1, #self.LeftDoorSpeed do
-            self.LeftDoorSpeed[i] = math.Rand(self.DoorSpeedMain + 0.6, self.DoorSpeedMain + 1.0)
-            self.RightDoorSpeed[i] = math.Rand(self.DoorSpeedMain + 0.6, self.DoorSpeedMain + 1.0)
+            self.LeftDoorSpeed[i] = math.Rand(self.DoorSpeedMain + 0.1, self.DoorSpeedMain + 0.3)
+            self.RightDoorSpeed[i] = math.Rand(self.DoorSpeedMain + 0.1, self.DoorSpeedMain + 0.3)
         end
     end
 

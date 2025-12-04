@@ -778,7 +778,7 @@ if SERVER then
         if sourceid == self.Train:GetWagonNumber() then return end
         if textdata == "RouteNumber" then self.RouteNumber = numdata end
         if textdata == "Route" then self.Route = numdata end
-        if textdata == "InformerCfg" then self.InformerCfgIdx = numdata end
+        if textdata == "InformerCfg" then self.InformerCfgIdx = numdata self.InformerCfg = nil end
         if textdata == "LastStation" then
             self.LastStation = numdata
             self.LastStationDraft = numdata
@@ -1437,7 +1437,7 @@ else
                 surface.SetDrawColor(255, 255, 255, 255)
                 surface.SetMaterial(logo)
                 surface.DrawTexturedRectRotated(scr_w / 2 - 700, scr_h / 2, 300, 300, (CurTime() % 10) * 360 / 10)
-                draw.SimpleText("ver. 1.0.0", "BUIKSystem", scr_w - 20, scr_h - 20, colorWhite, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+                draw.SimpleText("ver. 1.5.0", "BUIKSystem", scr_w - 20, scr_h - 20, colorWhite, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
             elseif bootState == 4 then
                 draw.SimpleText("БЛОК НЕАКТИВЕН", "BUIKSystemHeader", scr_w / 2, scr_h / 2, colorWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             elseif bootState == 6 then

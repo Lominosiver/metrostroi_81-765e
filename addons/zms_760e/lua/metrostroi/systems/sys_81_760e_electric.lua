@@ -178,9 +178,7 @@ end
 
 function TRAIN_SYSTEM:TriggerInput(name, value)
     if name == "Power" and value then
-        self.PowerTimer = CurTime() + 6
-        self.PowerTimer = CurTime() + 6
-        --self.PowerTimer = CurTime()+6
+        self.ForcePoweron = CurTime() + 5
     end
 
     if name == "Slope" then self.Slope = value end
@@ -199,26 +197,23 @@ function TRAIN_SYSTEM:Think(dT, iter)
     local Panel = Train.Panel
     local BUV = Train.BUV
     local RV = Train.RV
-    --	local dT = dT/8
-    self.Battery80V = BUV.AKBVoltage --((Train.SF1 and Train.SF1.Value or 1)*Train.Battery.Value > 0) and (PSN and 80 or 69) or Train:ReadTrainWire(1) > 0.5 and 66 or 0
-    local P = C(self.Battery80V > 62) -- and 1 or 0
+    self.Battery80V = self.Power and self.Power > 1 and BUV.AKBVoltage or 0
+    local PBatt = C(BUV.AKBVoltage >= 62)
+    local P = C(self.Battery80V > 62)
     self.Power1 = P
-    local PowerPSN = C(self.Battery80V > 79) -- and 1 or 0
-    local HV = C(550 <= self.Main750V and self.Main750V <= 975) -- and 1 or 0
-    local BO = C(self.Battery80V > 67) -- and 1 or 0	
+    local PowerPSN = C(self.Battery80V > 79)
+    local HV = C(550 <= self.Main750V and self.Main750V <= 975)
+    local BO = C(self.Battery80V > 67)
     ----------------------------------------------------------------------------
     -- Information only
     ----------------------------------------------------------------------------
-    -- ������� ��������������� ����� 80V
     local PSN = BUV.PSN * BO > 0
     self.Aux80V = PSN and 80 or 69
-    -- ������� ��������� 80V
-    self.Lights80V = PSN and 80 or 0 --Train.PowerSupply.XT3_4
+    self.Lights80V = PSN and 80 or 0
     self.BUFT = P * Train.Battery.Value * Train.SF55.Value * self.KM2
     ----------------------------------------------------------------------------
     -- Voltages from the third rail
     ----------------------------------------------------------------------------
-    -- ���������� � ������� ������������� �����
     local dU = Train.TR.Main750V - self.Main750V
     if Train.TR.Main750V < 550 and self.Main750V >= 550 then
         if not self.Main750VTimer then self.Main750VTimer = CurTime() + Rand(0.4, 0.8) end
@@ -230,104 +225,144 @@ function TRAIN_SYSTEM:Think(dT, iter)
     end
 
     self.Main750V = self.Main750V + dU * dT / ((dU < 0 and self.Main750V < 530 and 0.016 or 0.0014) * 1100)
-    -- ���������� � �������������� ������������� �����
-    self.Aux750V = self.Main750V -- * Train.PNB_1250_2.Value * Train.KVC.Value
-    -- ������� ���������� ������� �����
+    self.Aux750V = self.Main750V
     self.Power750V = self.Main750V * Train.GV.Value
-    if RV then
-        Train:WriteTrainWire(72, P * Train.SF27.Value * Train.PowerOn.Value) --вкл бс
+
+    if self.ForcePoweron and CurTime() > self.ForcePoweron then
+        self.ForcePoweron = nil
     end
 
-    --if RV then
-    --Train:WriteTrainWire(8,P*(Train.PowerOff.Value+(1-Train.SF27.Value)))--выкл бс
-    --end
-    if self.Battery80V < 62 and self.Power then --67
-        self.Power = nil
-    elseif (BUV.PowerOff or 0) + (2 - (Train.SF35 and Train.SF35.Value or 1) - (Train.SF58 and Train.SF58.Value or 1)) > 0 and not self.PowerOffTimer then
-        self.PowerOffTimer = CurTime() + Rand(1, 3)
-    elseif (Train:ReadTrainWire(72) > 0 or P * (Train.SF58 and Train.SF58.Value or 1) * (Train.SF35 and Train.SF35.Value or 1) * Train.PowerOn.Value > 0) and not self.PowerTimer then
-        self.PowerTimer = CurTime() + Rand(1, 2)
+    if not self.ForcePoweron then
+        if RV then
+            local bsOff = PBatt * Train.SF27.Value * Train.PowerOff.Value > 0.5
+            if bsOff and not self.PowerOffCommandTimer then self.PowerOffCommandTimer = CurTime() + Rand(0.8, 1.6) end
+            if not bsOff and self.PowerOffCommandTimer then self.PowerOffCommandTimer = nil self.BsOffPlayed = false end
+            bsOff = bsOff and CurTime() > self.PowerOffCommandTimer
+            if bsOff and not self.BsOffPlayed then Train:PlayOnce("battery_pneumo","bass",1) self.BsOffPlayed = true end
+            Train:WriteTrainWire(72, PBatt * Train.SF27.Value * Train.PowerOn.Value)
+            Train:WriteTrainWire(73, bsOff)
+        end
+
+        local bsOff = not PBatt or Train:ReadTrainWire(73) > 0 or (2 - (Train.SF35 and Train.SF35.Value or 1) - (Train.SF58 and Train.SF58.Value or 1)) > 0
+        local bsOn = PBatt * (Train.SF58 and Train.SF58.Value or 1) * (Train.SF35 and Train.SF35.Value or 1) * (Train.PowerOn.Value + Train:ReadTrainWire(72)) > 0
+
+        if BUV.AKBVoltage < 62 and self.Power then
+            self.Power = nil
+        elseif (self.Power or 0) > 0 and bsOff and not self.PowerOffTimer then
+            self.PowerOffTimer = CurTime() + Rand(1.8, 2.1)
+        elseif (self.Power or 0) < 1 and bsOn and not self.PowerTimer then
+            self.PowerTimer = CurTime() + Rand(0.1, 0.3)
+        end
+
+        if self.PowerTimer and self.PowerOffTimer then self.PowerTimer = nil end
+
+        if self.PowerTimer and CurTime() - self.PowerTimer > 0 then
+            if not bsOn then
+                self.Power = 0
+                self.PowerTimer = nil
+            else
+                self.Power = (self.Power or 0) + 1
+                if self.Power < 2 then
+                    self.PowerTimer = CurTime() + Rand(2, 3)
+                else
+                    self.PowerTimer = nil
+                end
+                if self.Power then
+                    if self.Power == 1 then
+                        Train:PlayOnce("battery_pneumo","bass",1)
+                    else
+                        Train:PlayOnce("battery_on_1","bass",1)
+                    end
+                end
+            end
+        end
+
+        if self.PowerOffTimer and CurTime() - self.PowerOffTimer > 0 then
+            if self.Power > 1 and not bsOff then
+                self.PowerOffTimer = nil
+            else
+                self.Power = (self.Power or 0) - 1
+                if self.Power < 0 then
+                    self.Power = nil
+                    self.PowerOffTimer = nil
+                elseif self.Power > 0 then
+                    self.PowerOffTimer = CurTime() + Rand(1.2, 1.6)
+                else
+                    self.PowerOffTimer = nil
+                end
+                if self.Power then
+                    if self.Power == 1 then
+                        Train:PlayOnce("battery_off_1","bass",1)
+                    else
+                        Train:PlayOnce("battery_off_2","bass",1)
+                    end
+                end
+            end
+        end
+
+        self.Power = (P == 0) and nil or self.Power
+        Train:WriteTrainWire(75, P * math.max(0, (self.Power or 0) - 1))
+        Train:WriteTrainWire(74, PBatt * (1 - math.max(0, (self.Power or 0) - 1)))
+
+    else
+        self.Power = 2
     end
 
-    if self.PowerTimer and self.PowerOffTimer then self.PowerTimer = nil end
-    if self.PowerTimer and CurTime() - self.PowerTimer > 0 then
-        self.Power = 1
-        self.PowerTimer = nil
-    end
 
-    if self.PowerOffTimer and CurTime() - self.PowerOffTimer > 0 then
-        self.Power = 0
-        self.PowerOffTimer = nil
-    end
-
-    self.Power = (P == 0) and nil or self.Power
-    if not RV then
-        Train:WriteTrainWire(75, P * (self.Power or 0))
-        Train:WriteTrainWire(74, P * (1 - (self.Power or 0)))
-    end
-
-    self.KM2 = RV and 1 or (self.Power and self.Power == 1 and 1 or 0)
-    --Train:WriteTrainWire(1,self.Battery80V > 67 and 1 or 0)
-    --Train:WriteTrainWire("AKB",self.Battery80V)
+    self.KM2 = self.Power and self.Power > 1 and 1 or 0
     ----------------------------------------------------------------------------
     -- Some internal electric
     ----------------------------------------------------------------------------
     if RV then
         local UPIPower = P * Train.SF6.Value
         self.UPIPower = UPIPower
-        local PowerReserve = P * min(1, (1 - Train.SF6.Value) * abs(RV.KRRPosition) + Train.SF6.Value) --self.Battery80V*(1-Train.SF6.Value)*(RV.KRRPosition ~= 0 and 1 or 0) > 62 or power	
+        local PowerReserve = P * min(1, (1 - Train.SF6.Value) * abs(RV.KRRPosition) + Train.SF6.Value)
         self.PowerReserve = PowerReserve
-        --local HeadlightsPower = power and (Train.SF16.Value*Train.SF17.Value > 0 and (RV["KRO11-12"] > 0 and Train.HeadlightsSwitch.Value > 1 or Train.SA13.Value*Train.EmergencyControls.Value > 0) and 1 or (Train.HeadlightsSwitch.Value > 0 and RV["KRO11-12"] > 0 or Train.EmergencyControls.Value > 0.5) and Train.SF16.Value+(Train.HeadlightsSwitch.Value > 1 and Train.SF17.Value or 0) > 0 and 0.5) or 0
         Train:WriteTrainWire(20, P * Train.SF29.Value * Train.SA15.Value)
         Train:WriteTrainWire(2, P * Train.SF7.Value * Train.EnableBVEmer.Value)
-        --Train:WriteTrainWire(34,P*(RV["KRO1-2"]--[[*Train.SF2.Value]] + RV["KRR1-2"]--[[*Train.SF3.Value]]))
-        Train:WriteTrainWire(35, P * (RV["KRO1-2"] * Train.SF7.Value + RV["KRR1-2"] * Train.SF8.Value)) --[[*Train.SF2.Value]]
+        Train:WriteTrainWire(35, P * (RV["KRO1-2"] * Train.SF7.Value + RV["KRR1-2"] * Train.SF8.Value))
         Train:WriteTrainWire(36, Train.SF3.Value * Train.EmergencyControls.Value)
         local Drive = Train.BARS.Drive
-        --local PowerReserve = (self.Battery80V*(1-Train.SF6.Value)*(RV.KRRPosition ~= 0 and 1 or 0) > 62 or self.Battery80V*Train.SF6.Value > 62) and 1 or 0
         local Orientation = C(Train.SF9.Value + RV["KRR7-8"] > 0)
-        Train:WriteTrainWire(19, PowerReserve * (1 - Train.SD3.Value) * RV["KRR7-8"] * Drive * Train.EmerX1.Value) --*((Train.SF6.Value+(Train.BARS.UOS and Train.BARS.UOS and 1 or 0) > 0) and 1 or 0))  --*Train.PB.Value) --[[*Train.SF9.Value]]
-        Train:WriteTrainWire(45, PowerReserve * (1 - Train.SD3.Value) * RV["KRR7-8"] * Drive * Train.EmerX2.Value) --*((Train.SF6.Value+(Train.BARS.UOS and Train.BARS.UOS and 1 or 0) > 0) and 1 or 0))  --*Train.PB.Value) --[[*Train.SF9.Value]] 
+        Train:WriteTrainWire(19, PowerReserve * (1 - Train.SD3.Value) * RV["KRR7-8"] * Drive * Train.EmerX1.Value)
+        Train:WriteTrainWire(45, PowerReserve * (1 - Train.SD3.Value) * RV["KRR7-8"] * Drive * Train.EmerX2.Value)
         self.EmerXod = PowerReserve * RV["KRR7-8"] * Drive * min(1, Train.EmerX1.Value + Train.EmerX2.Value)
-        S["RV"] = P * (Train.BUKP.InitTimer and Train.BUKP.InitTimer > 0 and 1 or RV["KRO9-10"] * Train.SF2.Value + RV["KRR7-8"] * Train.SF3.Value) --*Orientation
-        Train:WriteTrainWire(3, S["RV"] * Orientation) --S["RV"]*Orientation)		
+        S["RV"] = P * (Train.BUKP.InitTimer and Train.BUKP.InitTimer > 0 and 1 or RV["KRO9-10"] * Train.SF2.Value + RV["KRR7-8"] * Train.SF3.Value)
+        Train:WriteTrainWire(3, S["RV"] * Orientation)
         Train:WriteTrainWire(4, 0)
         Train:WriteTrainWire(5, P * RV["KRR7-8"] * Orientation)
         Train:WriteTrainWire(6, P * RV["KRO1-2"] * Orientation)
-        local KM1 = P * RV["KRO11-12"] * Train.SF2.Value --[[*Train.SF6.Value]]
-        local KM2 = P * RV["KRO15-16"] --[[*Train.SF6.Value]]
-        --Train:WriteTrainWire(11,P*Train.SA1.Value)
-        Train:WriteTrainWire(12, P * (RV["KRR3-4"] * Train.SF3.Value + KM1)) --*Train.SF9.Value)
-        Train:WriteTrainWire(13, P * (RV["KRR9-10"] + KM2)) --*Train.SF9.Value)
-        Train:WriteTrainWire(14, P * RV["KRR3-4"] * Orientation * Train.SF3.Value) --*Train.SF9.Value)
-        Train:WriteTrainWire(15, P * RV["KRR9-10"] * Orientation * Train.SF3.Value) --*Train.SF9.Value)
-        local BTB = P * (RV["KRO13-14"] * Train.SF2.Value * Train.SF7.Value + RV["KRR11-12"] * Train.SF3.Value * Train.SF8.Value) --*Train.SF6.Value
+        local KM1 = P * RV["KRO11-12"] * Train.SF2.Value
+        local KM2 = P * RV["KRO15-16"]
+        Train:WriteTrainWire(12, P * (RV["KRR3-4"] * Train.SF3.Value + KM1))
+        Train:WriteTrainWire(13, P * (RV["KRR9-10"] + KM2))
+        Train:WriteTrainWire(14, P * RV["KRR3-4"] * Orientation * Train.SF3.Value)
+        Train:WriteTrainWire(15, P * RV["KRR9-10"] * Orientation * Train.SF3.Value)
+        local BTB = P * (RV["KRO13-14"] * Train.SF2.Value * Train.SF7.Value + RV["KRR11-12"] * Train.SF3.Value * Train.SF8.Value)
         if P * Train.SD.Value > 0 then
             if S["RV"] ~= self.rv then
                 self.rv = S["RV"]
                 if self.rv ~= 0 then self.SDActive = true end
             end
 
-            self.SD = C(S["RV"] > 0 and (self.SDActive or Train.SD2.Value == 0)) -- and 1 or 0
+            self.SD = C(S["RV"] > 0 and (self.SDActive or Train.SD2.Value == 0))
         else
             self.SD = 0
             self.SDActive = false
         end
 
         local BTBp = BTB * min(1, 1 - Train.SD2.Value + self.SD)
-        self.V2 = BTB --P*(RV["KRO13-14"]*Train.SF7.Value + RV["KRR11-12"]*Train.SF8.Value)--*Train.SF6.Value
-        self.V1 = UPIPower * Train.HornB.Value --[[*(RV["KRO13-14"]*Train.SF7.Value + RV["KRR11-12"]*Train.SF8.Value)]]
+        self.V2 = BTB
+        self.V1 = UPIPower * Train.HornB.Value
         Train:WriteTrainWire(27, BTB)
         Train:WriteTrainWire(11, BTB * Train.SA1.Value)
         Train:WriteTrainWire(31, BTB * (1 - Train.SA1.Value))
         Train:WriteTrainWire(28, BTB * Train.EmerBrake.Value)
         Train:WriteTrainWire(29, BTB * Train.EmerBrake.Value * Train.EmerBrakeAdd.Value)
         Train:WriteTrainWire(30, BTB * Train.EmerBrake.Value * Train.EmerBrakeRelease.Value)
-        --Train:WriteTrainWire(34,min(1,self.SD+BTBp))--BTB*(1-Train.Pneumatic.SD2))
-        --local BTB = P
-        Train:WriteTrainWire(24, BTBp * (1 - Train:ReadTrainWire(41))) --BTB*(1-Train.BUKP.EmergencyBrake))     --(1-Train.EmergencyBrake.Value)*(1-Train.Prost_Kos.EmergencyBrake))--*(1-Train.BUKP.EmergencyBrake))
+        Train:WriteTrainWire(24, BTBp * (1 - Train:ReadTrainWire(41)))
         Train:WriteTrainWire(25, BTBp == 0 and Train:ReadTrainWire(26) > 0 and Train:ReadTrainWire(24) * self.BTB or 0)
-        Train:WriteTrainWire(26, BTBp * Train.BARS.BTB * (1 - self.BTBr) * (1 - Train.BUKP.EmergencyBrake)) --(1-Train:ReadTrainWire(32)))         --BTB*(Train.BARS.BTB)*(1-Train.BUKP.BTB))
+        Train:WriteTrainWire(26, BTBp * Train.BARS.BTB * (1 - self.BTBr) * (1 - Train.BUKP.EmergencyBrake))
         Train:WriteTrainWire(41, Train.EmergencyBrake.Value)
         Train:WriteTrainWire(32, Train.BTB.Value)
         if Train:ReadTrainWire(32) > 0 then
@@ -344,9 +379,9 @@ function TRAIN_SYSTEM:Think(dT, iter)
 
         Train:WriteTrainWire(10, P * Train.Battery.Value * Train.EmergencyCompressor.Value)
         local CurrentSpeed = C(Train.BUKP.CurrentSpeed < 1.8)
-        local EmergencyDoors = Train.SF6.Value * Train.EmergencyDoors.Value * S["RV"] --
+        local EmergencyDoors = Train.SF6.Value * Train.EmergencyDoors.Value * S["RV"]
         Train:WriteTrainWire(40, EmergencyDoors)
-        Train:WriteTrainWire(39, EmergencyDoors * Train.EmerCloseDoors.Value) --Двери закрытие
+        Train:WriteTrainWire(39, EmergencyDoors * Train.EmerCloseDoors.Value)
         Train:WriteTrainWire(38, EmergencyDoors * Train.SF11.Value * Train.DoorLeft.Value * CurrentSpeed)
         Train:WriteTrainWire(37, EmergencyDoors * Train.SF11.Value * Train.DoorRight.Value * CurrentSpeed)
         local ASNP_VV = Train.ASNP_VV
@@ -358,8 +393,8 @@ function TRAIN_SYSTEM:Think(dT, iter)
         Panel.HeadlightsHalf = UPIPower * (Train.SF16.Value + Train.SF17.Value) * (RV["KRO11-12"] * Train.HeadlightsSwitch.Value + Train.EmergencyControls.Value)
         Panel.RedLights = Train.SF28.Value + (RV["KRO7-8"] + Train.EmergencyControls.Value) * Train.SF1.Value * P
         Panel.CabVent = P * Train.SF23.Value
-        Panel.DoorLeftL = UPIPower * Train.DoorSelectL.Value * (1 - Train.DoorSelectR.Value)
-        Panel.DoorRightL = UPIPower * Train.DoorSelectR.Value * (1 - Train.DoorSelectL.Value)
+        Panel.DoorLeftL = UPIPower * Train.DoorSelectL.Value * (1 - Train.DoorSelectR.Value) * Train.BUKP.ZeroSpeed
+        Panel.DoorRightL = UPIPower * Train.DoorSelectR.Value * (1 - Train.DoorSelectL.Value) * Train.BUKP.ZeroSpeed
         Panel.DoorCloseL = UPIPower * Train.DoorClose.Value
         Panel.DoorBlockL = UPIPower * Train.DoorBlock.Value
         Panel.EmerBrakeL = PowerReserve * C(Train.Pneumatic.EmerBrakeWork == 1 or Train.Pneumatic.EmerBrakeWork == true) * BTB
@@ -368,28 +403,26 @@ function TRAIN_SYSTEM:Think(dT, iter)
         Panel.ALSl = UPIPower * Train.ALS.Value
         Panel.PRl = UPIPower * Train.Pr.Value
         Panel.OtklRl = UPIPower * Train.OtklR.Value
-        -- Panel.R_Linel = PowerReserve * Train.R_Line.Value
-        -- Panel.R_ChangeRoutel = PowerReserve * Train.R_ChangeRoute.Value
         Panel.Washerl = PowerReserve * Train.Washer.Value
         Panel.Wiperl = PowerReserve * Train.Wiper.Value * Train.SF23.Value
         Panel.EmergencyControlsl = UPIPower * Train.EmergencyControls.Value
         Panel.EmergencyDoorsl = UPIPower * Train.EmergencyDoors.Value
         Panel.GlassHeatingl = PowerReserve * Train.GlassHeating.Value
-        Panel.PowerOnl = P * Train.SF27.Value * min(1, Train:ReadTrainWire(75))
-        Panel.PowerOffl = P * Train.SF27.Value * min(1, Train:ReadTrainWire(74))
+        Panel.PowerOnl = PBatt * Train.SF27.Value * min(1, Train:ReadTrainWire(75) + Train.PowerOn.Value)
+        Panel.PowerOffl = PBatt * Train.SF27.Value * min(1, Train:ReadTrainWire(74) + Train.PowerOff.Value)
         Panel.LV = min(1, Train.Battery.Value + Train.SF1.Value) * self.Battery80V --/150
     else
         Panel.LV = Train.Battery.Value * self.KM2 * Train.SF44.Value * self.Battery80V --/150
     end
 
-    if not Async then
-        Panel.SalonLighting1 = min(1, Train:ReadTrainWire(20)) * Train.Battery.Value * Train.SF44.Value
-        Panel.SalonLighting2 = P * self.KM2 * Train.Battery.Value * Train.SF43.Value * BUV.MainLights
-    else
-        Panel.WorkFan = P * Train.Battery.Value * Train.GV.Value * HV
-        Panel.SalonLighting1 = P * self.KM2 * Train.Battery.Value * Train.SF44.Value
-        Panel.SalonLighting2 = P * self.KM2 * Train.Battery.Value * Train.SF43.Value * BUV.MainLights
-    end
+    -- if not Async then
+    --     Panel.SalonLighting1 = min(1, Train:ReadTrainWire(20)) * Train.Battery.Value * Train.SF44.Value
+    --     Panel.SalonLighting2 = P * self.KM2 * Train.Battery.Value * Train.SF43.Value * BUV.MainLights
+    -- else
+    Panel.WorkFan = P * Train.Battery.Value * Train.GV.Value * HV
+    Panel.SalonLighting1 = P * self.KM2 * Train.Battery.Value * Train.SF44.Value
+    Panel.SalonLighting2 = P * self.KM2 * Train.Battery.Value * Train.SF43.Value * BUV.MainLights
+    -- end
 
     Panel.PassSchemes = P * min(1, Train.SF37.Value + Train.SF38.Value) * BUV.Power --*C(Train.CIS.BMCISInit)
     Panel.PassSchemesL = P * BUV.Power * Train.SF37.Value
