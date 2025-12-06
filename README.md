@@ -40,8 +40,8 @@
       - [ ] Salon CIS
   - [x] Console model (cringe)
   - [ ] BUKP => SAU Skif
-      - [ ] ARS1/2, ATS1/2
-      - [ ] Xod => ARS work logic
+      - [x] ARS1/2, ATS1/2
+      - [x] Xod => ARS work logic
       - [ ] No assemble instead of disable drive in some cases
       - [ ] Safety loop improvement
       - [ ] Zero speed feature

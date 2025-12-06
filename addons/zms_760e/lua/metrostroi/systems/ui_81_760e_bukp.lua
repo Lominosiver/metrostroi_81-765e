@@ -526,7 +526,7 @@ local statusGetters = {
 }
 function TRAIN_SYSTEM:DrawStatus(Wag)
     self:DrawThrottle(
-        Wag:GetNW2Bool("VityazBARSPN2", false) and -50 or Wag:GetNW2Int("VityazType", 0),
+        Wag:GetNW2Int("VityazThrottle", 0),
         sizeThrottleMeasure + sizeBorder, scrOffsetY + sizeTopBar + sizeMainMargin + sizeThrottleLabelsH,
         sizeThrottleBarW - sizeBorder * 2
     )
@@ -969,7 +969,7 @@ local sizeVoCellMargin = 16
 local voFields = {
     {
         {"БУКСЫ", "VityazBuksGood"},
-        {"МК", "VityazMKWork", function(val) return not val and colorRed or nil end},
+        {"МК", function(Wag, idx) return not Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false) and 0 or Wag:GetNW2Int("VityazMKState" .. idx, -1) end, function(val) return val < 0 and colorRed or val > 0 and colorGreen or nil end},
         {"Освещение", "VityazLightsWork"},
         {"ТКПР", "VityazPantDisabled"},
         {"Напряжение КС", "VityazHVGood"},
@@ -1016,7 +1016,7 @@ local voFields = {
         {"", function() return true end},
     }
 }
-local noAsync = { ["VityazMKWork"] = true, ["VityazPSNEnabled"] = true }
+local noAsync = { ["VityazMKState"] = true }
 local voLabels = {}
 for idx, fields in ipairs(voFields) do voLabels[idx] = {} for fIdx, field in ipairs(fields) do voLabels[idx][fIdx] = field[1] end end
 local voDefaultValGetter = function(Wag, idx, k) return Wag:GetNW2Bool(k .. idx, false) end
@@ -1039,7 +1039,9 @@ function TRAIN_SYSTEM:DrawVoPage(Wag, x, y, w, h)
             local _, valGetter, getter = unpack(fieldData or {})
             if valGetter then
                 if isstring(valGetter) and not Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false) and noAsync[valGetter] then return end
-                local val = isfunction(valGetter) and valGetter(Wag, idx) or voDefaultValGetter(Wag, idx, valGetter)
+                local k = isstring(valGetter) and valGetter or nil
+                valGetter = isfunction(valGetter) and valGetter or voDefaultValGetter
+                local val = valGetter(Wag, idx, k)
                 getter = getter or voDefaultGetter
                 local bColor, text, textColor = getter(val)
                 return bColor, text or voPage > 1 and tostring(field) or nil, textColor, "Mfdu765.VoLabelBigger"

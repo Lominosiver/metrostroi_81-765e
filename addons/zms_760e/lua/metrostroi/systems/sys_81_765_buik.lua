@@ -155,6 +155,12 @@ local function toUpperCase(str)
     return str
 end
 
+local ars_states = {
+    [0] = STATE_RED,
+    [1] = STATE_GREEN,
+    [2] = STATE_YELLOW,
+}
+
 
 if SERVER then
     util.AddNetworkString("BUIK765.AnnouncerCmd")
@@ -318,8 +324,8 @@ if SERVER then
 
         local alsArs = Wag:GetNW2Bool("SA14")
         self:CheckDisplayState(1, alsArs and "2/6" or "ДАУ", STATE_NORMAL)
-        self:CheckDisplayState(2, "АРС1", not Wag.BARS.ATS1 and STATE_INACTIVE or Wag:GetNW2Bool("DisableDrive", false) and STATE_YELLOW or Wag:GetNW2Bool("VityazBARS1", false) and STATE_RED or STATE_GREEN)
-        self:CheckDisplayState(3, "АРС2", not Wag.BARS.ATS2 and STATE_INACTIVE or Wag:GetNW2Bool("DisableDrive", false) and STATE_YELLOW or Wag:GetNW2Bool("VityazBARS2", false) and STATE_RED or STATE_GREEN)
+        self:CheckDisplayState(2, "АРС1", ars_states[Wag:GetNW2Int("VityazARS1", -1)] or STATE_INACTIVE)
+        self:CheckDisplayState(3, "АРС2", ars_states[Wag:GetNW2Int("VityazARS2", -1)] or STATE_INACTIVE)
         self:CheckDisplayState(4, Wag.BARSBlock.Value == 1 and "АТС1" or Wag.BARSBlock.Value == 2 and "АТС2" or Wag.BARSBlock.Value == 3 and "УОС" or "ШТАТ", STATE_NORMAL)
         self:CheckDisplayState(5, "НД", alsArs and not Wag.BARS.NoFreq and (Wag.BARS.LN and STATE_NORMAL or STATE_RED) or STATE_INACTIVE)
         self:CheckDisplayState(6, "0", not Wag.BARS.NoFreq and math.floor(Wag.BARS.SpeedLimit) < 21 and STATE_RED or STATE_NORMAL)

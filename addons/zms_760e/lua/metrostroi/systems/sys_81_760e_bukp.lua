@@ -1108,7 +1108,8 @@ if SERVER then
 
                     self:CheckError(19, err19 and isnumber(err19))
                     if Train.RV["KRO5-6"] == 0 then
-                        if (BARS.Brake == 0 and BARS.Drive > 0 and (self.Error == 0 or self.Error == 5.5 and self.EmergencyBrake == 0 or (self.Error == 6 and Train.BUV.Slope1) or self.Error >= 9 and self.Error ~= 11 or self.Error == 11 and Train.DoorBlock.Value > 0)) or Train.KV765.TractiveSetting <= 0 then --[[or (self.Error > 1 or self.Error < 4) and Train.BARSBlock.Value == 3 and not err6]]
+                        local AllowDriveInput = BARS.Brake == 0 and BARS.Drive > 0 and (self.Error == 0 or self.Error == 5.5 and self.EmergencyBrake == 0 --[[or (self.Error == 6 and Train.BUV.Slope1)]] or self.Error >= 9 and self.Error ~= 11 or self.Error == 11 and Train.DoorBlock.Value > 0)
+                        if AllowDriveInput or Train.KV765.TractiveSetting <= 0 then --[[or (self.Error > 1 or self.Error < 4) and Train.BARSBlock.Value == 3 and not err6]]
                             stength = Train.KV765.TractiveSetting
                         end
 
@@ -1116,6 +1117,9 @@ if SERVER then
                         if Train.Prost_Kos.Command ~= 0 and Train.Prost_Kos.ProstActive == 1 and Train.KV765.Position >= 0 then stength = translate_oka_kv_to_765(Train.Prost_Kos.Command) end
                         if Train.Prost_Kos.CommandKos then stength = -100 end
                         if BARS.Brake > 0 then stength = -100 end
+                        if err6 and (Train.KV765.Position > 0 or Train.Speed > 1.6) then stength = -100 end
+                        local sb = stength > -50 and (BARS.StillBrake == 1 or Train.Speed < 0.5 and BARS.PN1 == 1)
+                        if sb then stength = -50 end
                         
                         if Train.Prost_Kos.Metka and (Train.Prost_Kos.Metka[2] or Train.Prost_Kos.Metka[3] or Train.Prost_Kos.Metka[4]) and (Train.Prost_Kos.DistToSt ~= 0 or Train.Prost_Kos.ProstActive == 1) then
                             Train:SetNW2Int("VityazS", (Train.Prost_Kos.Dist or -10) * 100) --(Train:ReadCell(49165)-5-5)*100)
@@ -1123,7 +1127,7 @@ if SERVER then
                             Train:SetNW2Int("VityazS", -1000)
                         end
 
-                        if (Train.KV765.TractiveSetting > 0 or Train.KV765.TargetTractiveSetting > 0) and stength <= 0 then
+                        if not sb and (Train.KV765.TractiveSetting > 0 or Train.KV765.TargetTractiveSetting > 0) and stength <= 0 then
                             Train.KV765:TriggerInput("ResetTractiveSetting", 1)
                         end
 
@@ -1156,7 +1160,7 @@ if SERVER then
                     if (not err10 or stength <= 0) and self.PTEnabled then self.PTEnabled = nil end
                     self:CheckError(9, self.PTEnabled and CurTime() - self.PTEnabled > 3.5 + (Train.BUV.Slope1 and 1 or 0)) --2.7
                     self:CheckError(10, self.HVBad and CurTime() - self.HVBad > 10)
-                    Train:SetNW2Int("VityazType", math.Round(stength or 0))
+                    Train:SetNW2Int("VityazThrottle", math.Round(stength or 0))
                     local train = self.Trains[self.Trains[1]]
                     Train:SetNW2Int("VityazBUVStrength", math.abs(Train.BUV.Strength))
                     --Train:SetNW2Int("VityazI",math.abs(Train.AsyncInverter.Current)*100)
@@ -1218,15 +1222,15 @@ if SERVER then
                         Train:SetNW2Bool("VityazBARS1", self.err > 0 and (Train.SF5.Value > 0.5 or Train.KV765.Position <= 0)) --"АРС"
                         Train:SetNW2Bool("VityazBARS2", self.err > 0 and (Train.SF4.Value > 0.5 or Train.KV765.Position <= 0)) --"АРС"						
                     else
-                        Train:SetNW2Bool("VityazBARS1", --[[Train.Pneumatic.BrakeCylinderPressure > 0.1 and]]
-                            (BARS.PN1 == 1) and (Train.SF5.Value > 0.5 or Train.KV765.Position <= 0)) --or Train.BUV.BARSBrakeTimer or BARS.Brake == 1)) --"АРС"
+                        Train:SetNW2Bool("VityazBARS1",
+                            (BARS.PN1 == 1) and (Train.SF5.Value > 0.5 or Train.KV765.Position <= 0))
 
-                        Train:SetNW2Bool("VityazBARS2", --[[Train.Pneumatic.BrakeCylinderPressure > 0.1 and]]
-                            (BARS.PN1 == 1) and (Train.SF4.Value > 0.5 or Train.KV765.Position <= 0)) --or Train.BUV.BARSBrakeTimer or BARS.Brake == 1)) --"АРС"		
+                        Train:SetNW2Bool("VityazBARS2",
+                            (BARS.PN1 == 1) and (Train.SF4.Value > 0.5 or Train.KV765.Position <= 0))
                     end
 
-                    Train:SetNW2Int("VityazARS1", Train:GetNW2Bool("DisableDrive", false) and 2 or Train:GetNW2Bool("VityazBARS1", false) and 0 or 1)
-                    Train:SetNW2Int("VityazARS2", Train:GetNW2Bool("DisableDrive", false) and 2 or Train:GetNW2Bool("VityazBARS2", false) and 0 or 1)
+                    Train:SetNW2Int("VityazARS1", BARS.Active == 1 and not BARS.ATS1 and -1 or Train:GetNW2Bool("DisableDrive", false) and 2 or Train:GetNW2Bool("VityazBARS1", false) and 0 or 1)
+                    Train:SetNW2Int("VityazARS2", BARS.Active == 1 and not BARS.ATS2 and -1 or Train:GetNW2Bool("DisableDrive", false) and 2 or Train:GetNW2Bool("VityazBARS2", false) and 0 or 1)
 
                     for i = 1, self.WagNum do
                         local train = self.Trains[self.Trains[i]]
@@ -1237,17 +1241,16 @@ if SERVER then
                         if self.State2 == 11 then
                             for i = 1, self.WagNum do
                                 local train = self.Trains[self.Trains[i]]
-                                Train:SetNW2Bool("VityazBuksGood" .. i, true) --"МК"
-                                Train:SetNW2Bool("VityazMKWork" .. i, train.MKWork) --"МК"
+                                Train:SetNW2Bool("VityazBuksGood" .. i, true)
+                                Train:SetNW2Bool("VityazMKState" .. i, not train.MKWork and -1 or train.MKCurrent > 5 and 1 or 0) --"МК"
                                 Train:SetNW2Bool("VityazLightsWork" .. i, train.PassLightEnabled) --"ОСВ ВКЛ"
                                 Train:SetNW2Bool("VityazPantDisabled" .. i, not train.PantDisabled) --"ТКПР"
-                                --Train:SetNW2Bool("VityazHVGood" .. i, not train.HVBad)
-                                --Train:SetNW2Bool("VityazPSNWork" .. i, train.PSNWork) --"ПСН"
                                 Train:SetNW2Bool("VityazRessoraGood" .. i, true)
                                 Train:SetNW2Bool("VityazPUGood" .. i, true)
                                 Train:SetNW2Bool("VityazBUDWork" .. i, train.BUDWork)
                                 Train:SetNW2Bool("VityazWagOr" .. i, train.Orientation)
 
+                                Train:SetNW2Bool("VityazMKWork" .. i, train.MKWork) --"МК"
                                 Train:SetNW2Bool("VityazPTWork" .. i, not train.PTBad) --"ТОРМ ОБ" !
                                 Train:SetNW2Bool("VityazEmPT" .. i, train.ReserveChannelBraking) --"ТОРМ РК"
                                 Train:SetNW2Bool("VityazDoorBlock" .. i, train.Blocks) --"ТОРЦ ДВ" FIXME
@@ -1302,7 +1305,7 @@ if SERVER then
                         elseif self.State2 == 41 then
                             for i = 1, self.WagNum do
                                 local train = self.Trains[self.Trains[i]]
-                                Train:SetNW2Int("VityazIMK" .. i, train.MKVoltage and train.MKVoltage * 10)
+                                Train:SetNW2Int("VityazIMK" .. i, train.MKCurrent and train.MKCurrent * 10)
                                 Train:SetNW2Int("VityazIVO" .. i, train.VagEqConsumption * 10)
                                 Train:SetNW2Int("VityazUBS" .. i, train.LV and train.LV * 10 or 0)
                                 Train:SetNW2Int("VityazU" .. i, train.HVVoltage and train.HVVoltage * 10 or 0)
@@ -1479,8 +1482,8 @@ if SERVER then
             --self:CState("RVPB",--[[(Train.BARS.Speed < 1 and 1 or 0)*]] RV*Train.SA1.Value*Train:ReadTrainWire(35) > 0)--(1-Train.RV["KRO5-6"])*Train.SF2.Value > 0)
             self:CState("Ring", Train.Ring.Value > 0, "BUKP")
             self.ControllerState = stength
-            self:CState("DriveStrength", Train.BARS.StillBrake == 0 and math.abs(stength) or 50)
-            self:CState("Brake", (Train.BARS.StillBrake == 1 or stength < 0) and 1 or 0)
+            self:CState("DriveStrength", math.abs(stength))
+            self:CState("Brake", stength < 0 and 1 or 0)
             self:CState("StrongerBrake", stength < 0 and Train.KV765.Position < -1 and Train.BARS.StillBrake == 0 and 1 or 0)
             self:CState("PN1", Train.BARS.PN1)
             self:CState("PN2", Train.BARS.PN2 + (self.Slope and Train.RV.KROPosition ~= 0 and self.SlopeSpeed and 1 or 0))
@@ -2006,7 +2009,7 @@ else
             --local BUVState = Train:GetNW2Bool("VityazBUVState"..i,false)
             self:PrintText(5, 0, "РЕЖИМ:", yellow)
             if not Train:GetNW2Bool("VityazBARSPN2", false) then
-                local strength = Train:GetNW2Int("VityazType", 0)
+                local strength = Train:GetNW2Int("VityazThrottle", 0)
                 if strength > 0 then
                     self:PrintText(11, 0, string.format("Х%03d%%", strength), yellow, true)
                 elseif strength < 0 then
