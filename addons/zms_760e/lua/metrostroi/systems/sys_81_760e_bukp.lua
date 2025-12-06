@@ -520,7 +520,7 @@ if SERVER then
                 end
 
                 local interceptScroll = false
-                if name == "VityazF7" or name == "VityazF6" and self.State2 == 61 then
+                if (name == "VityazF7" or name == "VityazF6") and self.State2 == 61 then
                     interceptScroll = true
                     self.CondLeto = not self.CondLeto
                 end
@@ -942,6 +942,9 @@ if SERVER then
                     local hvGood = 0
                     local condAny = false
                     local voGood = true
+                    local schemeAll = true
+                    local schemeAny = false
+                    local btbAll = true
 
                     for i = 1, self.WagNum do
                         local trainid = self.Trains[i]
@@ -970,6 +973,17 @@ if SERVER then
                             err16 = err16 or not train.PassLightEnabled
                             err18 = err18 or not train.SF47
                             ptApplied = ptApplied or train.PTEnabled
+
+                            if train.BVEnabled then bvEnabled = bvEnabled + 1 end
+                            if not train.BVEnabled and train.AsyncInverter then bvDisabled = bvDisabled + 1 end
+                            if not train.HVBad and train.AsyncInverter then hvGood = hvGood + 1 end
+                            if train.HVBad and train.AsyncInverter then hvBad = hvBad + 1 end
+                            if train.Cond1 or train.Cond2 then condAny = true end
+                            if not working or not train.PSNEnabled or not train.PassLightEnabled then voGood = false end
+                            if not train.Scheme and train.AsyncInverter then schemeAll = false end
+                            if train.Scheme and train.AsyncInverter then schemeAny = true end
+                            if train.PTEnabled then ptAll = false end
+                            if not train.BTBReady then btbAll = false end
                         end
 
                         --Errors
@@ -1007,13 +1021,6 @@ if SERVER then
                             if r and not doorrightopened then doorrightopened = true end
                         end
 
-                        if train.BVEnabled then bvEnabled = bvEnabled + 1 end
-                        if not train.BVEnabled and train.AsyncInverter then bvDisabled = bvDisabled + 1 end
-                        if not train.HVBad and train.AsyncInverter then hvGood = hvGood + 1 end
-                        if train.HVBad and train.AsyncInverter then hvBad = hvBad + 1 end
-                        if train.Cond1 or train.Cond2 then condAny = true end
-                        if not working or train.PSNBroken or not train.PSNWork or not train.PSNEnabled or not train.PassLightEnabled then voGood = false end
-
                         Train:SetNW2Bool("VityazDoorLeft" .. i, doorleftopened)
                         Train:SetNW2Bool("VityazDoorRight" .. i, doorrightopened)
                         --Train:SetNW2Bool("VityazAKB"..i,train.Electric.Battery80V < 62)
@@ -1040,6 +1047,8 @@ if SERVER then
                         end
                     end
 
+                    local errPT = self.PTEnabled and CurTime() - self.PTEnabled > 3.5 + (Train.BUV.Slope1 and 1 or 0)
+
                     Train:SetNW2Int("VityazDoorsAll", err11 and 0 or cabDoors and 2 or 1)
                     Train:SetNW2Int("VityazHvAll", hvGood == 0 and 0 or hvBad == 0 and 1 or 2)
                     Train:SetNW2Int("VityazBvAll", bvEnabled == 0 and 0 or bvDisabled == 0 and 1 or 2)
@@ -1048,6 +1057,18 @@ if SERVER then
                     Train:SetNW2Int("VityazKTR", Train.EmerBrake.Value == 1 and 1 or -1)
                     Train:SetNW2Int("VityazALS", Train.ALS.Value == 1 and 1 or -1)
                     Train:SetNW2Int("VityazBOSD", Train.DoorBlock.Value == 1 and 0 or -1)
+
+                    Train:SetNW2Bool("VityazShowDoors", err11)
+                    Train:SetNW2Bool("VityazShowBV", bvDisabled > 0)
+                    Train:SetNW2Bool("VityazShowScheme", self.SchemeTimer and self.SchemeTimer < CurTime())
+                    Train:SetNW2Bool("VityazShowPTApply", errPT)
+                    Train:SetNW2Bool("VityazShowPBApply", err7)
+                    Train:SetNW2Bool("VityazShowBUVState", err3)
+                    Train:SetNW2Bool("VityazShowBTBReady", not btbAll)
+
+                    local schemeShouldAssemble = schemeAny or Train.RV["KRR15-16"] * Train.SF3.Value < 0.5 and Train.KV765.Position > 0
+                    if not schemeAll and schemeShouldAssemble and not self.SchemeTimer then self.SchemeTimer = CurTime() + 1.8 end
+                    if (not schemeShouldAssemble or schemeAll) and self.SchemeTimer then self.SchemeTimer = nil end
 
                     if self.ProstTimer and Train.VityazF8.Value < 0.5 then self.ProstTimer = nil end
                     Train:SetNW2Bool("VityazProstTimer", self.ProstTimer and CurTime() - self.ProstTimer > 0.5)
@@ -1128,13 +1149,15 @@ if SERVER then
                         end
 
                         Train:SetNW2Bool("VityazBARSPN2", not Train.Prost_Kos.CommandKos and BARS.Brake == 0 and BARS.Active == 1 and BARS.StillBrake > 0 and not Train.Pneumatic.EmerBrakeWork)
-                        if Train.Prost_Kos.Command ~= 0 and Train.Prost_Kos.ProstActive == 1 and Train.KV765.Position >= 0 then stength = translate_oka_kv_to_765(Train.Prost_Kos.Command) end
-                        if Train.Prost_Kos.CommandKos then stength = -100 end
-                        if BARS.Brake > 0 then stength = -100 end
-                        if err6 and (Train.KV765.Position > 0 or Train.Speed > 1.6) then stength = -100 end
-                        local sb = stength > -50 and (BARS.StillBrake == 1 or Train.Speed < 0.5 and BARS.PN1 == 1)
-                        if sb then stength = -50 end
-                        
+
+                        local override = false
+                        if Train.Prost_Kos.Command ~= 0 and Train.Prost_Kos.ProstActive == 1 and Train.KV765.Position >= 0 then stength = translate_oka_kv_to_765(Train.Prost_Kos.Command) override = true end
+                        if Train.Prost_Kos.CommandKos then stength = -100 override = true end
+                        if BARS.Brake > 0 then stength = -100 override = true end
+                        if err6 and (Train.KV765.Position > 0 or Train.Speed > 1.6) then stength = -100 override = true end
+                        local sb = not override and (BARS.StillBrake == 1 or Train.Speed < 0.5 and BARS.PN1 == 1)
+                        if sb then stength = -50 override = true end
+
                         if Train.Prost_Kos.Metka and (Train.Prost_Kos.Metka[2] or Train.Prost_Kos.Metka[3] or Train.Prost_Kos.Metka[4]) and (Train.Prost_Kos.DistToSt ~= 0 or Train.Prost_Kos.ProstActive == 1) then
                             Train:SetNW2Int("VityazS", (Train.Prost_Kos.Dist or -10) * 100) --(Train:ReadCell(49165)-5-5)*100)
                         elseif Train:GetNW2Int("VityazS", -1000) ~= -1000 then
@@ -1172,7 +1195,7 @@ if SERVER then
 
                     if err10 and stength > 0 and not self.PTEnabled then self.PTEnabled = CurTime() end
                     if (not err10 or stength <= 0) and self.PTEnabled then self.PTEnabled = nil end
-                    self:CheckError(9, self.PTEnabled and CurTime() - self.PTEnabled > 3.5 + (Train.BUV.Slope1 and 1 or 0)) --2.7
+                    self:CheckError(9, errPT) --2.7
                     self:CheckError(10, self.HVBad and CurTime() - self.HVBad > 10)
                     Train:SetNW2Int("VityazThrottle", math.Round(stength or 0))
                     local train = self.Trains[self.Trains[1]]

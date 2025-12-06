@@ -284,6 +284,13 @@ surface.CreateFont("Mfdu765.AsyncLabels", {
     weight = 600,
 })
 
+surface.CreateFont("Mfdu765.MainGridLabels", {
+    font = "Open Sans",
+    extended = true,
+    size = 36,
+    weight = 700,
+})
+
 surface.CreateFont("Mfdu765.TableText", {
     font = "Open Sans",
     extended = true,
@@ -450,7 +457,7 @@ function TRAIN_SYSTEM:DrawMainPage()
         draw.SimpleText(tostring(self.SpeedNext), "Mfdu765.SpeedLetter", x, y - 10, colorYellow, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     end
 
-    draw.DrawText("Пока здесь больше нихуя нет :)\nДля выхода в обычный экран -\nнажми любую цифру.\nДля возврата сюда - ВВОД", "Mfdu765.StatusSmall", scrW * 0.4, scrOffsetY + sizeTopBar + 40, colorMain, TEXT_ALIGN_TOP, TEXT_ALIGN_LEFT)
+    self:DrawMainStatus(self.Train, sizeThrottleW + sizeMainMargin + 490, posPageStartY + 4, sizeMainW - 500, sizeMainH - 8)
 end
 
 
@@ -463,7 +470,7 @@ local sizeStatusVoltageMargin = 32
 local LegacyErrors = {
     {"Сбой КМ.", true},
     {"Сбой РВ.", true},
-    {"Отс. связь с БКВУ.", true},
+    {"Отс. связь с БУВ-М.", true},
     {"Вагон не ориентирован.", true},
     {"Запрет ТР от АРС.",},
     {"Экстренное торможение.", true},
@@ -652,7 +659,7 @@ function TRAIN_SYSTEM:DrawStatus(Wag)
 end
 
 local sizeCellBorderRadius = 8
-function TRAIN_SYSTEM:DrawGrid(x, y, w, h, vertical, cellGap, labels, labelFont, wagNumbers, wagNumbersFont, leftOffset, topOffset, getter)
+function TRAIN_SYSTEM:DrawGrid(x, y, w, h, vertical, cellGap, labels, labelFont, wagNumbers, wagNumbersFont, leftOffset, topOffset, getter, drawRow)
     if not isfunction(getter) then return end
     if not istable(wagNumbers) then
         local ind = not wagNumbers
@@ -677,7 +684,8 @@ function TRAIN_SYSTEM:DrawGrid(x, y, w, h, vertical, cellGap, labels, labelFont,
     for row = 1, rowCount do
         if vertical then rowLabel = labels[row] else rowLabel = wagNumbers[row] end
         if not rowLabel then return end
-        if #rowLabel > 0 then
+        local drawCurRow = not isfunction(drawRow) or drawRow(row)
+        if drawCurRow and #rowLabel > 0 then
             draw.SimpleText(
                 tostring(rowLabel),
                 vertical and labelFont or wagNumbersFont, x - leftOffset, y + cellH / 2,
@@ -696,13 +704,15 @@ function TRAIN_SYSTEM:DrawGrid(x, y, w, h, vertical, cellGap, labels, labelFont,
                 )
             end
 
-            local wagIdx = vertical and col or row
-            local color, text, textColor, textFont = getter(wagIdx, vertical and row or col)
-            if color then
-                draw.RoundedBox(sizeCellBorderRadius, x + cellMarginX, y + cellMarginY, cellW - cellMarginX * 2, cellH - cellMarginY * 2, color)
-            end
-            if text then
-                draw.SimpleText(text, textFont or "Mfdu765.CellText", x + cellW / 2, y + cellH / 2, textColor or colorBlack, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            if drawCurRow then
+                local wagIdx = vertical and col or row
+                local color, text, textColor, textFont = getter(wagIdx, vertical and row or col)
+                if color then
+                    draw.RoundedBox(sizeCellBorderRadius, x + cellMarginX, y + cellMarginY, cellW - cellMarginX * 2, cellH - cellMarginY * 2, color)
+                end
+                if text then
+                    draw.SimpleText(text, textFont or "Mfdu765.CellText", x + cellW / 2, y + cellH / 2, textColor or colorBlack, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                end
             end
 
             x = x + cellW + cellGap
@@ -998,7 +1008,7 @@ local sizeVoCellMargin = 16
 local voFields = {
     {
         {"БУКСЫ", "VityazBuksGood"},
-        {"МК", function(Wag, idx) return not Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false) and -2 or Wag:GetNW2Int("VityazMKState" .. idx, -1) end, function(val) return val < 0 and colorRed or val > 0 and colorGreen or val > -2 and colorMainDisabled or nil end},
+        {"МК", function(Wag, idx) return not Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false) and -2 or Wag:GetNW2Int("VityazMKState" .. idx, -1) end, function(val) return val > 0 and colorGreen or val > -2 and (val < 0 and colorRed or colorMainDisabled) or nil end},
         {"Освещение", "VityazLightsWork"},
         {"ТКПР", "VityazPantDisabled"},
         {"Напряжение КС", "VityazHVGood"},
@@ -1116,4 +1126,40 @@ function TRAIN_SYSTEM:DrawCondPage(Wag, x, y, w, h)
     surface.DrawTexturedRect(x + w / 2 + 70, gy + gh + 218 - ich / 2, icw, ich)
 
     draw.SimpleText("Загрузка: " .. (Wag:GetNW2Bool("VityazCondAny", false) and "33 %" or "0 %"), "Mfdu765.BodyTextSmall", x + 4, gy + gh + 290, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+end
+
+local mainGridLabels = {
+    "Двери", "БВ", "Сбор схемы", "ПТ включен", "Ст. тормоз", "БУВ", "БТБ гот."
+}
+local mainGridData = {
+    {"VityazDoors", "VityazShowDoors"},
+    {"VityazBV", "VityazShowBV"},
+    {"VityazScheme", "VityazShowScheme"},
+    {"VityazPTApply", "VityazShowPTApply"},
+    {"VityazPBApply", "VityazShowPBApply"},
+    {"VityazBUVState", "VityazShowBUVState"},
+    {"VityazBTBReady", "VityazShowBTBReady"},
+}
+local noAsync = { ["VityazBV"] = true, ["VityazScheme"] = true }
+local mainGridDraw = {}
+function TRAIN_SYSTEM:DrawMainStatus(Wag, x, y, w, h)
+    local gx, gy, gw, gh = x, y + 64, w, h - 64
+    local drawGrid = false
+    for idx, d in ipairs(mainGridData) do
+        mainGridDraw[idx] = Wag:GetNW2Bool(mainGridData[idx][2], false)
+        if mainGridDraw[idx] then drawGrid = true end
+    end
+    if not drawGrid then return end
+    self:DrawGrid(
+        gx, gy, gw, gh, true, sizeMainMargin * 0.75,
+        mainGridLabels, "Mfdu765.MainGridLabels",
+        false, "Mfdu765.MainGridLabels",
+        sizeMainMargin, sizeMainMargin / 2,
+        function(idx, field)
+            return not (not Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false) and noAsync[mainGridData[field][1]]) and (Wag:GetNW2Bool(mainGridData[field][1] .. idx, false) and colorGreen or colorRed) or nil
+        end,
+        function(field)
+            return mainGridDraw[field]
+        end
+    )
 end

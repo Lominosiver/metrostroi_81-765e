@@ -597,7 +597,7 @@ function TRAIN_SYSTEM:Think(dT)
         self.CloseDoors = command
     end
     self.CloseDoorsCommand = command
-    if command and self.CloseDoorsCommandAt and CurTime() - self.CloseDoorsCommandAt > 1.8 then
+    if command and (not self.CloseDoorsCommandAt or CurTime() - self.CloseDoorsCommandAt > 1.8) then
         self.CloseDoors = true
         if not Train.DoorsOpened then
             self.CloseDoorsCommandAt = nil
