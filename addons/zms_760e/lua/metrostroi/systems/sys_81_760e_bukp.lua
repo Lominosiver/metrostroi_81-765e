@@ -941,6 +941,7 @@ if SERVER then
                     local hvBad = 0
                     local hvGood = 0
                     local condAny = false
+                    local voGood = true
 
                     for i = 1, self.WagNum do
                         local trainid = self.Trains[i]
@@ -1011,6 +1012,7 @@ if SERVER then
                         if not train.HVBad and train.AsyncInverter then hvGood = hvGood + 1 end
                         if train.HVBad and train.AsyncInverter then hvBad = hvBad + 1 end
                         if train.Cond1 or train.Cond2 then condAny = true end
+                        if not working or train.PSNBroken or not train.PSNWork or not train.PSNEnabled or not train.PassLightEnabled then voGood = false end
 
                         Train:SetNW2Bool("VityazDoorLeft" .. i, doorleftopened)
                         Train:SetNW2Bool("VityazDoorRight" .. i, doorrightopened)
@@ -1042,6 +1044,7 @@ if SERVER then
                     Train:SetNW2Int("VityazHvAll", hvGood == 0 and 0 or hvBad == 0 and 1 or 2)
                     Train:SetNW2Int("VityazBvAll", bvEnabled == 0 and 0 or bvDisabled == 0 and 1 or 2)
                     Train:SetNW2Bool("VityazCondAny", condAny)
+                    Train:SetNW2Bool("VityazVoGood", voGood)
                     Train:SetNW2Int("VityazKTR", Train.EmerBrake.Value == 1 and 1 or -1)
                     Train:SetNW2Int("VityazALS", Train.ALS.Value == 1 and 1 or -1)
                     Train:SetNW2Int("VityazBOSD", Train.DoorBlock.Value == 1 and 0 or -1)

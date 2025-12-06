@@ -505,7 +505,7 @@ local rightBarList = {
 }
 local statusGetters = {
     -- ВО
-    function(self, Wag) return colorMain end,
+    function(self, Wag) return Wag:GetNW2Bool("VityazVoGood", false) and colorMain or colorRed end,
     -- Двери
     function(self, Wag) return Wag:GetNW2Int("VityazDoorsAll", 0) == 1 and colorGreen or Wag:GetNW2Int("VityazDoorsAll", 0) == 2 and colorYellow or colorRed end,
     -- Тяг.привод
@@ -998,7 +998,7 @@ local sizeVoCellMargin = 16
 local voFields = {
     {
         {"БУКСЫ", "VityazBuksGood"},
-        {"МК", function(Wag, idx) return not Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false) and 0 or Wag:GetNW2Int("VityazMKState" .. idx, -1) end, function(val) return val < 0 and colorRed or val > 0 and colorGreen or nil end},
+        {"МК", function(Wag, idx) return not Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false) and -2 or Wag:GetNW2Int("VityazMKState" .. idx, -1) end, function(val) return val < 0 and colorRed or val > 0 and colorGreen or val > -2 and colorMainDisabled or nil end},
         {"Освещение", "VityazLightsWork"},
         {"ТКПР", "VityazPantDisabled"},
         {"Напряжение КС", "VityazHVGood"},
@@ -1045,7 +1045,6 @@ local voFields = {
         {"", function() return true end},
     }
 }
-local noAsync = { ["VityazMKState"] = true }
 local voLabels = {}
 for idx, fields in ipairs(voFields) do voLabels[idx] = {} for fIdx, field in ipairs(fields) do voLabels[idx][fIdx] = field[1] end end
 local voDefaultValGetter = function(Wag, idx, k) return Wag:GetNW2Bool(k .. idx, false) end
@@ -1067,7 +1066,6 @@ function TRAIN_SYSTEM:DrawVoPage(Wag, x, y, w, h)
             local fieldData = voFields[voPage] and voFields[voPage][field]
             local _, valGetter, getter = unpack(fieldData or {})
             if valGetter then
-                if isstring(valGetter) and not Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false) and noAsync[valGetter] then return end
                 local k = isstring(valGetter) and valGetter or nil
                 valGetter = isfunction(valGetter) and valGetter or voDefaultValGetter
                 local val = valGetter(Wag, idx, k)
