@@ -9,7 +9,7 @@ function TRAIN_SYSTEM:Ui765()
     if self.MainMsg == 0 and self.State == 5 and not self.LegacyScreen then
         local Wag = self.Train
 
-        self.AlsArs = Wag:GetNW2Bool("SA14")
+        self.AlsArs = Wag:GetNW2Bool("PmvFreq")
         local ao = Wag:GetNW2Bool("AOState", false)
         local vigilance = Wag:GetNW2Bool("VityazKB", false)
         local speedNextNofq = Wag:GetNW2Bool("VityazNextNoFq", false)
@@ -620,7 +620,7 @@ function TRAIN_SYSTEM:DrawStatus(Wag)
         val = isnumber(val) and val / 10 or val
         draw.SimpleText("P", "Mfdu765.StatusLarge", x - (idx > 2 and 24 or 16), y + 4, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
         draw.SimpleText(text, "Mfdu765.StatusSmall", x + (idx > 2 and 14 or 8), y, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
-        draw.SimpleText(val > 0 and string.format("%.1f", val) or "0", "Mfdu765.StatusValue", x, y - 4, colorBlue, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+        draw.SimpleText(not isnumber(val) and val or isnumber(val) and val > 0 and string.format("%.1f", val) or "0", "Mfdu765.StatusValue", x, y - 4, colorBlue, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
         if idx > 2 then
             draw.SimpleText("Атм", "Mfdu765.StatusSmall", x, y + 58, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
         end
@@ -1103,7 +1103,7 @@ function TRAIN_SYSTEM:DrawCondPage(Wag, x, y, w, h)
         0, sizeVoCellMargin / 2,
         function(idx, field)
             if field == 3 then
-                return Wag:GetNW2Bool("VityazHasCabin" .. idx, false) and colorGreen or nil
+                return Wag:GetNW2Bool("VityazHasCabin" .. idx, false) and (Wag:GetNW2Bool("VityazCondK" .. idx, false) and colorGreen or colorRed) or nil
             end
             return Wag:GetNW2Bool("VityazCond" .. field .. idx, false) and colorGreen or colorRed
         end
@@ -1143,7 +1143,7 @@ local mainGridData = {
 local noAsync = { ["VityazBV"] = true, ["VityazScheme"] = true }
 local mainGridDraw = {}
 function TRAIN_SYSTEM:DrawMainStatus(Wag, x, y, w, h)
-    local gx, gy, gw, gh = x, y + 64, w, h - 64
+    local gx, gy, gw, gh = x - 10, y + 64, w, h - 64
     local drawGrid = false
     for idx, d in ipairs(mainGridData) do
         mainGridDraw[idx] = Wag:GetNW2Bool(mainGridData[idx][2], false)

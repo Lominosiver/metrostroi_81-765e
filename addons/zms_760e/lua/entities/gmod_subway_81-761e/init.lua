@@ -217,7 +217,7 @@ end
 function ENT:Think()
     local retVal = self.BaseClass.Think(self)
     local Panel = self.Panel
-    local power = self.Electric.Power1 > 0
+    local power = self.Electric.BSPowered > 0
     self:SetPackedBool("WorkBeep",power)
     self:SetPackedBool("WorkFan",Panel.WorkFan>0)--power and self.Battery.Value*self.GV.Value*(550 <= self.Electric.Main750V and self.Electric.Main750V <= 975 and 1 or 0) > 0)		
     local state = math.abs(self.AsyncInverter.InverterFrequency/(11+self.AsyncInverter.State*5))--(10+8*math.Clamp((self.AsyncInverter.State-0.4)/0.4,0,1)))

@@ -285,8 +285,8 @@ function TRAIN_SYSTEM:Think(dT)
     local Train = self.Train
     self.WeightLoadRatio = math.max(0, math.min(1, Train:GetNW2Float("PassengerCount") / 200))
     -- Apply specific rate to equalize pressure
-    local V4 = Train.BUKP and (Train.K29.Value == 1 or self.V4 and Train.Electric.V2 > 0) --*((Train.RV["KRO1-2"]*Train.SF2.Value + Train.RV["KRR1-2"]*Train.SF3.Value ~= 0 and 1 or 0))--*((Train.BARS.UOS and Train.BARS.KB or Train.SF6.Value == 1) and 1 or 0) == 1) --Train.Electric.V4 > 0
-    self.V6 = Train.BUKP and (Train.Electric.Battery80V > 62 and V4 and Train.SF3.Value ~= 1 or Train.K29.Value == 1 and (Train.Electric.Battery80V > 62 and 1 or 0) * (Train.RV["KRO1-2"] + Train.RV["KRR1-2"] == 0 and 0 or 1) == 0)
+    local V4 = Train.BUKP and (Train.K29.Value == 1 or self.V4 and Train.Electric.V2 > 0)
+    self.V6 = Train.BUKP and (Train.Electric.Battery80V > 62 and V4 and Train.SF23F1.Value ~= 1 or Train.K29.Value == 1 and (Train.Electric.Battery80V > 62 and 1 or 0) * (Train.RV["KRO1-2"] + Train.RV["KRR1-2"] == 0 and 0 or 1) == 0)
     ----------------------------------------------------------------------------
     -- Accumulate derivatives
     self.TrainLinePressure_dPdT = 0.0
@@ -300,8 +300,8 @@ function TRAIN_SYSTEM:Think(dT)
     -- Feed pressure to door line
     self.DoorLinePressure = self.TrainToBrakeReducedPressure * 0.90
     local trainLineConsumption_dPdT = 0.0
-    if Train.BUKP then --and Train.SF6.Value > 0.5 end
-        self.V4 = Train.Electric.Battery80V > 62 and (Train.Electric.V2 * Train.BUKP.Active > 0)
+    if Train.BUKP then
+        self.V4 = Train.Electric.Battery80V > 62 and (Train.Electric.V2 * Train.BUKP.Active * Train.SF23F2.Value > 0)
     end
 
     local wagc = Train:GetWagonCount()
@@ -381,12 +381,9 @@ function TRAIN_SYSTEM:Think(dT)
 
         self.Train:SetPackedRatio("EmergencyValve_dPdT", -leak)
         local leak = 0
-        if (Train.BARS.RVTB == 0 or not Train.BARS.UOS and Train.BUKP.State < 5 and Train.ALS.Value == 0 and (Train.RV.KROPosition + Train.RV.KRRPosition ~= 0)) and not self.RVTBTimer then --[[or Train.SF5.Value == 0]] --[[and Train:ReadTrainWire(27) > 0.5]] --and Train:ReadTrainWire(27) > 0.5 then
+        if (Train.BARS.RVTB == 0 or not Train.BARS.UOS and Train.BUKP.State < 5 and Train.ALS.Value == 0 and (Train.RV.KROPosition + Train.RV.KRRPosition ~= 0)) and not self.RVTBTimer then
             self.RVTBTimer = CurTime()
         elseif (Train.BARS.RVTB > 0 and not (not Train.BARS.UOS and Train.BUKP.State < 5 and Train.ALS.Value == 0 and (Train.RV.KROPosition + Train.RV.KRRPosition ~= 0))) and self.RVTBTimer then
-            --[[and Train.SF5.Value > 0]]
-            --[[or Train:ReadTrainWire(27) == 0]]
-            --or Train:ReadTrainWire(27) == 0 then-- and Train.Speed < 1 then
             self.RVTBTimer = nil
         end
 
@@ -395,7 +392,7 @@ function TRAIN_SYSTEM:Think(dT)
             self.PrevV4 = self.V4
         end
 
-        if Train.RvtbErr and Train.K9.Value == 1 or Train.K9.Value == 1 and V4 and self.RVTBTimer and CurTime() - self.RVTBTimer > (5 * (Train.BARS.RVTBTimer and CurTime() - Train.BARS.RVTBTimer > 0 and 0 or 1) * (Train.BARS.KBApplyTimer and CurTime() - Train.BARS.KBApplyTimer > 0 and 0 or 1) * (Train.BARS.BrakeEfficiency and CurTime() - Train.BARS.BrakeEfficiency >= 3.6 and 0 or 1) * (Train.BARS.ReadyTimer and CurTime() - Train.BARS.ReadyTimer > 0 and 0 or 1) * Train.SF6.Value * (Train.BARS.RollingBraking and 0 or 1) * (Train.BUKP.err > 0 and 0 or 1) * (Train.BARS.UOS and 0 or 1) * (Train.BARS.Ready and 1 or 0) * (1 - Train:ReadTrainWire(5)) * Train.SF3.Value * Train.BARS.BTB * (Train.SF12.Value + Train.SF13.Value == 0 and 0 or 1) * (Train.BUKP.State < 5 and 0 or 1)) or Train.K9.Value == 1 and self.V6 then
+        if Train.RvtbErr and Train.K9.Value == 1 or Train.K9.Value == 1 and V4 and self.RVTBTimer and CurTime() - self.RVTBTimer > (5 * (Train.BARS.RVTBTimer and CurTime() - Train.BARS.RVTBTimer > 0 and 0 or 1) * (Train.BARS.KBApplyTimer and CurTime() - Train.BARS.KBApplyTimer > 0 and 0 or 1) * (Train.BARS.BrakeEfficiency and CurTime() - Train.BARS.BrakeEfficiency >= 3.6 and 0 or 1) * (Train.BARS.ReadyTimer and CurTime() - Train.BARS.ReadyTimer > 0 and 0 or 1) * Train.SF23F8.Value * (Train.BARS.RollingBraking and 0 or 1) * (Train.BUKP.err > 0 and 0 or 1) * (Train.BARS.UOS and 0 or 1) * (Train.BARS.Ready and 1 or 0) * (1 - Train:ReadTrainWire(5)) * Train.SF23F1.Value * Train.BARS.BTB * (Train.SF45F11.Value == 0 and 0 or 1) * (Train.BUKP.State < 5 and 0 or 1)) or Train.K9.Value == 1 and self.V6 then
             self.RVTBLeak = 1
             leak = self:equalizePressure(dT, "BrakeLinePressure", 0.0, 3 * Train:GetWagonCount(), false, false, 0.55)
             if self.PrevLeak ~= 1 then

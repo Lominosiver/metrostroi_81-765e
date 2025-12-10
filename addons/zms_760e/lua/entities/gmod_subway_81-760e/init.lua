@@ -8,23 +8,33 @@ ENT.SyncTable = {
     "DisableBV", "Ring", "R_Program2", "R_Announcer", "R_Line", "R_Micro", "R_Emer", "R_Program1", "R_Program11", "R_ChangeRoute",
     "R_ToBack", "DoorSelectL", "DoorSelectR", "DoorBlock", "EmerBrakeAdd", "EmerBrakeRelease", "EmerBrake", "DoorClose", "AttentionMessage",
     "Attention", "AttentionBrake", "EmergencyBrake", "Pr", "OtklR", "GlassHeating", "Washer", "SC",
-    "SF1", "SF2", "SF3", "SF4", "SF5", "SF6", "SF7", "SF8", "SF9", "SF10", "SF11", "SF12", "SF13", "SF14", "SF15", "SF16", "SF17", "SF18",
-    "SF19", "SF20", "SF21", "SF22", "SF23", "SF24", "SF25", "SF26", "SF27", "SF28", "SF29", "SF31", "SF32", "SF33", "SF34", "SF36", "SF37",
+    "SF31", "SF32", "SF33", "SF34", "SF36", "SF37",
     "SF38", "SF39", "SF40", "SF41", "SF42", "SF57", "SF43", "SF44", "SF45", "SF46", "SF47", "SF48", "SF49", "SF50", "SF51", "SF52", "SF53",
     "SF54", "SF55", "SF56", "SF80F9",
     "Stand", "EmergencyCompressor", "EmergencyControls", "EmergencyControlsK", "Wiper", "DoorLeft", "AccelRate", "HornB", "DoorRight",
-    "AutoDrive", "Micro", "SA16", "SA17", "Vent1", "Vent2", "Vent", "PassLight", "CabLight", "HeadlightsSwitch", "ParkingBrake", "SA15",
-    "BBER", "BBE", "Compressor", "CabLightStrength", "AppLights1", "AppLights2", "Battery", "SA14", "VityazF1", "VityazF2", "VityazF3",
+    "AutoDrive", "Micro", "Vent1", "Vent2", "Vent", "PassLight", "CabLight", "HeadlightsSwitch", "ParkingBrake",
+    "BBER", "BBE", "Compressor", "CabLightStrength", "AppLights1", "AppLights2", "Battery", "VityazF1", "VityazF2", "VityazF3",
     "VityazF4", "Vityaz1", "Vityaz4", "Vityaz7", "Vityaz2", "Vityaz5", "Vityaz8", "Vityaz0", "Vityaz3", "Vityaz6", "Vityaz9", "VityazF5",
     "VityazF6", "VityazF7", "VityazF8", "VityazF9", "K29", "UAVA", "K9", "K31", "EmerX1", "EmerX2", "EmerCloseDoors", "EmergencyDoors",
     "R_ASNPMenu", "R_ASNPUp", "R_ASNPDown", "R_ASNPOn", "VentHeatMode", "PowerOn", "PowerOff", "RearBrakeLineIsolation",
     "RearTrainLineIsolation", "FrontBrakeLineIsolation", "FrontTrainLineIsolation", "PB", "GV", "K23", "EmergencyBrakeValve",
     "CAMS1", "CAMS2", "CAMS3", "CAMS4", "CAMS5", "CAMS6", "CAMS7", "CAMS8", "CAMS9", "CAMS10",
-    "SA1", "SA1k", "SA2", "SA3", "SA4", "SA5", "SA6", "SA7", "SA8", "SA9", "SA10", "SA10k", "SA11", "SA12", "SA13", "SA14", "SA14k", "SA15",
-    "SA16", "SA17", "SA18",
     "IGLA1", "IGLA2", "IGLA3", "IGLA4", "AB",
-    "Buik_EMsg1", "Buik_EMsg2", "Buik_Unused1", "Buik_Mode", "Buik_Path", "Buik_Return", "Buik_Down", "Buik_Up", "Buik_MicLine", "Buik_MicBtn", "Buik_Asotp", "Buik_Ik"
+    "Buik_EMsg1", "Buik_EMsg2", "Buik_Unused1", "Buik_Mode", "Buik_Path", "Buik_Return", "Buik_Down", "Buik_Up", "Buik_MicLine", "Buik_MicBtn", "Buik_Asotp", "Buik_Ik",
+    "BatteryCharge"
 }
+
+if not ENT.PpzToggles then print("ACHTUNG! PIZDEC!") end
+for _, cfg in ipairs(ENT.PpzToggles or {}) do
+    table.insert(ENT.SyncTable, cfg.relayName)
+end
+
+if not ENT.PakToggles then print("ACHTUNG! PIZDEC!") end
+for k, cfg in pairs(ENT.PakToggles or {}) do
+    if #cfg.positions == 2 then
+        table.insert(ENT.SyncTable, k)
+    end
+end
 
 --------------------------------------------------------------------------------
 function ENT:Initialize()
@@ -40,7 +50,6 @@ function ENT:Initialize()
         ALS = {true, "ALSk"},
         ALSk = true,
         K9 = true,
-        BARSBlock = true,
         UAVA = true,
         R_ASNPOn = true,
         Init = true,
@@ -314,8 +323,6 @@ function ENT:Initialize()
     self.BKL = self.BKL or true
     self:SetNW2Bool("STL", self.STL)
     self:SetNW2Bool("BKL", self.BKL)
-    self.BARSBlockAnim = -0.1
-    self.PowerReserveAnim = -0.1
     self.PassengerDoor = false
     self.CabinDoorLeft = false
     self.CabinDoorRight = false
@@ -341,10 +348,8 @@ function ENT:NonSupportTrigger()
     self.ALS:TriggerInput("Set", 1)
     self.ALSk:TriggerInput("Set", 0)
     self.ALSVal = 2
-    --self.BARSBlock:TriggerInput("Set",3)
     self.Plombs.ALS = nil
     self.Plombs.ALSk = nil
-    --self.Plombs.BARSBlock = nil
 end
 
 local doorTrigSize = 5
@@ -727,7 +732,7 @@ function ENT:Think()
     --print(Metrostroi.GetReverserID(self:GetOwner(),true))
     local Panel = self.Panel
     local power = self.Electric.UPIPower > 0
-    local power1 = self.Electric.Power1 > 0
+    local power1 = self.Electric.BSPowered > 0
     local powerReserve = self.Electric.PowerReserve > 0
     if self.Electric.Battery80V < 62 then self.Electric.Power = nil end
     local state = math.abs(self.AsyncInverter.InverterFrequency / (11 + self.AsyncInverter.State * 5)) --(10+8*math.Clamp((self.AsyncInverter.State-0.4)/0.4,0,1)))
@@ -735,30 +740,27 @@ function ENT:Think()
     self:SetPackedRatio("asyncstate", math.Clamp(self.AsyncInverter.State / 0.2 * math.abs(self.AsyncInverter.Current) / 100, 0, 1))
     self:SetPackedRatio("chopper", math.Clamp(self.Electric.Chopper > 0 and self.Electric.Iexit / 100 or 0, 0, 1))
     self:SetPackedRatio("Speed", self.Speed)
-    --self:SetLightPower(10,self.BUV.Power and self.SF25.Value > 0.5 and self.CabinLight.Value > 0.5,self.CabinLight.Value == 2 and 1 or 0.3)
-    --self:SetPackedBool("PanelLighting",self.BUV.Power and self.SF25.Value > 0.5 and self.PanelLight.Value > 0.5)
-    --local mul = self.SF45.Value > 0.5 and self.BUV.MainLights and 1 or self.SF46.Value > 0.5 and 0.5 or 0
-    --self:SetLightPower(11,self.BUV.Power and mul > 0, mul)
-    --self:SetLightPower(15,self.BUV.Power and mul > 0, mul)
-    --print(Metrostroi.ASNPSetup[self:GetNW2Int("Announcer",1)][self.BMCIS.Line].English)
     self:SetNW2Int("Wrench", self.WrenchMode)
     self:SetPackedRatio("Controller", self.KV765.Position)
     self:SetPackedRatio("KRO", (self.RV.KROPosition + 1) / 2)
     self:SetPackedRatio("KRR", (self.RV.KRRPosition + 1) / 2)
     self:SetPackedRatio("VentCondMode", self.VentCondMode.Value / 3)
     self:SetPackedRatio("VentStrengthMode", self.VentStrengthMode.Value / 3)
-    --self:OnButtonPress("BARSBlock -")
-    --self:SetPackedRatio("VentHeatMode",self.VentHeatMode.Value/2)
-    --self:SetPackedRatio("BARSBlock",self.BARSBlock.Value/4)
-    self:SetPackedRatio("BARSBlock", self.BARSBlockAnim or -0.1)
-    self:SetPackedRatio("PowerReserve", self.PowerReserveAnim or -0.1)
     self:SetPackedBool("PowerOnLamp", Panel.PowerOnl > 0) -- and self.Electric.Power == 1)
     self:SetPackedBool("PowerOffLamp", Panel.PowerOffl > 0) --and self.Electric.Power == 0)
+    self:SetPackedBool("BatteryChargeLamp", Panel.BatteryChargel > 0)
     --print(self:ReadTrainWire(75),self:ReadTrainWire(74))
     local fB, rB = self.FrontBogey, self.RearBogey
     local validfB, validrB = IsValid(fB), IsValid(rB)
     for i = 1, 4 do
         self:SetPackedBool("TR" .. i, self.BUV.Pant or i <= 2 and validfB and fB.DisableContactsManual or i > 2 and validrB and rB.DisableContactsManual)
+    end
+
+    for k, cfg in pairs(self.PakToggles or {}) do
+        local r = self[k]
+        if r and r.Value then
+            self:SetNW2Int(k, r.Value)
+        end
     end
 
     --self:CreateShadow()
@@ -780,19 +782,22 @@ function ENT:Think()
         self.VentTimer = nil
     end
 
+    if not self.IglaStarted and self.IGLA_CBKI.State == 2 then
+        self.IglaStarted = CurTime() + 7
+    end
+    if self.IglaStarted and self.IGLA_CBKI.State < 2 then
+        self.IglaStarted = nil
+    end
+    if isnumber(self.IglaStarted) and CurTime() > self.IglaStarted then
+        self:PlayOnce("igla_started", "cabin", nil, 1)
+        self.IglaStarted = true
+    end
+
     self:SetPackedRatio("VentTimer", self.VentTimer or 0)
     self:SetPackedBool("BUKPRing", power and self.BUKP.State == 5 and self.BUKP.ErrorRinging)
     self:SetPackedBool("RingEnabled", power and self.BUKP.Ring)
     self:SetPackedBool("WorkFan", Panel.WorkFan > 0)
     self:SetPackedBool("PanelLighting", Panel.PanelLights > 0)
-    --local HeadlightsPower = power and self.HeadlightsSwitch.Value >= 0 and (self.SF16.Value*self.SF17.Value > 0 and (self.RV["KRO11-12"] > 0 and self.HeadlightsSwitch.Value > 1 or self.SA13.Value*self.EmergencyControls.Value > 0) and 1 or (self.HeadlightsSwitch.Value > 0 and self.RV["KRO11-12"] > 0 or self.EmergencyControls.Value > 0.5) and self.SF16.Value+(self.HeadlightsSwitch.Value > 1 and self.SF17.Value or 0) > 0 and 0.5) or 0
-    --if power and self.EmergencyControls.Value*self.SF16.Value > 0.5 and HeadlightsPower < 0.5 then HeadlightsPower = 0.5 end
-    --print(0.4+math.max(0,math.min(1,1-(self.Speed-30)/30))*0.5)
-    --print((80-self.Engines.Speed))
-    --self:SetPackedRatio("HeadlightsSwitch",self.HeadlightsSwitch.Value/2)
-    --self:SetPackedBool("HeadlightsEnabled1",HeadlightsPower > 0 --[[and self.SF12.Value > 0]] and not self:GetPackedBool("HeadlightsEnabled2"))
-    --self:SetPackedBool("HeadlightsEnabled2",HeadlightsPower > 0.5 --[[and self.SF13.Value > 0]])
-    --self:SetPackedBool("HeadlightsEnabled0",not self:GetPackedBool("HeadlightsEnabled1") and not self:GetPackedBool("HeadlightsEnabled2"))
     local HeadlightsPower = Panel.HeadlightsFull > 0 and 1 or Panel.HeadlightsHalf > 0 and 0.5 or 0
     self:SetPackedRatio("HeadlightsSwitch", self.HeadlightsSwitch.Value / 2)
     self:SetPackedBool("HeadlightsEnabled2", HeadlightsPower > 0.5)
@@ -800,15 +805,7 @@ function ENT:Think()
     self:SetPackedRatio("Headlights", HeadlightsPower)
     self:SetLightPower(1, HeadlightsPower > 0, HeadlightsPower ^ 0.5)
     self:SetLightPower(2, HeadlightsPower > 0, HeadlightsPower ^ 0.5)
-    --local redlights = (power1 and (self.RV["KRO7-8"] > 0 or self.EmergencyControls.Value > 0) and self.SF1.Value > 0 or self.SF28.Value > 0.5 and not power) 
     self:SetPackedBool("BacklightsEnabled", Panel.RedLights > 0)
-    --self:SetLightPower(3,redlights)
-    --self:SetLightPower(4,redlights)
-    --local cablight = power1 and self.SF15.Value > 0.5 and (self.SA6.Value > 0.5) and (self.SA6.Value+self.SA7.Value > 1 and 0.8 or 0.25) or (self.PowerReserve.Value == 2 and 1 or 0)*self.SF15.Value > 0 and 0.25 or 0
-    --local cabl = cablight > 0
-    --self:SetLightPower(10,cabl,cablight)
-    --self:SetPackedBool("CabinEnabledEmer", cabl)
-    --self:SetPackedBool("CabinEnabledFull", cablight > 0.25)
     local cablight = Panel.CabLight == 1 and 0.25 or Panel.CabLight == 2 and 0.8 or 0
     local cabl = cablight > 0
     self:SetLightPower(10, cabl, cablight)
@@ -847,6 +844,7 @@ function ENT:Think()
     self:SetNW2Bool("R_ChangeRouteLamp", Panel.R_ChangeRoutel > 0)
     self:SetNW2Bool("WasherLamp", Panel.Washerl > 0)
     self:SetNW2Bool("WiperLamp", Panel.Wiperl > 0)
+    self:SetNW2Bool("WiperPower", Panel.WiperPower > 0)
     self:SetNW2Bool("AccelRateLamp", power and self.BUKP.Slope)
     self:SetNW2Bool("RS", power and self.BARS.F6)
     self:SetNW2Bool("DoorAlarm", self.CIS.DoorAlarm)
@@ -857,9 +855,10 @@ function ENT:Think()
     self:SetPackedBool("AnnPlayHead", power1)
     self:SetNW2Bool("DoorCloseLamp", Panel.DoorCloseL > 0)
     self:SetNW2Bool("DoorBlockLamp", Panel.DoorBlockL > 0)
+    self:SetPackedRatio("CabinLight",self.CabinLight.Value / 2)
     self:SetPackedBool("AppLights", Panel.AppLights > 0)
-    self:SetPackedRatio("LV", Panel.LV / 150) --((self.Battery.Value+self.SF1.Value > 0) and 1 or 0)*self.Electric.Battery80V/150)
-    self:SetPackedRatio("HV", self.Electric.Main750V / 1000)
+    self:SetPackedRatio("LV", Panel.LV / 150)
+    self:SetPackedRatio("HV", (self.SF42F2.Value * self.Electric.BSPowered > 0.5 and self.Electric.Main750V or 0) / 1000)
     self:SetPackedRatio("IVO", 0.5 + self.BUV.IVO / 150)
     --self:SetPackedRatio("I13",(self.Electric.I13+500)/1000)
     --self:SetPackedRatio("I24",(self.Electric.I24+500)/1000)
@@ -1023,6 +1022,23 @@ function ENT:OnDecouple(isfront)
 end
 
 function ENT:OnButtonPress(button, ply)
+    local pakUp = string.StartsWith(button, "PakUp")
+    local pakDn = not pakUp and string.StartsWith(button, "PakDn")
+    if pakUp or pakDn then
+        local k = string.sub(button, 6)
+        local cfg = self.PakToggles and self.PakToggles[k] or nil
+        local r = cfg and self[k] or nil
+        if r and r.Value then
+            local prev = r.Value
+            local max = #cfg.positions - 1
+            r:TriggerInput("Set", r.Value + (pakDn and 1 or -1), 0, max)
+            -- if r.Value ~= prev then
+            --     self:PlayOnce(r.Value == 0 and "multiswitch_panel_min" or r.Value == max and "multiswitch_panel_max" or "multiswitch_panel_mid", "", 1, 0.85)
+            -- end
+            return
+        end
+    end
+
     if string.find(button, "PneumaticBrakeSet") then
         self.Pneumatic:TriggerInput("BrakeSet", tonumber(button:sub(-1, -1)))
         return
@@ -1040,30 +1056,6 @@ function ENT:OnButtonPress(button, ply)
         else
             self.PB:TriggerInput("Set", 1)
         end
-    end
-
-    if button == "BARSBlock -" then
-        self.BARSBlockAnim = (self.BARSBlockAnim or -0.1) + 0.1
-        self.BARSBlock.Value = self.BARSBlock.Value == 0 and 3 or self.BARSBlock.Value - 1
-        self:PlayOnce("bkpu", "", 1, 0.85)
-    end
-
-    if button == "BARSBlock +" then
-        self.BARSBlockAnim = (self.BARSBlockAnim or -0.1) - 0.1
-        self.BARSBlock.Value = self.BARSBlock.Value == 3 and 0 or self.BARSBlock.Value + 1
-        self:PlayOnce("bkpu", "", 1, 0.85)
-    end
-
-    if button == "PowerReserve -" then
-        self.PowerReserveAnim = (self.PowerReserveAnim or -0.1) + 0.1 * (self.PowerReserve.Value == 0 and 2 or 1)
-        self.PowerReserve.Value = self.PowerReserve.Value == 0 and 2 or self.PowerReserve.Value - 1
-        self:PlayOnce("powerreserve", "", 1, 0.85)
-    end
-
-    if button == "PowerReserve +" then
-        self.PowerReserveAnim = (self.PowerReserveAnim or -0.1) - 0.1 * (self.PowerReserve.Value == 2 and 2 or 1)
-        self.PowerReserve.Value = self.PowerReserve.Value == 2 and 0 or self.PowerReserve.Value + 1
-        self:PlayOnce("powerreserve", "", 1, 0.85)
     end
 
     if button == "IGLA23" then
@@ -1089,11 +1081,11 @@ function ENT:OnButtonPress(button, ply)
         self.door_add_2 = not self.door_add_2
     end
 
-    if button == "CabinDoorLeft" and (self.CabinDoorLeft or self.SA12.Value == 1 or self.Speed < 20) then --[[self:PlayOnce("door_cab_l_"..(self.CabinDoorLeft and "open" or "close"),"")]]
+    if button == "CabinDoorLeft" and (self.CabinDoorLeft or self.SF80F3.Value == 0 or self.Speed < 20) then --[[self:PlayOnce("door_cab_l_"..(self.CabinDoorLeft and "open" or "close"),"")]]
         self.CabinDoorLeft = not self.CabinDoorLeft
     end
 
-    if button == "CabinDoorRight" and (self.CabinDoorRight or (self.SA12.Value == 1 or self.Speed < 20) and not (self.door_add_1 or self.Chair or self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) and IsValid(self.InstructorsSeat3:GetDriver()))) then
+    if button == "CabinDoorRight" and (self.CabinDoorRight or (self.SF80F3.Value == 0 or self.Speed < 20) and not (self.door_add_1 or self.Chair or self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) and IsValid(self.InstructorsSeat3:GetDriver()))) then
         self.CabinDoorRight = not self.CabinDoorRight
         --self:PlayOnce("door_cab_r_"..(self.CabinDoorRight and "open" or "close"),"")
         if self.CabinDoorRight and self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) then
@@ -1174,7 +1166,7 @@ function ENT:OnButtonPress(button, ply)
     end
 
     if button == "ALSToggle" then
-        if self.ALS.Value * self.SF6.Value == 1 then --выключается
+        if self.ALS.Value * self.SF23F8.Value == 1 then --выключается
             if self.ALSVal == 2 then
                 self.ALSVal = 0
             else

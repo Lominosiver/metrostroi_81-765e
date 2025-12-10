@@ -1506,11 +1506,19 @@ ENT.ButtonMap["VoltHelper1"] = {
     }
 }
 
+ENT.ButtonMap["ASNPScreen"] = {
+    pos = Vector(410.21, 38.74 + 1.88, 20.27 - 1.33), --446 -- 14 -- -0,5
+    ang = Angle(0, 90, 90),
+    width = 512,
+    height = 128,
+    scale = 0.025 / 4.24,
+    hideseat = 0.2,
+}
+
 ENT.ButtonMap["ASNP"] = {
-    pos = Vector(453.3, 62.25, -1), --446 -- 14 -- -0,5
-    ang = Angle(0, 0, 90),
-    width = 180,
-    height = 100,
+    pos = Vector(410.21, 38.74, 20.27),
+    ang = Angle(0, 90, 90),
+    width = 180, height = 100,
     scale = 0.045,
     hideseat = 0.2,
     buttons = {
@@ -1606,15 +1614,6 @@ ENT.ButtonMap["ASNP"] = {
             }
         },
     }
-}
-
-ENT.ButtonMap["ASNPScreen"] = {
-    pos = Vector(455.18, 62.39, -2.33), --446 -- 14 -- -0,5
-    ang = Angle(0, 0, 91),
-    width = 512,
-    height = 128,
-    scale = 0.025 / 4.24,
-    hideseat = 0.2,
 }
 
 --color=Color(187,255,91) green
@@ -1923,8 +1922,8 @@ ENT.ButtonMap["RVSButtons"] = {
 }
 
 ENT.ButtonMap["IGLA"] = {
-    pos = Vector(452.56, 62, 3.81), --446 -- 14 -- -0,5
-    ang = Angle(0, 0, 90),
+    pos = Vector(410.56, 48.32, 12.62),
+    ang = Angle(0, 90, 90),
     width = 512,
     height = 93,
     scale = 0.018,
@@ -1933,8 +1932,8 @@ ENT.ButtonMap["IGLA"] = {
 }
 
 ENT.ButtonMap["IGLAButtons"] = {
-    pos = Vector(452.5, 62, 3.82),
-    ang = Angle(0, 0, 90),
+    pos = Vector(410.56, 48.26, 12.63),
+    ang = Angle(0, 90, 90),
     width = 165,
     height = 70,
     scale = 0.0625,
@@ -2106,8 +2105,9 @@ ENT.ButtonMap["BackVent"] = {
     }
 }
 ]]
+
 ENT.ButtonMap["BackPPZ"] = {
-    pos = Vector(410.162, 34.915, 12.26), --446 -- 14 -- -0,5
+    pos = Vector(410.45, 34.915, 13.0),
     ang = Angle(0, 90, 90),
     width = 440,
     height = 440,
@@ -2115,691 +2115,65 @@ ENT.ButtonMap["BackPPZ"] = {
     hideseat = 0.2,
     buttons = {
         {
-            ID = "SF1Toggle",
-            x = 61,
-            y = 73,
-            w = 34,
-            h = 40,
-            tooltip = "SF1: Питание общее",
-        },
-        {
-            ID = "SF2Toggle",
-            x = 61.5 + 2 * 16.5,
-            y = 73,
-            w = 17,
-            h = 40,
-            tooltip = "SF2: Управление основное",
-        },
-        {
-            ID = "SF3Toggle",
-            x = 61.5 + 3 * 16.5,
-            y = 73,
-            w = 17,
-            h = 40,
-            tooltip = "SF3: Управление резервное",
-        },
-        {
-            ID = "SF4Toggle", --БАРС
-            x = 61.5 + 4 * 16.5,
-            y = 73,
-            w = 17,
-            h = 40,
-            tooltip = "SF4",
-        },
-        {
-            ID = "SF5Toggle", --БУП
-            x = 61.5 + 5 * 16.5,
-            y = 73,
-            w = 17,
-            h = 40,
-            tooltip = "SF5",
-        },
-        {
-            ID = "SF6Toggle", --БЦКУ
-            x = 61.5 + 6 * 16.5,
-            y = 73,
-            w = 17,
-            h = 40,
-            tooltip = "SF6",
-        },
-        {
-            ID = "SF7Toggle", --ППО
-            x = 61.5 + 7 * 16.5,
-            y = 73,
-            w = 17,
-            h = 40,
-            tooltip = "SF7",
-        },
-        {
-            ID = "SF8Toggle", --Оповещение
-            x = 61.5 + 8 * 16.5,
-            y = 73,
-            w = 17,
-            h = 40,
-            tooltip = "SF8",
-        },
-        {
-            ID = "SF9Toggle", --Радиосвязь
-            x = 61.5 + 9 * 16.5,
-            y = 73,
-            w = 17,
-            h = 40,
-            tooltip = "SF9",
-        },
-        --{ID = "SF10Toggle",x=61.5+10*16.5, y=73, w=17,h=40, tooltip = "SF10",},--Ориентация
-        {
-            ID = "SF11Toggle", --Направление
-            x = 61.5 + 10 * 16.5,
-            y = 73,
-            w = 17,
-            h = 40,
-            tooltip = "SF11"
-        },
-        {
-            ID = "SF12Toggle", --цис1
-            x = 61.5 + 11 * 16.5,
-            y = 73,
-            w = 17,
-            h = 40,
-            tooltip = "SF12"
-        },
-        {
-            ID = "SF13Toggle", --цис2
-            x = 61.5 + 12 * 16.5,
-            y = 73,
-            w = 17,
-            h = 40,
-            tooltip = "SF13"
-        },
-        {
-            ID = "SF14Toggle", --кондей
-            x = 61.5 + 13 * 16.5,
-            y = 73,
-            w = 17,
-            h = 40,
-            tooltip = "SF14"
-        },
-        --{ID = "SF12Toggle",x=61.5+0*28.8, y=224.5, w=20,h=40, tooltip = "SF12: Фары 1-й группы",},--1гр фар
-        --{ID = "SF13Toggle",x=61.5+1*28.8, y=224.5, w=20,h=40, tooltip = "SF13: Фары 2-й группы",},--2гр фар
-        --{ID = "SF14Toggle",x=61.5+2*28.8, y=224.5, w=20,h=40, tooltip = "SF14: Огни габаритные",},--огни габаритные
-        {
-            ID = "SF15Toggle", --осв кабин
-            x = 61.5 + 0 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF15",
-        },
-        {
-            ID = "SF16Toggle", --отопление
-            x = 61.5 + 1 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF16",
-        },
-        {
-            ID = "SF17Toggle", --конд кабины
-            x = 61.5 + 2 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF17",
-        },
-        {
-            ID = "SF18Toggle", --гребнесмазыватель
-            x = 61.5 + 3 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF18",
-        },
-        {
-            ID = "SF19Toggle", --крм осн
-            x = 61.5 + 4 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF19",
-        },
-        {
-            ID = "SF20Toggle", --крм рез
-            x = 61.5 + 5 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF20",
-        },
-        {
-            ID = "SF21Toggle", --двери откр
-            x = 61.5 + 6 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF21",
-        },
-        {
-            ID = "SF22Toggle", --двери закр
-            x = 61.5 + 7 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF22"
-        },
-        {
-            ID = "SF23Toggle", --двери закр
-            x = 61.5 + 8 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF23"
-        },
-        --{ID = "SF242Toggle",x=61.5+9*16.5, y=224.5, w=17,h=40, tooltip = "SF24"},--двери закр
-        {
-            ID = "SF24Toggle", --двери закр
-            x = 61.5 + 9 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF24"
-        },
-        {
-            ID = "SF26Toggle", --двери закр
-            x = 61.5 + 10 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF26"
-        },
-        {
-            ID = "SF27Toggle", --двери закр
-            x = 61.5 + 11 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF27"
-        },
-        {
-            ID = "SF29Toggle",
-            x = 61.5 + 12 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF29"
-        },
-        {
-            ID = "SF28Toggle",
-            x = 61.5 + 13 * 16.5,
-            y = 213.5,
-            w = 17,
-            h = 40,
-            tooltip = "SF28"
-        },
-        {
-            ID = "SA1Toggle",
-            x = 51.7 + 0 * 20.7,
-            y = 313.48,
-            w = 20,
-            h = 40,
-            tooltip = "SA1",
+            ID = "PowerOnSet", tooltip = "Включение бортсети",
+            x = 71.7, y = 24.8, radius = 20,
             model = {
-                model = "models/metrostroi_train/81-760/81_760_switch_pmv_add.mdl",
-                z = 7.3,
-                ang = Angle(-180, 90, 90),
-                var = "SA1", --vmin=1,vmax=0,
-                speed = 9,
-                sndvol = 0.8,
-                snd = function(val) return val and "switch_on" or "switch_off" end,
-                sndmin = 80,
-                sndmax = 1e3 / 3,
-                sndang = Angle(-90, 0, 0),
-            }
-        },
-        {
-            ID = "SA1kToggle",
-            x = 51.7 + 0 * 20.7,
-            y = 313.48,
-            w = 20,
-            h = 20,
-            tooltip = "SA1 крышка",
-            model = {
-                model = "models/metrostroi_train/81-760/81_760_red_cap.mdl",
-                y = 4,
-                z = 18,
-                ang = Angle(-180, 90, 90),
-                var = "SA1k",
-                speed = 9,
-                vmin = 1,
-                vmax = 0,
-                disable = "SA1Toggle",
-                sndvol = 0.8,
-                snd = function(val) return val and "switch_on" or "switch_off" end,
-                sndmin = 80,
-                sndmax = 1e3 / 3,
-                sndang = Angle(-90, 0, 0),
-            }
-        },
-        {
-            ID = "SA2Toggle",
-            x = 51.7 + 1 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA2"
-        },
-        {
-            ID = "SA3Toggle",
-            x = 51.7 + 2 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA3"
-        },
-        {
-            ID = "SA4Toggle",
-            x = 51.7 + 3 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA4"
-        },
-        {
-            ID = "SA5Toggle",
-            x = 51.7 + 4 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA5"
-        },
-        {
-            ID = "SA6Toggle",
-            x = 51.7 + 5 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA6"
-        },
-        {
-            ID = "SA7Toggle",
-            x = 51.7 + 6 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA7"
-        },
-        {
-            ID = "SA8Toggle",
-            x = 51.7 + 7 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA8"
-        },
-        {
-            ID = "SA9Toggle",
-            x = 51.7 + 8 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA9"
-        },
-        {
-            ID = "SA10Toggle",
-            x = 51.7 + 9 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA10"
-        },
-        {
-            ID = "SA10kToggle",
-            x = 51.7 + 9 * 20.7,
-            y = 313.48,
-            w = 20,
-            h = 20,
-            tooltip = "SA10 крышка",
-            model = {
-                model = "models/metrostroi_train/81-760/81_760_red_cap.mdl",
-                y = 4,
-                z = 18,
-                ang = Angle(-180, 90, 90),
-                var = "SA10k",
-                speed = 9,
-                vmin = 1,
-                vmax = 0,
-                disable = "SA10Toggle",
-                sndvol = 0.8,
-                snd = function(val) return val and "switch_on" or "switch_off" end,
-                sndmin = 80,
-                sndmax = 1e3 / 3,
-                sndang = Angle(-90, 0, 0),
-            }
-        },
-        {
-            ID = "SA11Toggle",
-            x = 51.7 + 10 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA11 блокировка кнопок дверей салона"
-        },
-        {
-            ID = "SA12Toggle",
-            x = 51.7 + 11 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA12 разблокировка дверей кабины"
-        },
-        {
-            ID = "SA13Toggle",
-            x = 51.7 + 12 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA13"
-        },
-        {
-            ID = "SA14Toggle",
-            x = 51.7 + 13 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA14"
-        },
-        {
-            ID = "SA14kToggle",
-            x = 51.7 + 13 * 20.7,
-            y = 313.48,
-            w = 20,
-            h = 20,
-            tooltip = "SA14 крышка",
-            model = {
-                model = "models/metrostroi_train/81-760/81_760_yellow_cap.mdl",
-                y = 4,
-                z = 18,
-                ang = Angle(-180, 90, 90),
-                var = "SA14k",
-                speed = 9,
-                vmin = 1,
-                vmax = 0,
-                disable = "SA14Toggle",
-                sndvol = 0.8,
-                snd = function(val) return val and "switch_on" or "switch_off" end,
-                sndmin = 80,
-                sndmax = 1e3 / 3,
-                sndang = Angle(-90, 0, 0),
-            }
-        },
-        {
-            ID = "SA15Toggle",
-            x = 51.7 + 14 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA15"
-        },
-        {
-            ID = "SA16Toggle",
-            x = 51.7 + 15 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA16"
-        },
-        {
-            ID = "SA17Toggle",
-            x = 51.7 + 16 * 20.7,
-            y = 313.5,
-            w = 20,
-            h = 40,
-            tooltip = "SA17"
-        },
-        {
-            ID = "BatteryStub",
-            x = 361,
-            y = 63,
-            radius = 20,
-            tooltip = "Выключатель батареи (неисп.)",
-            model = {
-                model = "models/metrostroi_train/81-760/81_760_switch_vb.mdl",
-                z = 6,
-                ang = Angle(0, 90, -90),
-                var = "Battery",
-                speed = 4,
-                sndvol = 1,
-                snd = function(val) return val and "switch_batt_on" or "switch_batt_off" end,
-                sndmin = 90,
-                sndmax = 1e3,
-                sndang = Angle(-90, 0, 0),
-                vmin = 0,
-                vmax = 1
-            }
-        },
-        {
-            ID = "!BARSBlock",
-            x = 385,
-            y = 178,
-            radius = 0,
-            model = {
-                model = "models/metrostroi_train/81-760/81_760_switch_bcpu.mdl",
-                z = 2,
-                ang = Angle(0, 90, -90),
-                --getfunc = function(ent) return ent:GetPackedRatio("BARSBlock") end,var="BARSBlock",
-                plomb = {
-                    model = "models/metrostroi_train/81/plomb_b.mdl",
-                    ang = -90,
-                    x = 0,
-                    y = 27,
-                    z = -5,
-                    var = "BARSBlockPl",
-                    ID = "BARSBlockPl",
-                },
-                speed = 4, --min=0.5,max=0.15,
-                sndvol = 1,
-                snd = function(_, val) return val == 3 and "switch_batt_on" or val == 0 and "switch_batt_off" or "switch_batt" end,
-                sndmin = 90,
-                sndmax = 1e3,
-                sndang = Angle(-90, 0, 0),
-            }
-        },
-        {
-            ID = "BARSBlock -", --  -31
-            x = 354,
-            y = 175,
-            w = 30,
-            h = 40,
-            tooltip = "Блокировка неисправных БАРСов: -",
-            model = {
-                plomb = {
-                    var = "BARSBlockPl",
-                    ID = "BARSBlockPl",
-                },
-            }
-        },
-        {
-            ID = "BARSBlock +", --  -1
-            x = 384,
-            y = 175,
-            w = 30,
-            h = 40,
-            tooltip = "Блокировка неисправных БАРСов: +",
-            model = {
-                plomb = {
-                    var = "BARSBlockPl",
-                    ID = "BARSBlockPl",
-                },
-            }
-        },
-        {
-            ID = "!PowerReserve",
-            x = 334,
-            y = 178,
-            radius = 0,
-            model = {
-                model = "models/metrostroi_train/81-760/81_760_switch_bcpu.mdl",
-                z = 2,
-                ang = Angle(0, 90, -90),
-                color = Color(0, 0, 0),
-                --getfunc = function(ent) return ent:GetPackedRatio("BARSBlock") end,var="BARSBlock",
-                plomb = {
-                    model = "models/metrostroi_train/81/plomb_b.mdl",
-                    ang = -90,
-                    x = 0,
-                    y = 27,
-                    z = -25,
-                    var = "PowerReservePl",
-                    ID = "PowerReservePl",
-                },
-                speed = 4, --min=0.5,max=0.15,
-                sndvol = 1,
-                snd = function(_, val) return val == 2 and "switch_batt_on" or val == 0 and "switch_batt_off" or "switch_batt" end,
-                sndmin = 90,
-                sndmax = 1e3,
-                sndang = Angle(-90, 0, 0),
-            }
-        },
-        {
-            ID = "PowerReserve -", --  -31
-            x = 303,
-            y = 175,
-            w = 30,
-            h = 40,
-            tooltip = "-",
-            model = {
-                plomb = {
-                    var = "PowerReservePl",
-                    ID = "PowerReservePl",
-                },
-            }
-        },
-        {
-            ID = "PowerReserve +", --  -1
-            x = 333,
-            y = 175,
-            w = 30,
-            h = 40,
-            tooltip = "+",
-            model = {
-                plomb = {
-                    var = "PowerReservePl",
-                    ID = "PowerReservePl",
-                },
-            }
-        },
-        {
-            ID = "PowerOnSet",
-            x = 337.7,
-            y = 136,
-            radius = 20,
-            tooltip = "Бортсеть вкл",
-            model = {
+                var = "PowerOn",
                 model = "models/metrostroi_train/81-760/81_760_button_green.mdl",
-                z = -1,
                 lamp = {
                     model = "models/metrostroi_train/81-760/81_760_lamp_green.mdl",
-                    var = "PowerOnLamp",
-                    z = 0.4,
-                    anim = true
+                    var = "PowerOnLamp", z = 0.5, anim = true,
                 },
-                var = "PowerOn",
-                speed = 12,
-                vmin = 0,
-                vmax = 1,
-                sndvol = 0.3,
+                z = 0, ang = Angle(0, 0, 0),
+                sndvol = 0.4, speed = 12, vmin = 0, vmax = 1,
                 snd = function(val) return val and "button_square_on" or "button_square_off" end,
-                sndmin = 80,
-                sndmax = 1e3 / 3,
-                sndang = Angle(-90, 0, 0),
+                sndmin = 90, sndmax = 1e3,
             }
-        },
-        {
-            ID = "PowerOffSet",
-            x = 380.7,
-            y = 136,
-            radius = 20,
-            tooltip = "Бортсеть выкл",
+        }, {
+            ID = "PowerOffSet", tooltip = "Выключение бортсети",
+            x = 110, y = 24.8, radius = 20,
             model = {
+                var = "PowerOff",
                 model = "models/metrostroi_train/81-760/81_760_button_red.mdl",
-                z = -1,
                 lamp = {
                     model = "models/metrostroi_train/81-760/81_760_lamp_red.mdl",
-                    var = "PowerOffLamp",
-                    z = 0.4,
-                    anim = true
+                    var = "PowerOffLamp", z = 0.5, anim = true,
                 },
-                var = "PowerOff",
-                speed = 12,
-                vmin = 0,
-                vmax = 1,
-                sndvol = 0.3,
+                z = 0, ang = Angle(0, 0, 0),
+                sndvol = 0.4, speed = 12, vmin = 0, vmax = 1,
                 snd = function(val) return val and "button_square_on" or "button_square_off" end,
-                sndmin = 80,
-                sndmax = 1e3 / 3,
-                sndang = Angle(-90, 0, 0),
+                sndmin = 90, sndmax = 1e3,
             }
-        },
+        }, {
+            ID = "BatteryChargeToggle", tooltip = "Заряд аккумуляторной батареи",
+            x = 148.3, y = 24.8, radius = 20,
+            model = {
+                var = "BatteryCharge",
+                model = "models/metrostroi_train/81-760/81_760_button_white.mdl",
+                lamp = {
+                    model = "models/metrostroi_train/81-760/81_760_lamp_white.mdl",
+                    var = "BatteryChargeLamp", z = 0.5, anim = true,
+                },
+                z = 0, ang = Angle(0, 0, 0),
+                sndvol = 0.4, speed = 12, vmin = 0, vmax = 1,
+                snd = function(val) return val and "button_square_on" or "button_square_off" end,
+                sndmin = 90, sndmax = 1e3,
+            }
+        }
     }
 }
 
-ENT.ButtonMap["BackPPZ1"] = {
-    pos = Vector(410.163, 34.915, 12.28), --446 -- 14 -- -0,5
-    ang = Angle(0, 90, 90),
+table.Add(ENT.ButtonMap["BackPPZ"].buttons, ENT.PpzToggles)
+
+ENT.ButtonMap["PpzCover"] = {
+    pos = Vector(412, 34.915, 13.0),
+    ang = Angle(0,90,90),
     width = 440,
     height = 440,
     scale = 0.0605,
     hideseat = 0.2,
     buttons = {}
 }
-
-for k, buttbl in ipairs(ENT.ButtonMap["BackPPZ"].buttons) do
-    if buttbl.ID:find("SF") then
-        if k == 1 then
-            buttbl.model = {
-                model = "models/metrostroi_train/81-760/81_760_double_switch_pmv.mdl",
-                z = -10,
-                ang = Angle(-180, 90, 90),
-                var = buttbl.ID:Replace("Toggle", ""),
-                speed = 9,
-                vmin = 0,
-                vmax = 1,
-                sndvol = 0.4,
-                snd = function(val) return val and "sf_on" or "sf_off" end,
-                sndmin = 90,
-                sndmax = 1e3,
-            }
-        else
-            buttbl.model = {
-                model = "models/metrostroi_train/81-760/81_760_switch_pmv.mdl",
-                z = -10,
-                ang = Angle(-180, 90, 90),
-                var = buttbl.ID:Replace("Toggle", ""),
-                speed = 9,
-                vmin = 0,
-                vmax = 1,
-                sndvol = 0.4,
-                snd = function(val) return val and "sf_on" or "sf_off" end,
-                sndmin = 90,
-                sndmax = 1e3,
-            }
-        end
-    elseif buttbl.ID:find("SA") and not buttbl.ID:find("k") and buttbl.ID ~= "SA1" then
-        buttbl.model = {
-            model = "models/metrostroi_train/81-760/81_760_switch_pmv_add.mdl",
-            z = 7.3,
-            ang = Angle(-180, 90, 90),
-            var = buttbl.ID:Replace("Toggle", ""),
-            speed = 9,
-            vmin = 0,
-            vmax = 1,
-            sndvol = 0.8,
-            snd = function(val) return val and "switch_on" or "switch_off" end,
-            sndmin = 80,
-            sndmax = 1e3 / 3,
-            sndang = Angle(-90, 0, 0),
-        }
-    end
-end
 
 ENT.ButtonMap["PVZ"] = {
     pos = Vector(394, 10.8, 12.6), --446 -- 14 -- -0,5
@@ -3055,6 +2429,38 @@ for k, buttbl in ipairs(ENT.ButtonMap["PVZ"].buttons) do
         }
     end
 end
+
+ENT.ButtonMap["Lighting"] = {
+    pos = Vector(469.6, 56, -25), --446 -- 14 -- -0,5
+    ang = Angle(0, -90, 70),
+    width = 205,
+    height = 50,
+    scale = 0.0625,
+    hideseat = 0.2,
+    buttons = {
+        {ID = "CabinLightToggle", x = 70, y = 30, radius = nil, model = {
+            model = "models/metrostroi_train/81-722/button_rot.mdl", ang = 45,
+            getfunc = function(ent) return ent:GetPackedRatio("CabinLight") end,
+            var = "CabinLight", speed = 4.1, min = 0, max = 0.27,
+            sndvol = 0.4, snd = function(val,val2) return val2 == 1 and "multiswitch_panel_mid" or val and "multiswitch_panel_min" or "multiswitch_panel_max" end,
+            sndmin = 90, sndmax = 1e3,
+        }},
+        {ID = "CabinLight-", x = 60 - 8, y = 15, w = 20, h = 30, tooltip = "Освещение кабины (влево)", model = {
+            var = "CabinLight", states = {"Common.765.CabLight.Off", "Common.765.CabLight.Normal", "Common.765.CabLight.Full"},
+            varTooltip = function(ent) return ent:GetPackedRatio("CabinLight") / 0.99 end
+        }},
+        {ID = "CabinLight+", x = 60 + 8, y = 15, w = 20, h = 30, tooltip = "Освещение кабины (вправо)", model = {
+            var = "CabinLight", states = {"Common.765.CabLight.Off", "Common.765.CabLight.Normal", "Common.765.CabLight.Full"},
+            varTooltip = function(ent) return ent:GetPackedRatio("CabinLight") / 0.99 end
+        }},
+        -- {ID = "PanelLightToggle", x = 140, y = 30, radius = 15, tooltip = "Освещение пульта", model = {
+        --     model = "models/metrostroi_train/81-722/button_rot.mdl", ang = 45,
+        --     var = "PanelLight", speed = 8.2, min = 0, max = 0.27,
+        --     sndvol = 0.4, snd = function(val,val2) return val and "multiswitch_panel_max" or "multiswitch_panel_min" end,
+        --     sndmin = 90, sndmax = 1e3,
+        -- }},
+    }
+}
 
 ENT.ButtonMap["VityazButtons"] = {
     pos = Vector(490.6, 11.6, -7.5),
@@ -3332,114 +2738,6 @@ ENT.ButtonMap["VityazButtons"] = {
             }
         },
     }
-}
-
-ENT.ButtonMap["BMCISButtons"] = {
-    pos = Vector(515 + 20.8, 9.5, -21.2) + Vector(-41.5, 0, 17.5),
-    ang = Angle(0, -89.5, 62),
-    width = 20,
-    height = 160,
-    scale = 0.035,
-    hideseat = 0.2,
-    buttons = {
-        --[[
-        {
-            ID = "BMCISUpSet",
-            x = 0,
-            y = 0,
-            w = 20,
-            h = 20,
-            tooltip = "БМЦИС: Вверх",
-            model = {
-                var = "BMCISUp",
-                speed = 16,
-            }
-        },
-        {
-            ID = "BMCISDownSet",
-            x = 0,
-            y = 20,
-            w = 20,
-            h = 20,
-            tooltip = "БМЦИС: Вниз",
-            model = {
-                var = "BMCISDown",
-                speed = 16,
-            }
-        },
-        {
-            ID = "BMCISEnterSet",
-            x = 0,
-            y = 40,
-            w = 20,
-            h = 20,
-            tooltip = "БМЦИС: Ввод",
-            model = {
-                var = "BMCISEnter",
-                speed = 16,
-            }
-        },
-        {
-            ID = "BMCISEscSet",
-            x = 0,
-            y = 60,
-            w = 20,
-            h = 20,
-            tooltip = "БМЦИС: Esc",
-            model = {
-                var = "BMCISEsc",
-                speed = 16,
-            }
-        },
-        {
-            ID = "BMCISF1Set",
-            x = 0,
-            y = 80,
-            w = 20,
-            h = 20,
-            tooltip = "БМЦИС: F1",
-            model = {
-                var = "BMCISF1",
-                speed = 16,
-            }
-        },
-        {
-            ID = "BMCISF2Set",
-            x = 0,
-            y = 100,
-            w = 20,
-            h = 20,
-            tooltip = "БМЦИС: F2",
-            model = {
-                var = "BMCISF2",
-                speed = 16,
-            }
-        },
-        {
-            ID = "BMCISF3Set",
-            x = 0,
-            y = 120,
-            w = 20,
-            h = 20,
-            tooltip = "БМЦИС: F3",
-            model = {
-                var = "BMCISF3",
-                speed = 16,
-            }
-        },
-        {
-            ID = "BMCISF4Set",
-            x = 0,
-            y = 140,
-            w = 20,
-            h = 20,
-            tooltip = "БМЦИС: F4",
-            model = {
-                var = "BMCISF4",
-                speed = 16,
-            }
-        },
-    ]]}
 }
 
 _, _getX, _, _bw = _fncCoord(12, 285, 5)
@@ -3988,7 +3286,7 @@ ENT.ClientProps["RVTB"] = {
 }
 
 ENT.ClientProps["PPZ"] = {
-    model = "models/metrostroi_train/81-760/81_760a_ppz.mdl",
+    model = "models/metrostroi_train/81-765/81_765_ppz.mdl",
     pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 2,
@@ -5348,6 +4646,22 @@ for k, tbl in ipairs({ENT.LeftDoorPositions or {}, ENT.RightDoorPositions or {}}
     end
 end
 
+for _, cfg in pairs(ENT.PakToggles or {}) do
+    if cfg.buttons and cfg.btnmap and ENT.ButtonMap[cfg.btnmap] and ENT.ButtonMap[cfg.btnmap].buttons then
+        table.Add(ENT.ButtonMap[cfg.btnmap].buttons, cfg.buttons)
+    end
+end
+
+ENT.PakPositions = {
+    [0] = 270,
+    [1] = 235,
+    [2] = 210,
+    [3] = 180,
+    [4] = 140,
+    [5] = 115,
+    [6] = 90,
+}
+
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
     self.Vityaz = self:CreateRT("760Vityaz", 1024, 1024)
@@ -5818,10 +5132,6 @@ function ENT:Think()
     self:Animate("brake_line", self:GetPackedRatio("BL"), 0, 0.853, 256, 2)
     self:Animate("train_line", self:GetPackedRatio("TL"), 0, 0.853, 256, 2)
     self:Animate("brake_cylinder", self:GetPackedRatio("BC"), 0, 0.827, 256, 2)
-    --self:Animate("volt_lv",self:GetPackedRatio("LV"),1,0.712,92,2)
-    --self:Animate("volt_hv",self:GetPackedRatio("HV"),1,0.726,92,2)
-    --self:Animate("amp_i13",self:GetPackedRatio("I13"),1,0.722,92,2)
-    --self:Animate("amp_i24",self:GetPackedRatio("I24"),1,0.726,92,2)
     self:Animate("controller", controllerpos[self:GetPackedRatio("Controller") + 4] or 0, 0.316, 0.66, 2, false)
     self:Animate("EmergencyBrakeValve", self:GetPackedBool("EmergencyBrakeValve") and 1 or 0, 0, 1, 6, false)
     local speed = self:GetPackedRatio("Speed", 0)
@@ -6026,7 +5336,7 @@ function ENT:Think()
     self:PlayDoorSound(door_cab_m > 0.2, "door_cab_m")
     local door_cab_l = self:Animate("door_cab_l", self:GetPackedBool("CabinDoorLeft") and 1 or 0, 0, 1, 2, 0.5)
     self:PlayDoorSound(door_cab_l > 0.2, "door_cab_l")
-    self:HidePanel("BackPPZ1", door_cab_l == 0)
+    self:HidePanel("PpzCover", door_cab_l == 0)
     local door_cab_r = self:Animate("door_cab_r", self:GetPackedBool("CabinDoorRight") and 1 or 0, 0, 1, 2, 0.5)
     self:PlayDoorSound(door_cab_r > 0.2, "door_cab_r")
     local cab_chair_add = self:Animate("cab_chair_add", self:GetPackedBool("cab_chair_add") and 1 or 0, 0, 1, 4, 0.5)
@@ -6051,7 +5361,7 @@ function ENT:Think()
     local K31_cap = self:Animate("K31_cap", self:GetPackedBool("door_k31") and 1 or 0, 0, 1, 4, 0.5)
     self:ShowHide("K31", K31_cap > 0)
     self:HidePanel("K31", K31_cap < 1)
-    if (self:GetPackedBool("WorkBeep") and self:GetPackedBool("wiper")) and self.Anims["wiper"] and self:GetPackedBool("WorkCabVent") then
+    if (self:GetPackedBool("WorkBeep") and self:GetPackedBool("wiper")) and self.Anims["wiper"] and self:GetPackedBool("WiperPower") then
         local anim = self.Anims["wiper"].value
         if anim == 0 then
             self.WiperDir = true
@@ -6060,7 +5370,7 @@ function ENT:Think()
         end
 
         self:Animate("wiper", self.WiperDir and 1 or 0, 0, 1, 0.32, false)
-    elseif self:GetPackedBool("WorkCabVent") then
+    elseif self:GetPackedBool("WiperPower") then
         self:Animate("wiper", 0, 0, 1, 0.32, false)
     end
 
@@ -6155,13 +5465,6 @@ function ENT:Think()
     self.PreviousCompressorState = state
     local state = self:GetPackedBool("WorkBeep")
     self:SetSoundState("work_beep", state and 1 or 0, 1)
-    -- Parking brake animation
-    self.TrueAngle = self.TrueAngle or 0
-    self.TrueAngle = self.TrueAngle + (self:GetPackedRatio("BARSBlock") * 900 - self.TrueAngle) * 5.0 * (self.DeltaTime or 0)
-    if self.ClientEnts and IsValid(self.ClientEnts["!BARSBlock"]) then self.ClientEnts["!BARSBlock"]:SetPoseParameter("position", 1.0 - ((self.TrueAngle % 360) / 360)) end
-    self.TrueAngle1 = self.TrueAngle1 or 0
-    self.TrueAngle1 = self.TrueAngle1 + (self:GetPackedRatio("PowerReserve") * 900 - self.TrueAngle1) * 5.0 * (self.DeltaTime or 0)
-    if self.ClientEnts and IsValid(self.ClientEnts["!PowerReserve"]) then self.ClientEnts["!PowerReserve"]:SetPoseParameter("position", 1.0 - ((self.TrueAngle1 % 360) / 360)) end
     --[[
 	self:SetModelScale(0.1)
 	for k,v in pairs(self.ClientEnts) do
@@ -6243,6 +5546,28 @@ function ENT:Think()
     local head = self:GetPackedBool("AnnPlayHead")
     for k, v in ipairs(self.AnnouncerPositions) do
         if self.Sounds["announcer" .. k] and IsValid(self.Sounds["announcer" .. k]) then self.Sounds["announcer" .. k]:SetVolume((work and (k > 1 or k == 1 and head)) and (v[3] or 1) or 0) end
+    end
+
+    if self.ClientEnts then
+        for k, cfg in pairs(self.PakToggles or {}) do
+            local ce = self.ClientEnts[k .. "Toggle"]
+            if IsValid(ce) then
+                local kAnim = "PakAnim" .. k
+                self[kAnim] = self[kAnim] or 0
+
+                local target = self.PakPositions[cfg.positions[math.Clamp((self:GetNW2Int(k) or 0) + 1, 1, #cfg.positions)]]
+
+                if math.abs(target - self[kAnim]) > 0.5 then
+                    local sgn = target - self[kAnim] > 0 and 1 or -1
+                    self[kAnim] = self[kAnim] + 540 * dT * sgn
+                    if math.abs(target - self[kAnim]) < 10 then
+                        self[kAnim] = target
+                    end
+                end
+
+                ce:SetPoseParameter("position", 1.0 - ((self[kAnim] % 360) / 360))
+            end
+        end
     end
 end
 

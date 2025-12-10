@@ -143,8 +143,11 @@ function ENT:InitializeSounds()
         loop = true,
         "subway_trains/common/pneumatic/isolation_leak.wav"
     }
-
     self.SoundPositions["rear_isolation"] = {300, 1e9, Vector(-469, 0, -63), 1}
+
+    self.SoundNames["pak_on"] = "subway_trains/717/switches/rc_on.mp3"
+    self.SoundNames["pak_off"] = "subway_trains/717/switches/rc_off.mp3"
+
     self.SoundNames["gv_f"] = {"subway_trains/717/kv70/reverser_0-b_1.mp3", "subway_trains/717/kv70/reverser_0-b_2.mp3"}
     self.SoundNames["gv_b"] = {"subway_trains/717/kv70/reverser_b-0_1.mp3", "subway_trains/717/kv70/reverser_b-0_2.mp3"}
     self.SoundPositions["gv_f"] = {80, 1e9, Vector(126.4, 50, -60 - 23.5), 0.8}

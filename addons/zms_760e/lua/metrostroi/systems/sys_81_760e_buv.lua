@@ -166,77 +166,76 @@ local function CheckSF33(Train, val)
     local tbl, numtbl = {Train}, {}
     numtbl[Train.WagonNumber] = true
     local Ft, Rt = PrevTrain(Train, true), PrevTrain(Train)
-    local SF33 = Train.SF1 and Train.SF1.Value or Train.SF33.Value
-    if not Train.SF1 or Train.SF1.Value == 1 then
-        local i = 0
-        while IsValid(Ft) and not Train.SF1 do
-            i = i + 1
-            if not Ft.SF1 and Ft.SF33.Value == 0 then
-                if Ft.RearTrain ~= tbl[i] then
-                    table.insert(tbl, Ft)
-                    numtbl[Ft.WagonNumber] = true
-                end
+    local SF33 = Train.SF33.Value
 
-                break
-            elseif not Ft.SF1 or Ft.SF1.Value == 1 then
+    local i = 0
+    while IsValid(Ft) and not Train.SA1 do
+        i = i + 1
+        if not Ft.SA1 and Ft.SF33.Value == 0 then
+            if Ft.RearTrain ~= tbl[i] then
                 table.insert(tbl, Ft)
                 numtbl[Ft.WagonNumber] = true
-                if Ft.SF1 then break end
             end
 
-            if IsValid(PrevTrain(Ft, true)) and not numtbl[PrevTrain(Ft, true).WagonNumber] then
-                Ft = PrevTrain(Ft, true)
-            elseif IsValid(PrevTrain(Ft)) and not numtbl[PrevTrain(Ft).WagonNumber] then
-                Ft = PrevTrain(Ft)
-            else
-                break
-            end
+            break
+        else
+            table.insert(tbl, Ft)
+            numtbl[Ft.WagonNumber] = true
+            if Ft.SA1 then break end
         end
 
-        local k = i
-        while IsValid(Rt) and SF33 > 0 do
-            i = i + 1
-            if not Rt.SF1 and Rt.SF33.Value == 0 then
-                if Rt.RearTrain ~= tbl[i] and Rt.RearTrain ~= tbl[i - k] then
-                    table.insert(tbl, Rt)
-                    numtbl[Rt.WagonNumber] = true
-                end
+        if IsValid(PrevTrain(Ft, true)) and not numtbl[PrevTrain(Ft, true).WagonNumber] then
+            Ft = PrevTrain(Ft, true)
+        elseif IsValid(PrevTrain(Ft)) and not numtbl[PrevTrain(Ft).WagonNumber] then
+            Ft = PrevTrain(Ft)
+        else
+            break
+        end
+    end
 
-                break
-            elseif not Rt.SF1 or Rt.SF1.Value == 1 then
+    local k = i
+    while IsValid(Rt) and SF33 > 0 do
+        i = i + 1
+        if not Rt.SA1 and Rt.SF33.Value == 0 then
+            if Rt.RearTrain ~= tbl[i] and Rt.RearTrain ~= tbl[i - k] then
                 table.insert(tbl, Rt)
                 numtbl[Rt.WagonNumber] = true
-                if Rt.SF1 then break end
             end
 
-            if IsValid(PrevTrain(Rt, true)) and not numtbl[PrevTrain(Rt, true).WagonNumber] then
-                Rt = PrevTrain(Rt, true)
-            elseif IsValid(PrevTrain(Rt)) and not numtbl[PrevTrain(Rt).WagonNumber] then
-                Rt = PrevTrain(Rt)
-            else
-                break
-            end
+            break
+        else
+            table.insert(tbl, Rt)
+            numtbl[Rt.WagonNumber] = true
+            if Rt.SA1 then break end
         end
 
-        tbl["i"] = i
-        tbl["k"] = k
+        if IsValid(PrevTrain(Rt, true)) and not numtbl[PrevTrain(Rt, true).WagonNumber] then
+            Rt = PrevTrain(Rt, true)
+        elseif IsValid(PrevTrain(Rt)) and not numtbl[PrevTrain(Rt).WagonNumber] then
+            Rt = PrevTrain(Rt)
+        else
+            break
+        end
     end
+
+    tbl["i"] = i
+    tbl["k"] = k
 
     local valu = false
     for _, v in pairs(tbl) do
-        if IsEntity(v) and (v.SF1 and (v == Train or v.SF1.Value > 0) or not v.SF1 and v.SF32.Value > 0) and v.Battery.Value > 0 and (not v.Electric.KM2 or v.Electric.KM2 == 1) then
+        if IsEntity(v) and (v.SA1 or not v.SA1 and v.SF32.Value > 0) and v.Battery.Value > 0 and (not v.Electric.KM2 or v.Electric.KM2 == 1) then
             valu = true
             break
         end
     end
 
     local value = true
-    if Train.SF1 then
+    if Train.SA1 then
         value = false
         local prev = PrevTrain(Train)
         if IsValid(prev) then
-            value = not prev.SF1 and CheckSF33(prev, 1) or prev.SF1 and prev.Battery.Value * prev.SF1.Value == 1
-            if not prev.SF1 and not Orient(Train) and prev.SF33.Value == 0 then value = false end
+            value = not prev.SA1 and CheckSF33(prev, 1) or prev.SA1 and prev.Battery.Value == 1
+            if not prev.SA1 and not Orient(Train) and prev.SF33.Value == 0 then value = false end
         end
 
         if not value then value = SF33 == 1 end
@@ -247,7 +246,7 @@ local function CheckSF33(Train, val)
     elseif val and val == 1 then
         return valu and value
     elseif not val then
-        return valu and value or (Train.SF1 and Train.SF1.Value or 1) * Train.Battery.Value > 0
+        return valu and value or Train.Battery.Value > 0
     end
 end
 
@@ -255,15 +254,15 @@ local function CheckVoltage(Train)
     local tbl = CheckSF33(Train, true)
     local V = Train.Battery.Value > 0 and 69 + 11 * Train.BUV.PSN or 0
     local i, k, max = (tbl["i"] or 0) + 1, (tbl["k"] or 0) + 1, #tbl
-    if (Train.SF1 or (Train.SF31.Value + Train.SF32.Value) > 0) and V < 80 then
+    if (Train.SA1 or (Train.SF31.Value + Train.SF32.Value) > 0) and V < 80 then
         local Rt, Ft = nil, nil
         local j = 1
         while (j < k) and tbl[j + 1] do
             j = j + 1
-            if tbl[j].SF1 and tbl[j].SF1.Value == 1 or not tbl[j].SF1 and tbl[j].SF32.Value > 0 then
+            if tbl[j].SA1 or not tbl[j].SA1 and tbl[j].SF32.Value > 0 then
                 Ft = tbl[j]
                 break
-            elseif tbl[j].SF1 then
+            elseif tbl[j].SA1 then
                 break
             end
         end
@@ -271,10 +270,10 @@ local function CheckVoltage(Train)
         j = k
         while (j < max) and tbl[j + 1] do
             j = j + 1
-            if tbl[j].SF1 and tbl[j].SF1.Value == 1 or not tbl[j].SF1 and tbl[j].SF32.Value > 0 then
+            if tbl[j].SA1 or not tbl[j].SA1 and tbl[j].SF32.Value > 0 then
                 Rt = tbl[j]
                 break
-            elseif tbl[j].SF1 then
+            elseif tbl[j].SA1 then
                 break
             end
         end
@@ -296,7 +295,7 @@ function TRAIN_SYSTEM:Think(dT)
     local P = HasEngine and Train.Electric.Power750V or Train.Electric.Main750V
 
     self.AKBVoltage = CheckVoltage(Train)
-    self.Power = (Train.Electric.Battery80V > 62 and (Train.SF31.Value + Train.SF32.Value > 0 or not Train.SF1 and CheckSF33(Train, 1))) and 1 or 0
+    self.Power = (Train.Electric.Battery80V > 62 and (Train.SF31.Value + Train.SF32.Value > 0 or not Train.SA1 and CheckSF33(Train, 1))) and 1 or 0
     self.State = self.Power > 0
     self.ADUVWork = (Train.Battery.Value * Train.SF48.Value > 0) or self.States.BCPressure == nil
     self.ADUTWork = (Train.Electric.BUFT > 0) or self.States.BCPressure == nil
@@ -323,6 +322,7 @@ function TRAIN_SYSTEM:Think(dT)
             self:CState("CabDoorLeft", not Train.CabinDoorLeft)
             self:CState("CabDoorRight", not Train.CabinDoorRight)
             self:CState("CabDoorPass", not Train.PassengerDoor)
+            self:CState("CondK", Train.Electric.BSPowered * Train.SF62F3.Value > 0.5)
         end
 
         self:CState("EmPT", Train:ReadTrainWire(28) > 0)
@@ -577,7 +577,7 @@ function TRAIN_SYSTEM:Think(dT)
         self.PN2 = self.Slope and self:Get("SlopeSpeed") or PN and strongerBrake
     end
 
-    self.PSN = not self:Get("PVU8") and Train.Electric.Battery80V > 67 and (self.PSNSignal or Train.SA4 and Train.SA4.Value > 0.5) and Train.Battery.Value * Train.SF45.Value or 0
+    self.PSN = not self:Get("PVU8") and Train.Electric.Battery80V > 67 and self.PSNSignal and Train.Battery.Value * Train.SF45.Value or 0
     if Train.Electric.Main750V < 550 or Train.Electric.Main750V > 975 then self.PSN = 0 end
     if self.PSN == 0 and self.PassLight and self.MainLights == 1 and not self.MainLightsTimer then self.MainLightsTimer = CurTime() end
     self.Recurperation = not self:Get("ReccOff") and 1 or 0

@@ -561,6 +561,12 @@ function ENT:InitializeSounds()
     self.SoundPositions["rolling_medium2"] = {480,1e12,Vector(0,0,0),0.90*0.4}
     self.SoundPositions["rolling_high2"] = {480,1e12,Vector(0,0,0),1.00*0.4}
 
+    self.SoundNames["multiswitch_panel_max"] = "subway_trains/722/switches/multi_switch_panel_max.mp3"
+    self.SoundNames["multiswitch_panel_mid"] = {"subway_trains/722/switches/multi_switch_panel_mid.mp3","subway_trains/722/switches/multi_switch_panel_mid2.mp3"}
+    self.SoundNames["multiswitch_panel_min"] = "subway_trains/722/switches/multi_switch_panel_min.mp3"
+    self.SoundNames["pak_on"] = "subway_trains/717/switches/rc_on.mp3"
+    self.SoundNames["pak_off"] = "subway_trains/717/switches/rc_off.mp3"
+
     self.SoundNames["gv_f"] = {"subway_trains/717/kv70/reverser_0-b_1.mp3", "subway_trains/717/kv70/reverser_0-b_2.mp3"}
     self.SoundNames["gv_b"] = {"subway_trains/717/kv70/reverser_b-0_1.mp3", "subway_trains/717/kv70/reverser_b-0_2.mp3"}
     self.SoundPositions["gv_f"] = {80, 1e9, Vector(126.4, 50, -60 - 23.5), 0.8}
@@ -578,21 +584,23 @@ function ENT:InitializeSounds()
     self.SoundNames["igla_off"] = "subway_trains/common/other/igla/igla_off2.mp3"
     self.SoundNames["igla_start1"] = "subway_trains/common/other/igla/igla_start.mp3"
     self.SoundNames["igla_start2"] = "subway_trains/common/other/igla/igla_start2.mp3"
+    self.SoundNames["igla_started"] = "subway_trains/760e/igla/igla_started.mp3"
     self.SoundNames["igla_alarm1"] = "subway_trains/common/other/igla/igla_alarm1.mp3"
     self.SoundNames["igla_alarm2"] = "subway_trains/common/other/igla/igla_alarm2.mp3"
     self.SoundNames["igla_alarm3"] = "subway_trains/common/other/igla/igla_alarm3.mp3"
-    self.SoundPositions["igla_on"] = {50, 1e9, Vector(452.56, 62, 3.81), 0.3}
-    self.SoundPositions["igla_off"] = {50, 1e9, Vector(452.56, 62, 3.81), 0.3}
-    self.SoundPositions["igla_start1"] = {50, 1e9, Vector(452.56, 62, 3.81), 0.5}
-    self.SoundPositions["igla_start2"] = {50, 1e9, Vector(452.56, 62, 3.81), 0.3}
-    self.SoundPositions["igla_alarm1"] = {50, 1e9, Vector(452.56, 62, 3.81), 0.5}
-    self.SoundPositions["igla_alarm2"] = {50, 1e9, Vector(452.56, 62, 3.81), 0.5}
-    self.SoundPositions["igla_alarm3"] = {50, 1e9, Vector(452.56, 62, 3.81), 0.5}
+    self.SoundPositions["igla_on"] = {50, 1e9, Vector(410.56, 48.32, 12.62), 0.3}
+    self.SoundPositions["igla_off"] = {50, 1e9, Vector(410.56, 48.32, 12.62), 0.3}
+    self.SoundPositions["igla_start1"] = {50, 1e9, Vector(410.56, 48.32, 12.62), 0.5}
+    self.SoundPositions["igla_start2"] = {50, 1e9, Vector(410.56, 48.32, 12.62), 0.3}
+    self.SoundPositions["igla_started"] = {50, 1e9, Vector(410.56, 48.32, 12.62), 1}
+    self.SoundPositions["igla_alarm1"] = {50, 1e9, Vector(410.56, 48.32, 12.62), 0.5}
+    self.SoundPositions["igla_alarm2"] = {50, 1e9, Vector(410.56, 48.32, 12.62), 0.5}
+    self.SoundPositions["igla_alarm3"] = {50, 1e9, Vector(410.56, 48.32, 12.62), 0.5}
+
     self.SoundNames["epk_brake"] = {
         loop = true,
         "subway_trains/760/new/rvtb_loop.wav"
     }
-
     self.SoundPositions["epk_brake"] = {80, 1e9, Vector(458, 56.5, -61), 0.65}
     self.SoundNames["epk_brake_close"] = {"subway_trains/760/new/rvtb_end.wav"}
     self.SoundPositions["epk_brake_close"] = {80, 1e9, Vector(458, 56.5, -61), 0.65}
@@ -774,6 +782,126 @@ function ENT:InitializeSounds()
     end
 end
 
+
+ENT.PakToggles = {}
+
+local function pmvToggle(name, tooltip, x, y, idx, positions, states, default)
+    ENT.PakToggles[name] = {
+        btnmap = "BackPPZ",
+        positions = positions,
+        default = default or 0,
+        buttons = {
+            {
+                ID = name .. "Toggle", x = x + idx * 51.5, y = y + 20, radius = nil, model = {
+                    var = name,
+                    model = "models/metrostroi_train/81-760/81_760_switch_bcpu.mdl",
+                    z = -1, ang = Angle(0,90,-90), color = Color(0,0,0),
+                    speed = 4,
+                    sndvol = 0.4, snd = function(_, val) return val == 0 and "multiswitch_panel_min" or val == (#positions - 1) and "multiswitch_panel_max" or "multiswitch_panel_mid" end,
+                    sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0)
+                }
+            },
+            {ID = "PakUp" .. name, x = idx * 51.5 + x - 20, y = y,      w = 40, h = 20, tooltip = tooltip .. " ↑", model = {
+                states = states, var = states and name or nil, varTooltip = states and function(ent) return ent:GetNW2Int(name, 0) / (#states - 1) end or nil
+            }},
+            {ID = "PakDn" .. name, x = idx * 51.5 + x - 20, y = y + 21, w = 40, h = 20, tooltip = tooltip .. " ↓", model = {
+                states = states, var = states and name or nil, varTooltip = states and function(ent) return ent:GetNW2Int(name, 0) / (#states - 1) end or nil
+            }},
+        }
+    }
+end
+
+pmvToggle("PmvAddressDoors", "(не используется) Индивидуальное открытие дверей", 71.7, 48, 0, {0, 3}, {
+    "Common.765.Buttons.IOn", "Common.765.Buttons.IOff"
+}, 1)
+pmvToggle("PmvRpdp", "Питание РПДП", 71.7, 48, 1, {0, 3}, {
+    "Common.765.PMV.RPDP.BS", "Common.765.PMV.RPDP.AKB"
+})
+pmvToggle("PmvPant", "Отжатие токоприемников", 71.7, 104, 0, {0, 2, 4, 6}, {
+    "Common.765.PMV.Pant.All", "Common.765.PMV.Pant.2nd", "Common.765.PMV.Pant.1st", "Common.765.PMV.Pant.Off"
+}, 3)
+pmvToggle("PmvParkingBrake", "Стояночный тормоз", 71.7, 104, 1, {0, 3}, {
+    "Common.765.Buttons.Off", "Common.765.Buttons.On"
+})
+pmvToggle("PmvAtsBlock", "Блокиратор АТС", 71.7, 104, 2, {0, 1, 2, 3}, {
+    "Common.765.PMV.ATS.Normal", "Common.765.PMV.ATS.ATS1", "Common.765.PMV.ATS.ATS2", "Common.765.PMV.ATS.UOS"
+})
+pmvToggle("PmvFreq", "Дешифратор", 71.7, 104, 3, {0, 3}, {
+    "Common.765.PMV.Freq.DAU", "Common.765.PMV.Freq.AlsArs"
+})
+pmvToggle("PmvLights", "Освещение салона", 71.7, 104, 4, {0, 3}, {
+    "Common.765.Buttons.IOn", "Common.765.Buttons.IOff"
+}, 1)
+pmvToggle("PmvEmerPower", "Аварийное питание", 71.7, 104, 5, {0, 3}, {
+    "Common.765.Buttons.IOff", "Common.765.Buttons.IOn"
+})
+pmvToggle("PmvCond", "Выключатель кондиционера салона", 71.7, 104, 6, {0, 3}, {
+    "Common.765.Buttons.On", "Common.765.Buttons.Off"
+}, 1)
+--[[
+    TODO restore functionality:
+    SA2-4 мк, псн, только через ПВУ? резвервный псн вырезан?
+    SA6-7 сильный свет кабины под ПМО, убедиться в каких случаях работает слабый свет
+    SA8 освещение ао, найти на что вообще вклияет и нужен ли
+    SA10 авар.вкл. рвс (и света, по коду) - уже заменен или нет?
+    SA13 рез. фары - нужен ли, либо всегда вкл от рез. цепей
+    SA15 авар.пит.приц.ваг. - проверить, используется ли после переработки БС
+]]
+
+
+local function ppzToggle(name, tooltip, x, y, idx)
+    return {
+        relayName = name,
+        ID = name .. "Toggle", tooltip = tooltip,
+        x = idx * (16 + 5.25) + x, y = y,
+        w = 16, h = 50,
+        model = {
+            var = name,
+            model = "models/metrostroi_train/81-760/81_760_switch_pmv.mdl",
+            z = -10, ang = Angle(-180, 90, 90),
+            speed = 9, sndvol = 0.4, vmin = 0, vmax = 1,
+            snd = function(val) return val and "sf_on" or "sf_off" end,
+            sndmin = 90, sndmax = 1e3,
+        }
+    }
+end
+
+ENT.PpzToggles = {
+    ppzToggle("SF42F1", "42F1: РПДП", 60.8, 225, 0),
+    ppzToggle("SF30F1", "30F1: Управление БС", 60.8, 225, 1),
+    ppzToggle("SF23F2", "23F2: Активная кабина", 60.8, 225, 2),
+    ppzToggle("SF23F1", "23F1: Управление резервное", 60.8, 225, 3),
+    ppzToggle("SF23F3", "23F3: Управление основное", 60.8, 225, 4),
+    ppzToggle("SF23F13", "23F13: Ориентация", 60.8, 225, 5),
+    ppzToggle("SF23F7", "23F7: АТС-2", 60.8, 225, 6),
+    ppzToggle("SF23F8", "23F8: АТС-1, УПИ, Монитор", 60.8, 225, 7),
+    ppzToggle("SF22F5", "22F5: РВТБ", 60.8, 225, 8),
+    ppzToggle("SF22F2", "22F2: КМ (питание крана основное, резервное)", 60.8, 225, 9),
+    ppzToggle("SF22F3", "22F3: Управление стояночным тормозом", 60.8, 225, 10),
+    ppzToggle("SF80F5", "80F5: Двери управление", 60.8, 225, 11),
+    ppzToggle("SF80F1", "80F1: Контроль дверей", 60.8, 225, 12),
+    ppzToggle("SF80F3", "80F3: Двери кабины", 60.8, 225, 13),
+    ppzToggle("SF62F1", "62F1: Вентиляция аппаратного отсека", 60.8, 225, 14),
+    ppzToggle("SF42F2", "42F2: Счетчик", 60.8, 225, 15),
+    ppzToggle("SF30F5", "30F5: ППП", 60.8, 330, 0),
+    ppzToggle("SF70F1", "70F1: Радиосвязь", 60.8, 330, 1),
+    ppzToggle("SF45F11", "45F11: ЦИК", 60.8, 330, 2),
+    ppzToggle("SF45F1", "45F1: Видеонаблюдение", 60.8, 330, 3),
+    ppzToggle("SF43F3", "43F3: Штурман (антисон)", 60.8, 330, 4),
+    ppzToggle("SF90F1", "90F1: АСОТП ЦБКИ", 60.8, 330, 5),
+    ppzToggle("PPZUU1", "Не используется", 60.8, 330, 6),
+    ppzToggle("SF51F1", "51F1: Фары, габаритные огни", 60.8, 330, 7),
+    ppzToggle("SF51F2", "51F2: Габаритные огни от АКБ\n(ночной отстой)", 60.8, 330, 8),
+    ppzToggle("SF52F1", "52F1: Освещение кабины", 60.8, 330, 9),
+    ppzToggle("SF62F3", "62F3: Кондиционер кабины", 60.8, 330, 10),
+    ppzToggle("SF62F4", "62F4: Обеззараживающее уст-во кабины", 60.8, 330, 11),
+    ppzToggle("SF61F8", "61F8: Кондиционер салона", 60.8, 330, 12),
+    ppzToggle("SF70F4", "70F4: Обогрев кресла, подножки\nШторка, подстаканник (81-765.4)", 60.8, 330, 13),
+    ppzToggle("SF70F3", "70F3: Стеклоочиститель, омыватель, АГС, сигнал", 60.8, 330, 14),
+    ppzToggle("SF70F2", "70F2: Обогрев стекла", 60.8, 330, 15),
+}
+
+
 function ENT:InitializeSystems()
     self:LoadSystem("TR", "TR_3B") --"81_760_TR_7B")
     self:LoadSystem("Electric", "81_760E_Electric")
@@ -881,6 +1009,7 @@ local Announcer = {}
 for k, v in pairs(Metrostroi.AnnouncementsASNP or {}) do
     Announcer[k] = v.name or k
 end
+
 
 ENT.Spawner = {
     model = {"models/metrostroi_train/81-760/81_760a_body.mdl", "models/metrostroi_train/81-760/81_760a_int.mdl", "models/metrostroi_train/81-760/81_760_cockpit.mdl", "models/metrostroi_train/81-760/81_760_headlamps.mdl",},
@@ -1023,45 +1152,42 @@ ENT.Spawner = {
                     ent.Electric:TriggerInput("Power", true)
                 end
                 local first = i == 1 or _LastSpawner ~= CurTime()
-                if ent.SF1 then
-                    for i = 1, 29 do
-                        if ent["SF" .. i] and i ~= 22 then ent["SF" .. i]:TriggerInput("Set", 1) end
+                if ent.SA1 then
+                    local leaveOff = {
+                        PPZUU1 = true,
+                        SF43F3 = true,
+                        SF70F2 = true,
+                        SF51F2 = val ~= 3,
+                        SF70F4 = val > 2,
+                        SF62F3 = val > 2,
+                        SF62F4 = val > 2,
+                        SF30F1 = val > 2,
+                        SF23F7 = val > 2,
+                        SF23F8 = val > 2,
+                    }
+
+                    for _, cfg in ipairs(ent.PpzToggles or {}) do
+                        if not leaveOff[cfg.relayName] then
+                            local r = ent[cfg.relayName]
+                            if r and r.TriggerInput then
+                                r:TriggerInput("Set", 1)
+                            end
+                        end
                     end
 
-                    ent.SA15:TriggerInput("Set", 1)
-                    --ent.Vent2:TriggerInput("Set",val==1 and 1 or 0)
+                    if MetrostroiAdvanced and MetrostroiAdvanced.TwoToSixMap then
+                        ent.PmvFreq:TriggerInput("Set", 1)
+                    end
+
                     ent.HeadlightsSwitch:TriggerInput("Set", val <= 2 and 2 or 0)
-                    ent.SA2:TriggerInput("Set", val <= 2 and 1 or 0)
-                    ent.SA3:TriggerInput("Set", val <= 2 and 1 or 0)
-                    ent.SA5:TriggerInput("Set", val <= 2 and 1 or 0)
-                    ent.SA6:TriggerInput("Set", val <= 2 and 1 or 0)
-                    ent.SA9:TriggerInput("Set", val <= 2 and 1 or 0)
                     ent.DoorClose:TriggerInput("Set", first and val == 1 and 1 or 0)
-                    --ent.PassScheme:TriggerInput("Set",val==1 and 1 or 0)
-                    --ent.R_Announcer:TriggerInput("Set",val<=2 and 1 or 0)
                     ent.R_ASNPOn:TriggerInput("Set", 1)
-                    --[[
-                if val==1 then
-                    timer.Simple(1,function()
-                        if not IsValid(ent) then return end
-                        ent.BUKP.State=2
-                    end)
-                end]]
-                    ent.SA1k:TriggerInput("Set", val == 3 and 0 or 1)
-                    ent.SA1k.Value = val == 3 and 0 or 1
-                    ent.SA1:TriggerInput("Set", val == 3 and 1 or 0)
-                    ent.SF4:TriggerInput("Set", val <= 2 and 1 or 0)
-                    ent.SF5:TriggerInput("Set", val <= 2 and 1 or 0)
-                    ent.SF6:TriggerInput("Set", val <= 2 and 1 or 0)
-                    ent.SF12:TriggerInput("Set", val <= 2 and 1 or 0)
-                    ent.SF13:TriggerInput("Set", val <= 2 and 1 or 0)
-                    ent.SF15:TriggerInput("Set", val <= 2 and 1 or 0)
-                    for i = 26, 28 do
-                        if ent["SF" .. i] then ent["SF" .. i]:TriggerInput("Open", 1) end
-                    end
+                    ent.CabinLight:TriggerInput("Set", 1)
 
-                    ent.SF27:TriggerInput("Set", val <= 2 and 1 or 0)
-                    ent.SF28:TriggerInput("Set", val == 3 and 1 or 0)
+                    ent.PmvParkingBrake:TriggerInput("Set", val == 3 and 1 or 0)
+                    ent.PmvLights:TriggerInput("Set", val <= 2 and 0 or 1)
+                    ent.PmvCond:TriggerInput("Set", val <= 2 and 0 or 1)
+
                     _LastSpawner = CurTime()
                     ent.CabinDoorLeft = val == 4 and first
                     ent.CabinDoorRight = val == 4 and first
@@ -1078,7 +1204,7 @@ ENT.Spawner = {
                 ent.BUD.DoorLeft = val == 4
                 ent.GV:TriggerInput("Set", val < 4 and 1 or 0)
                 if val <= 2 then
-                    if ent.SF1 then
+                    if ent.SA1 then
                         timer.Simple(first and 2 or 1, function()
                             if not IsValid(ent) then return end
                             ent:SetNW2Int("VityazWagNum", ent.BUKP.WagNum)
@@ -1128,7 +1254,7 @@ ENT.Spawner = {
                 end
 
                 ent.Pneumatic.TrainLinePressure = val == 3 and 5 + math.random() or val == 2 and 6.6 + math.random() * 1.4 or 7.6 + math.random() * 0.5
-                if not ent.SF1 then ent.Pneumatic.TLPressure = ent.Pneumatic.TrainLinePressure end
+                if not ent.SA1 then ent.Pneumatic.TLPressure = ent.Pneumatic.TrainLinePressure end
                 ent.Pneumatic.ParkingBrakePressure = val == 3 and 0 or ent.Pneumatic.TrainLinePressure
                 ent.Pneumatic.ParkingBrake = val == 3
                 ent._SpawnerStarted = val

@@ -174,7 +174,7 @@ if SERVER then
         local Wag = self.Train
 
         local battery = Wag.Electric.Battery80V > 62
-        local power = battery and (Wag.SF12.Value + Wag.SF13.Value) > 0.5
+        local power = battery and Wag.SF45F11.Value > 0.5
         if not power then
             if self.State ~= STATE_POWEROFF then
                 self.Train.CIS:Trigger("Restart", 0)
@@ -190,8 +190,8 @@ if SERVER then
             self.State = STATE_BOOTING
         end
 
-        Wag:SetNW2Bool("Buik_PathLamp", battery and Wag.Buik_Path.Value > 0)
-        Wag:SetNW2Bool("Buik_MicLineLamp", battery and Wag.Buik_MicLine.Value > 0)
+        Wag:SetNW2Bool("Buik_PathLamp", battery and Wag.Buik_Path.Value * Wag.SF70F3.Value * Wag.Electric.UPIPower > 0)
+        Wag:SetNW2Bool("Buik_MicLineLamp", battery and Wag.Buik_MicLine.Value * Wag.SF70F3.Value * Wag.Electric.UPIPower > 0)
 
         if not power and self:IsCurrentlyPlaying() then
             self:StopMessage()
@@ -215,7 +215,7 @@ if SERVER then
             return
         end
 
-        if self.State == STATE_NORMAL and (not Wag.BUKP or Wag.BUKP.State ~= 5 or Wag.SF6.Value < 1) then self.State = STATE_INACTIVE end
+        if self.State == STATE_NORMAL and (not Wag.BUKP or Wag.BUKP.State ~= 5 or Wag.SF23F8.Value < 1) then self.State = STATE_INACTIVE end
 
         self.WagNum = Wag.BUKP and Wag.BUKP.WagNum or 0
         if self.State == STATE_NORMAL and (not isnumber(self.WagNum) or self.WagNum < 1) then self.State = STATE_INACTIVE end
@@ -227,7 +227,7 @@ if SERVER then
 
         else
             self.Active = self.State == STATE_INACTIVE_CABIN and Wag:GetNW2Int("VityazMainMsg", 1) == 0 or false
-            if self.State == STATE_INACTIVE and Wag.BUKP and Wag.BUKP.State == 5 and Wag.SF6.Value > 0.5 and isnumber(self.WagNum) and self.WagNum >= 1 then
+            if self.State == STATE_INACTIVE and Wag.BUKP and Wag.BUKP.State == 5 and Wag.SF23F8.Value > 0.5 and isnumber(self.WagNum) and self.WagNum >= 1 then
                 self.State = STATE_INACTIVE_CABIN
             end
             if self.State == STATE_INACTIVE_CABIN and self.Active then self.State = STATE_NORMAL end
@@ -279,7 +279,7 @@ if SERVER then
 
     function TRAIN_SYSTEM:TrainInfo(Wag)
         local bukpMessage = Wag:GetNW2Int("VityazMainMsg", 1)
-        self.Active = bukpMessage == 0
+        self.Active = bukpMessage == 0 and Wag.BUKP.Active > 0
         if not self.Active and self.ActiveOnly then
             self.State = STATE_INACTIVE_CABIN
             return
@@ -322,11 +322,11 @@ if SERVER then
 
         end
 
-        local alsArs = Wag:GetNW2Bool("SA14")
+        local alsArs = Wag:GetNW2Bool("PmvFreq")
         self:CheckDisplayState(1, alsArs and "2/6" or "ДАУ", STATE_NORMAL)
         self:CheckDisplayState(2, "АРС1", ars_states[Wag:GetNW2Int("VityazARS1", -1)] or STATE_INACTIVE)
         self:CheckDisplayState(3, "АРС2", ars_states[Wag:GetNW2Int("VityazARS2", -1)] or STATE_INACTIVE)
-        self:CheckDisplayState(4, Wag.BARSBlock.Value == 1 and "АТС1" or Wag.BARSBlock.Value == 2 and "АТС2" or Wag.BARSBlock.Value == 3 and "УОС" or "ШТАТ", STATE_NORMAL)
+        self:CheckDisplayState(4, Wag.PmvAtsBlock.Value == 1 and "АТС1" or Wag.PmvAtsBlock.Value == 2 and "АТС2" or Wag.PmvAtsBlock.Value == 3 and "УОС" or "ШТАТ", STATE_NORMAL)
         self:CheckDisplayState(5, "НД", alsArs and not Wag.BARS.NoFreq and (Wag.BARS.LN and STATE_NORMAL or STATE_RED) or STATE_INACTIVE)
         self:CheckDisplayState(6, "0", not Wag.BARS.NoFreq and math.floor(Wag.BARS.SpeedLimit) < 21 and STATE_RED or STATE_NORMAL)
         self:CheckDisplayState(7, "ОЧ", Wag.BARS.NoFreq and STATE_RED or STATE_NORMAL)  -- FIXME: or inactive?

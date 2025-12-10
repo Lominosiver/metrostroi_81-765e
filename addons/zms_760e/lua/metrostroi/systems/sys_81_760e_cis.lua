@@ -74,7 +74,7 @@ if SERVER then
     function TRAIN_SYSTEM:Trigger(name, value)
         --local name = name:gsub("BMCIS","")
         local Train = self.Train
-        local Power = Train.Electric.Battery80V > 62 --and Train.SF12.Value+Train.SF13.Value > 0
+        local Power = Train.Electric.Battery80V > 62
         if Power then
             if name == "CISRestart" and value and CurTime() - self.Prev > 0 then
                 Train:CANWrite("CIS", self.Train:GetWagonNumber(), "CIS", nil, "CISRestart", 0)

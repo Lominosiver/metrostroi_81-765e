@@ -214,7 +214,7 @@ end
 function ENT:Think()
     local retVal = self.BaseClass.Think(self)
     local Panel = self.Panel
-    local power = self.Electric.Power1 > 0
+    local power = self.Electric.BSPowered > 0
     self:SetPackedBool("WorkBeep",power)
     
     --self:SetPackedBool("Vent1Work",self.Electric.Vent1>0)
