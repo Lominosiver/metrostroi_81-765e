@@ -107,7 +107,7 @@ function TRAIN_SYSTEM:Think(dT)
                 local targetSpeed = (70.5 * (math.max(0.0, math.min(1.0, dist2 / 240)) ^ 0.54)) + 0.4 * (dist2 < 48 and 1 or 0)
                 --print(dist2)
                 --local a = (Tspeed/3.6)^2/(2*math.abs(dist2))
-                if Train:GetClass()[19] == "a" and #Train.WagonList > 3 then --[[dist2 < 50 and]]
+                if #Train.WagonList > 3 then --[[dist2 < 50 and]]
                     if Tspeed + 1 > targetSpeed then
                         if Tspeed - targetSpeed < 0.38 or Tspeed < 7 then --6
                             self.Command = -2
