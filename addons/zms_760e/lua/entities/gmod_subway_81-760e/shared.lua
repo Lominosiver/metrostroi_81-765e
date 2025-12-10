@@ -1139,6 +1139,7 @@ ENT.Spawner = {
     },
     {"HSEngines", "Spawner.720a.HSEngines", "Boolean"},
     {"FirstONIX", "Spawner.720a.FirstONIX", "Boolean"},
+    {"AddressDoors", "Индивид. открытие дверей (765.2)", "Boolean"},
     {
         "SpawnMode",
         "Spawner.Common.SpawnMode",
@@ -1183,6 +1184,7 @@ ENT.Spawner = {
                     ent.DoorClose:TriggerInput("Set", first and val == 1 and 1 or 0)
                     ent.R_ASNPOn:TriggerInput("Set", 1)
                     ent.CabinLight:TriggerInput("Set", 1)
+                    ent.PmvAddressDoors:TriggerInput("Set", ent:GetNW2Bool("AddressDoors", false) and 0 or 1)
 
                     ent.PmvParkingBrake:TriggerInput("Set", val == 3 and 1 or 0)
                     ent.PmvLights:TriggerInput("Set", val <= 2 and 0 or 1)

@@ -1483,7 +1483,7 @@ if SERVER then
                 Train:SetNW2Int("VityazWagNum" .. i, self.Trains[i] or 0)
             end
 
-            local addrDoors = Train:GetNW2Bool("AddressDoors", true) and Train.Electric.UPIPower * (1 - Train.PmvAddressDoors.Value) > 0.5
+            local addrDoors = Train:GetNW2Bool("AddressDoors", false) and Train.Electric.UPIPower * (1 - Train.PmvAddressDoors.Value) > 0.5
             self:CState("OpenLeft", doorLeft)
             self:CState("OpenRight", doorRight)
             self:CState("CloseDoors", doorClose)

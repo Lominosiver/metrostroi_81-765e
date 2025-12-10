@@ -5365,10 +5365,10 @@ function ENT:Think()
         self:HidePanel("DoorManualOutside" .. idx, not self:GetNW2Bool("DoorManualOpenLever" .. idx, false))
         local open = self:GetPackedRatio((idx < 5 and "DoorL" or "DoorR") .. (idx < 5 and idx or 9 - idx), 0) > 0
         self:HidePanel("DoorManualBlock" .. idx, open)
-        self:HidePanel("DoorAddressOpen" .. idx, open and self:GetNW2Bool("AddressDoors", true))
-        self:HidePanel("DoorAddressOpenOutside" .. idx, open and self:GetNW2Bool("AddressDoors", true))
+        self:HidePanel("DoorAddressOpen" .. idx, open or not self:GetNW2Bool("AddressDoors", false))
+        self:HidePanel("DoorAddressOpenOutside" .. idx, open or not self:GetNW2Bool("AddressDoors", false))
         local btnKey = "DoorArrdessButton" .. idx
-        self:ShowHide(btnKey, self:GetNW2Bool("AddressDoors", true))
+        self:ShowHide(btnKey, self:GetNW2Bool("AddressDoors", false))
         local btn = self.ClientEnts[btnKey]
         if IsValid(btn) then
             btn:SetSubMaterial(1, self:GetNW2Bool("DoorButtonLed" .. (idx < 5 and 9 - idx or idx - 4), false) and "models/metrostroi_train/81-765/led_green" or "models/metrostroi_train/81-765/led_off")
