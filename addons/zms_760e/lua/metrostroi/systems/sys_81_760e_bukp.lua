@@ -29,12 +29,19 @@ local ErrorsA = {
     {"Doors", "Двери не закрыты.", "Двери не закрыты на %d вагоне."},
 }
 local ErrorsB = {
+    {"RightBlock", "Правые двери заблокированы.",},
+    {"LeftBlock", "Левые двери заблокированы.",},
     {"HV", "Напряжение КС.",},
     {"RearCabin", "Открыта кабина ХВ.",},
 }
 local ErrorsC = {
     {"SF", "Включи автомат.", "Включи автомат на %d вагоне."},
     {"PassLights", "Освещение не включено.", "Освещение не включено\nна %d вагоне.",},
+}
+
+local ErrRingContinious = {
+    RightBlock = true,
+    LeftBlock = true,
 }
 
 local Error2id = {}
@@ -97,7 +104,6 @@ function TRAIN_SYSTEM:Initialize()
 
     self.State = 0
     self.State2 = 0
-    self.MainScreen = true
     self.LegacyScreen = false
     self.Trains = {}
     self.Errors = {}
@@ -126,6 +132,7 @@ function TRAIN_SYSTEM:Initialize()
     self.Compressor = false
     self.BlockLeft = true
     self.BlockRight = true
+    self.DoorControlDelay = math.random() * 0.9 + 0.2
     self.States = {}
     self.NextState = {
         ["1"] = {
@@ -456,7 +463,7 @@ if SERVER then
         elseif self.State == 4 and name == BTN_ENTER and value and RV ~= 0 then
             self.Errors = {}
             --self:CState("BVInit",false)
-            self.State2 = 11
+            self.State2 = 0
             self.Prost = true
             self.Kos = true
             self.Ovr = true
@@ -478,12 +485,11 @@ if SERVER then
             else
                 if char and self.State2 ~= 01 then
                     if char == 0 then self.Selected = 1 end
-                    if char == math.floor(self.State2 / 10) and not self.MainScreen then
+                    if char == math.floor(self.State2 / 10) then
                         self.LegacyScreen = not self.LegacyScreen
                     else
                         self.LegacyScreen = char == 0
                     end
-                    self.MainScreen = false
                     self.State2 = tonumber(char .. "1")
                     self.AutoChPage = nil
                 end
@@ -509,13 +515,11 @@ if SERVER then
                 end
 
                 if name == BTN_MODE and self.LegacyScreen and (self.State2 == 71 or self.State2 == 72) then self.CondLeto = not self.CondLeto end
-                if name == BTN_CLEAR then self.MainScreen = true self.LegacyScreen = false self.State2 = 11 end
+                if name == BTN_CLEAR then self.LegacyScreen = false self.State2 = 0 self.AutoChPage = nil end
             end
 
             if name == BTN_ENTER then
                 self.ProstTimer = CurTime()
-                --self.PrevState2 = self.State2
-                -- self.MainScreen = true
             end
 
             if not self.LegacyScreen and math.floor(self.State2 / 10) == 1 and self.State2 > 15 then
@@ -534,7 +538,7 @@ if SERVER then
 
             if name == BTN_UP and self.Selected > 1 then self.Selected = self.Selected - 1 end
             if name == BTN_DOWN and self.Selected < self.WagNum then self.Selected = self.Selected + 1 end
-            if name == BTN_ENTER then self.State2 = 11 end
+            if name == BTN_ENTER then self.State2 = 0 self.LegacyScreen = false end
         end
 
         if self.State == 5 and name == "AttentionMessage" and value then
@@ -580,7 +584,7 @@ if SERVER then
                 self.Errors[name] = CurTime()
                 self.ErrorParams[id] = isnumber(param) and param or nil
             end
-        elseif id <= #ErrorsA and self.Errors[id] and self.Errors[id] ~= CurTime() or self.Errors[id] == false then
+        elseif (id <= #ErrorsA or ErrRingContinious[name]) and self.Errors[id] and self.Errors[id] ~= CurTime() or self.Errors[id] == false then
             self.Errors[id] = nil
             self.Errors[name] = nil
             self.ErrorParams[id] = nil
@@ -608,18 +612,22 @@ if SERVER then
             if self.ErrorRing then self.ErrorRing = nil end
             self.Train:SetNW2Int("VityazErrorCat", 0)
             self.Train:SetNW2String("VityazErrorStr", "")
-        elseif self.Error ~= errId or self.ErrorParams[0] ~= param then
-            if errId ~= Error2id["Doors"] or self.Train.Speed >= 1.8 then
+        else
+            local str = ErrorsCat[category][errId - start + 1]
+            local changed = self.Error ~= errId or self.ErrorParams[0] ~= param
+
+            if (changed or ErrRingContinious[str[1]]) and (str[1] ~= "Doors" or self.Train.Speed >= 1.8) then
                 self.ErrorRing = CurTime()
             end
 
-            self.Train:SetNW2Int("VityazErrorCat", category)
+            if changed then
+                self.Train:SetNW2Int("VityazErrorCat", category)
 
-            local str = ErrorsCat[category][errId - start + 1]
-            if isnumber(param) and str[3] then
-                self.Train:SetNW2String("VityazErrorStr", string.format(str[3], param))
-            else
-                self.Train:SetNW2String("VityazErrorStr", str[2])
+                if isnumber(param) and str[3] then
+                    self.Train:SetNW2String("VityazErrorStr", string.format(str[3], param))
+                else
+                    self.Train:SetNW2String("VityazErrorStr", str[2])
+                end
             end
         end
 
@@ -1073,6 +1081,19 @@ if SERVER then
                     local noOrient = self.Errors.NoOrient
                     self:EndWagonsCheck()
 
+                    if doorsNotClosed and not self.DoorControlTimer then
+                        self.DoorControlTimer = true
+                    end
+                    if not doorsNotClosed and self.DoorControlTimer and not isnumber(self.DoorControlTimer) then
+                        self.DoorControlTimer = CurTime() + self.DoorControlDelay + math.Rand(-0.2, 0.2)
+                    end
+                    if not doorsNotClosed and isnumber(self.DoorControlTimer) then
+                        doorsNotClosed = CurTime() < self.DoorControlTimer
+                        if not doorsNotClosed then
+                            self.DoorControlTimer = nil
+                        end
+                    end
+
                     local errPT = self.PTEnabled and CurTime() - self.PTEnabled > 2 + (Train.BUV.Slope1 and 1.2 or 0)
 
                     Train:SetNW2Int("VityazDoorsAll", doorsNotClosed and 0 or cabDoors and 2 or 1)
@@ -1111,9 +1132,11 @@ if SERVER then
 
                     if self.BLTimer and CurTime() - self.BLTimer > 0 and Train.RV.KRRPosition == 0 and Train.Electric.SD == 0 and Train.Electric.V2 > 0 and self.EmergencyBrake == 0 then
                         self.State2 = 52
-                        self.MainScreen = false
                         self.EmergencyBrake = 1
                     end
+
+                    self:CheckError("RightBlock", (not doorRight or Train.DoorClose.Value > 0) and Train.DoorRight.Value > 0)
+                    self:CheckError("LeftBlock", (not doorLeft or Train.DoorClose.Value > 0) and Train.DoorLeft.Value > 0)
 
                     self:CheckError("BrakeLine", self.BLTimer and CurTime() - self.BLTimer > 0)
                     self:CheckError("RvErr", false)
@@ -1123,14 +1146,12 @@ if SERVER then
                     if not self.Errors.Doors then self:CheckError("Doors", doorsNotClosed or self.WasDoors and Train.KV765.Position > 0) end
 
                     local err11ch = self.WasDoors ~= not not self.Errors.Doors
-                    if self.MainScreen and self.Errors.Doors and err11ch then
-                        self.AutoChPage = self.State2
+                    if self.Errors.Doors and err11ch then
+                        if not self.AutoChPage then self.AutoChPage = self.State2 end
                         self.State2 = 21
-                        self.MainScreen = false
                     end
                     if not self.Errors.Doors and err11ch and self.AutoChPage and not self.AwaitOpenDoors then
-                        self.State2 = self.AutoChPage
-                        self.MainScreen = true
+                        self.State2 = self.AutoChPage or self.State2
                     end
                     if self.AwaitOpenDoors and (not self.AutoChPage or self.Errors.Doors) then
                         self.AwaitOpenDoors = false
@@ -1408,8 +1429,6 @@ if SERVER then
                     self.DateEntered = nil
                     self.EmergencyBrake = 0
                     self.BTB = 0
-                    --self.Slope = false
-                    --if Back then self.BErrorsTimer = CurTime()+3 end--self.State2 = 11 
                     self.BErrorsTimer = CurTime() + 3
                     if self.PTEnabled then self.PTEnabled = nil end
                     self.BLTimer = nil
@@ -1451,10 +1470,9 @@ if SERVER then
                 self.EnginesStrength = 0
             end
 
-            if self.MainScreen and not self.LegacyScreen and addrDoors and (Train.DoorLeft.Value + Train.DoorRight.Value) * (1 - Train.DoorClose.Value) > 0 then
-                self.AutoChPage = self.State2
+            if (Train.DoorLeft.Value + Train.DoorRight.Value) > 0 then
+                if not self.AutoChPage then self.AutoChPage = self.State2 end
                 self.State2 = 21
-                self.MainScreen = false
                 self.AwaitOpenDoors = true
             end
 
@@ -1556,11 +1574,10 @@ if SERVER then
         self.EmergencyBrake = self.State == 5 and self.EmergencyBrake or 0
         self:CState("BUPWork", self.State > 0)
         Train:SetNW2Int("VityazSelected", self.Selected)
-        if self.State ~= 5 then self.MainScreen = true self.LegacyScreen = false end
+        if self.State ~= 5 then self.LegacyScreen = false end
         if Train.SF23F7.Value + Train.SF23F8.Value > 0 and Train:GetNW2Int("VityazState") == 5 or Train:GetNW2Int("VityazState") < 5 or not Power then
             Train:SetNW2Int("VityazState", self.State)
             Train:SetNW2Int("VityazState2", self.State2)
-            Train:SetNW2Bool("VityazMainScreen", self.MainScreen)
             Train:SetNW2Bool("VityazLegacyScreen", self.LegacyScreen)
 
             local line = "---"
@@ -1626,7 +1643,7 @@ else
             if state ~= -2 then
                 self.State = state
                 self.State2 = self.Train:GetNW2Int("VityazState2", 0)
-                self.MainScreen = self.Train:GetNW2Bool("VityazMainScreen", false)
+                self.MainScreen = self.State2 == 0
                 self.LegacyScreen = self.Train:GetNW2Bool("VityazLegacyScreen", false)
             end
             render.PushRenderTarget(self.Train.Vityaz, 0, 0, 1024, 1024)
