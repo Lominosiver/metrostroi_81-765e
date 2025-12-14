@@ -627,33 +627,35 @@ function ENT:InitializeSounds()
     self.SoundPositions["epk_brake_close"] = {80, 1e9, Vector(458, 56.5, -61), 0.65}
     self.SoundNames["epk_brake_open"] = {"subway_trains/760/new/rvtb_start.wav"}
     self.SoundPositions["epk_brake_open"] = {80, 1e9, Vector(458, 56.5, -61), 0.65}
+
     self.SoundNames["valve_brake"] = {
         loop = true,
         "subway_trains/760/new/stopcrane_loop.wav"
     }
-
     self.SoundPositions["valve_brake"] = {400, 1e9, Vector(418.25, -49.2, 1.3), 1}
+
     self.SoundNames["valve_brake_close"] = {"subway_trains/760/stopkran_close.wav"}
     self.SoundPositions["valve_brake_close"] = {400, 1e9, Vector(418.25, -49.2, 1.3), 1}
     self.SoundNames["valve_brake_open"] = {"subway_trains/760/stopkran_open.wav"}
     self.SoundPositions["valve_brake_open"] = {400, 1e9, Vector(418.25, -49.2, 1.3), 1}
+
     self.SoundNames["emer_brake"] = {
         loop = true,
-        "subway_trains/common/pneumatic/autostop_loop.wav"
+        "subway_trains/765/pneumo/autostop_loop.wav"
     }
-
     self.SoundPositions["emer_brake"] = {600, 1e9, Vector(380, -45, -75), 0.95}
+    self.SoundNames["emer_brake_open"] = { "subway_trains/765/pneumo/autostop_start.wav" }
+    self.SoundPositions["emer_brake_open"] = {600, 1e9, Vector(380, -45, -75), 1}
+
     self.SoundNames["vent_loop"] = {
         loop = true,
         "subway_trains/760/new/vent_cockpit_default_2.wav"
     }
-
     self.SoundPositions["vent_loop"] = {400, 1e9, Vector(422, 55, 40), 1}
     self.SoundNames["vent_loop_max"] = {
         loop = true,
         "subway_trains/760/new/vent_cockpit_high.wav"
     }
-
     self.SoundPositions["vent_loop_max"] = {400, 1e9, Vector(422, 55, 40), 1}
 
     for i = 0, 3 do
@@ -897,7 +899,7 @@ ENT.PpzToggles = {
     ppzToggle("SF23F7", "23F7: АТС-2", 60.8, 225, 6),
     ppzToggle("SF23F8", "23F8: АТС-1, УПИ, Монитор", 60.8, 225, 7),
     ppzToggle("SF22F5", "22F5: РВТБ", 60.8, 225, 8),
-    ppzToggle("SF22F2", "22F2: КМ (питание крана основное, резервное)", 60.8, 225, 9),
+    ppzToggle("SF22F2", "22F2: КМ, БТБУ, СД", 60.8, 225, 9),
     ppzToggle("SF22F3", "22F3: Управление стояночным тормозом", 60.8, 225, 10),
     ppzToggle("SF80F5", "80F5: Двери управление", 60.8, 225, 11),
     ppzToggle("SF80F1", "80F1: Контроль дверей", 60.8, 225, 12),
@@ -1041,11 +1043,10 @@ ENT.Spawner = {
     spawnfunc = function(i, tbls, tblt)
         local WagNum = tbls.WagNum
         if i > 1 and i < WagNum then
-            if (WagNum > 6 and (i == WagNum - 1 or i == 2)) or (WagNum > 3 and WagNum ~= 5 and i == WagNum - 1) or (WagNum == 5 and i == 3) then
-                return "gmod_subway_81-763e"
-            else
-                return "gmod_subway_81-761e"
-            end
+            return (
+                WagNum < 6 and not tbls.NoTrailers and i == 3 or
+                WagNum >= 6 and i % 3 == 0
+            ) and "gmod_subway_81-763e" or "gmod_subway_81-761e"
         else
             return "gmod_subway_81-760e"
         end
@@ -1166,6 +1167,26 @@ ENT.Spawner = {
     {"HSEngines", "Spawner.720a.HSEngines", "Boolean"},
     {"FirstONIX", "Spawner.720a.FirstONIX", "Boolean"},
     {"AddressDoors", "Индивид. открытие дверей (765.2)", "Boolean"},
+    {"NoTrailers", "Без прицепных 763Э", "Boolean", false, nil, function(self, stbl)
+        local wagnField = stbl.WagNum
+        if self.TrainInjected == wagnField then return end
+        self.TrainInjected = wagnField
+        local t = self.Think or function() end
+        self.Think = function(_self)
+            local retval = { t(_self) }
+            if wagnField == self.TrainInjected then
+                local wagn = wagnField:GetValue()
+                local enable = wagn < 6 and wagn > 3
+                self:SetEnabled(enable)
+                if not enable then
+                    self:SetValue(wagn <= 3)
+                else
+                    self:SetValue(false)
+                end
+            end
+            return unpack(retval)
+        end
+    end},
     {
         "SpawnMode",
         "Spawner.Common.SpawnMode",
@@ -1182,8 +1203,14 @@ ENT.Spawner = {
                 if ent.SA1 then
                     local leaveOff = {
                         PPZUU1 = true,
+                        SF70F2 = true,  -- PpzWindshieldHeat
+                        SF43F3 = true,  -- PpzSmartdrive
+                        SF51F2 = val ~= 3,  -- PpzBattLights
+                        SF30F1 = val > 2,  -- PpzBsControl
+                        SF62F3 = val > 2,  -- PpzCabinAc
+                        SF62F4 = val > 2,  -- PpzCabinEpra
+                        SF70F4 = val > 2,  -- PpzAuxCabin
                     }
-
                     for _, cfg in ipairs(ent.PpzToggles or {}) do
                         if not leaveOff[cfg.relayName] then
                             local r = ent[cfg.relayName]

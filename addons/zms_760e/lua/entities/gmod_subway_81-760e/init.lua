@@ -355,6 +355,7 @@ function ENT:InitializeSystemsServer()
     self.PpzAts2 = self.SF23F7
     self.PpzUpi = self.SF23F8
     self.PpzKm = self.SF22F2
+    self.PpzBtboSd = self.SF22F2
     self.PpzParkingBrakeControl = self.SF22F3
     self.PpzRvtb = self.SF22F5
     self.PpzDoorsControl = self.SF80F5
@@ -377,7 +378,7 @@ function ENT:InitializeSystemsServer()
     self.PpzAuxCabin = self.SF70F4
     self.PpzWiper = self.SF70F3
     self.PpzPurLamps = self.SF70F3
-    self.PpzWindshieldHead = self.SF70F2
+    self.PpzWindshieldHeat = self.SF70F2
 end
 
 function ENT:NonSupportTrigger()
@@ -777,7 +778,7 @@ function ENT:Think()
     self:SetPackedRatio("chopper", math.Clamp(self.Electric.Chopper > 0 and self.Electric.Iexit / 100 or 0, 0, 1))
     self:SetPackedRatio("Speed", self.Speed)
     self:SetNW2Int("Wrench", self.WrenchMode)
-    self:SetPackedRatio("Controller", self.KV765.Position)
+    self:SetPackedRatio("Controller", self.KV765.VisualPosition)
     self:SetPackedRatio("KRO", (self.RV.KROPosition + 1) / 2)
     self:SetPackedRatio("KRR", (self.RV.KRRPosition + 1) / 2)
     self:SetPackedRatio("VentCondMode", self.VentCondMode.Value / 3)

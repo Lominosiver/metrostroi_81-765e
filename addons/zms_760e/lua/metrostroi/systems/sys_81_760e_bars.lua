@@ -145,6 +145,8 @@ function TRAIN_SYSTEM:Think(dT)
         BUPKMState = KMState
     end
 
+    self.PN3 = 0
+
     if EnableALS and Train.BUKP.Active > 0 and PowerALS then
         local V = math.floor(self.Speed + 0.05)
         local Vlimit = 20
@@ -378,6 +380,10 @@ function TRAIN_SYSTEM:Think(dT)
                 end
 
                 if (self.NoFreq or self.SpeedLimit < 21) and KMState <= 0 and (self.KBApply or self.KBApplyTimer) then
+                    if self.KBApplyTimer then
+                        self.RVTB = 1
+                        self.BTB = 1
+                    end
                     self.KBApply = false
                     self.KBApplyTimer = nil
                 end
@@ -392,14 +398,10 @@ function TRAIN_SYSTEM:Think(dT)
 
                 if self.KBApplyTimer and CurTime() - self.KBApplyTimer > 0 and (self.NoFreq or self.SpeedLimit < 21) then
                     self.RVTB = 0
-                    --print("KBAPPLY")
+                    -- print("KBAPPLY")
                 elseif self.KBApplyTimer and not (self.NoFreq or self.SpeedLimit < 21) then
                     self.KBApplyTimer = nil
                 end
-            end
-
-            if Train.BUKP.err11 and (KMState > 0) and Train.DoorBlock.Value == 0 or Train.BUIK.State <= 0 and CurTime() - (Train.CIS.Prev or 0) > 5 then
-                -- self.DisableDrive = true
             end
 
         elseif self.BUKPState ~= 0 then

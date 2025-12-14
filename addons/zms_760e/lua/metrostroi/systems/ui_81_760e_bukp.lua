@@ -701,7 +701,8 @@ end
 function TRAIN_SYSTEM:DrawMainThrottle()
     local Wag = self.Train
     local thr = Wag:GetNW2Int("VityazThrottle", 0)
-    if Wag:GetNW2Bool("VityazOverrideKv") or not self.LastThrUpd or thr * (self.Throttle or 0) < 0 then
+    local override = Wag:GetNW2Bool("VityazOverrideKv")
+    if override or override ~= self.LastOverride or not self.LastThrUpd or thr * (self.Throttle or 0) < 0 then
         self.Throttle = thr
     else
         local dT = CurTime() - self.LastThrUpd
@@ -713,6 +714,7 @@ function TRAIN_SYSTEM:DrawMainThrottle()
             end
         end
     end
+    self.LastOverride = override
     self.LastThrUpd = CurTime()
 
     surface.SetDrawColor(0, 0, 0)
@@ -900,7 +902,7 @@ function TRAIN_SYSTEM:DrawAsyncPage(Wag, x, y, w, h)
         if thr == 0 then
             thr = Wag:GetNW2Int("VityazBrakeStrength" .. idx, 0)
         end
-        self:DrawThrottle(math.Clamp(thr * 100 / 15, -100, 100), xb, yb, barW)
+        self:DrawThrottle(math.Clamp(thr * 100 / 150, -100, 100), xb, yb, barW)
 
         local color = not Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false) and colorMainDarker or Wag:GetNW2Bool("VityazHVGood" .. idx, false) and colorGreen or colorRed
         draw.RoundedBox(

@@ -77,6 +77,9 @@ function TRAIN_SYSTEM:Initialize()
     self.BTOKTO2Val = randomGaussian(1.7, 2.7, 3.0)
     self.BTOKTO3Val = randomGaussian(1.7, 2.7, 3.0)
     self.BTOKTO4Val = randomGaussian(1.7, 2.7, 3.0)
+
+    self.WagIdx = 1
+    self.TrainLen = 1
 end
 
 function TRAIN_SYSTEM:Outputs()
@@ -385,8 +388,8 @@ function TRAIN_SYSTEM:Think(dT)
             self:CState("BVEnabled", Train.BV.Value > 0)
             self:CState("MKCurrent", math.Round(Train.Electric.MK * math.Round(math.Rand(12, 15) * (Train.Pneumatic.Compressor and (CurTime() - Train.Pneumatic.Compressor > 0 and 1 or CurTime() - Train.Pneumatic.Compressor > -4 and (4 + (CurTime() - Train.Pneumatic.Compressor)) / 4) or 0))))
             self:CState("MKWork", not self:Get("PVU3") and Train.SF34.Value == 1)
-            self:CState("DriveStrength", math.min(0, Train.AsyncInverter.Torque))
-            self:CState("BrakeStrength", math.max(0, Train.AsyncInverter.Torque))
+            self:CState("DriveStrength", math.min(0, Train.AsyncInverter.Torque + Train.AsyncInverter.Torque * math.Rand(0, 0.05)))
+            self:CState("BrakeStrength", math.max(0, Train.AsyncInverter.Torque + Train.AsyncInverter.Torque * math.Rand(0, 0.05)))
             self:CState("I", Train.AsyncInverter.Current)
         else
             self:CState("DriveStrength", 0)

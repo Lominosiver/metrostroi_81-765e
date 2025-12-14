@@ -324,9 +324,8 @@ function TRAIN_SYSTEM:Think(dT, iter)
         self.UPIPower = UPIPower
         local PowerReserve = P * min(1, (1 - Train.SF23F8.Value) * abs(RV.KRRPosition) + Train.SF23F8.Value)
         self.PowerReserve = PowerReserve
-        Train:WriteTrainWire(20, P --[[* Train.SF29.Value]])
-        Train:WriteTrainWire(2, P * Train.SF22F2.Value * Train.EnableBVEmer.Value)
-        Train:WriteTrainWire(35, P * (RV["KRO1-2"] * Train.SF22F2.Value + RV["KRR1-2"] * Train.SF22F2.Value))
+        Train:WriteTrainWire(20, P)
+        Train:WriteTrainWire(35, P * (RV["KRO1-2"] * Train.SF22F2.Value + RV["KRR1-2"]))
         Train:WriteTrainWire(36, Train.SF23F1.Value * Train.EmergencyControls.Value)
         local Drive = Train.BARS.Drive
         local Orientation = C(Train.SF23F13.Value * Train.BUKP.Active + RV["KRR7-8"] > 0)
@@ -344,7 +343,7 @@ function TRAIN_SYSTEM:Think(dT, iter)
         Train:WriteTrainWire(13, P * (RV["KRR9-10"] + KM2))
         Train:WriteTrainWire(14, P * RV["KRR3-4"] * Orientation * Train.SF23F1.Value)
         Train:WriteTrainWire(15, P * RV["KRR9-10"] * Orientation * Train.SF23F1.Value)
-        local BTB = P * (RV["KRO13-14"] * Train.SF23F3.Value * Train.SF22F2.Value + RV["KRR11-12"] * Train.SF23F1.Value * Train.SF22F2.Value)
+        local BTB = P * (RV["KRO13-14"] * Train.SF23F3.Value * Train.SF22F2.Value + RV["KRR11-12"] * Train.SF23F1.Value)
         if P * Train.SD.Value > 0 then
             if S["RV"] ~= self.rv then
                 self.rv = S["RV"]

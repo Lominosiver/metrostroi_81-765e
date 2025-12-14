@@ -14,6 +14,8 @@ function TRAIN_SYSTEM:Initialize()
     self.ReverseWork = false
     self.AddressReadyL = false
     self.AddressReadyR = false
+    self.Working = false
+    self.Starting = false
     if not TURBOSTROI then
         self.LeftDoorState = {0, 0, 0, 0}
         self.RightDoorState = {0, 0, 0, 0}
@@ -27,10 +29,10 @@ function TRAIN_SYSTEM:Initialize()
         self.WasManual = {}
         self.OpenButton = {}
         self.MobsOpening = {}
-        self.DoorSpeedMain = math.Rand(1.1, math.Rand(1.3, 1.6))
-        for i = 1, #self.LeftDoorSpeed do
-            self.LeftDoorSpeed[i] = math.Rand(self.DoorSpeedMain + 0.1, self.DoorSpeedMain + 0.3)
-            self.RightDoorSpeed[i] = math.Rand(self.DoorSpeedMain + 0.1, self.DoorSpeedMain + 0.3)
+        self.DoorSpeedMain = math.Rand(1.15, math.Rand(1.15, 1.25))
+        for i = 1, 4 do
+            self.LeftDoorSpeed[i] = math.Rand(self.DoorSpeedMain + 0.1, self.DoorSpeedMain + 0.2)
+            self.RightDoorSpeed[i] = math.Rand(self.DoorSpeedMain + 0.1, self.DoorSpeedMain + 0.2)
         end
     end
 
@@ -68,13 +70,20 @@ function TRAIN_SYSTEM:Think(dT)
 
     local poweron = Wag.Electric.Battery80V > 62
     local working = poweron and BUV.ADUDWork
+
+    if not working and self.Working then self.Working = false self.Starting = false end
+    if working and not self.Working and not self.Starting then self.Starting = CurTime() + 5 end
+    if self.Starting and CurTime() >= self.Starting then self.Starting = false self.Working = true end
+    working = self.Working
+    poweron = working or self.Starting and self.Starting - CurTime() < 0.3
+
     local workingLeft = working and BUV.Orientation and Wag.SF40.Value > 0 or not BUV.Orientation and Wag.SF41.Value > 0
     local workingRight = working and BUV.Orientation and Wag.SF41.Value > 0 or not BUV.Orientation and Wag.SF40.Value > 0
     local reserveLeft = Wag:ReadTrainWire(38) > 0
     local reserveRight = Wag:ReadTrainWire(37) > 0
     local commandLeft = workingLeft and (BUV.OpenLeft or reserveLeft)
     local commandRight = workingRight and (BUV.OpenRight or reserveRight)
-    local commandClose = (BUV.CloseDoors or Wag:ReadTrainWire(39) > 0) and BUV.Power * Wag.SF39.Value > 0
+    local commandClose = (working and BUV.CloseDoors and BUV.Power * Wag.SF39.Value > 0 or Wag:ReadTrainWire(39) > 0)
     if commandClose then
         self.DoorLeft = false
         self.DoorRight = false
@@ -117,7 +126,7 @@ function TRAIN_SYSTEM:Think(dT)
         local i = left and idx or (9 - idx)
 
         local dir = left and self.LeftDoorDir or self.RightDoorDir
-        local speed = left and self.LeftDoorSpeed or self.RightDoorSpeed
+        local speed = (left and self.LeftDoorSpeed[i] or self.RightDoorSpeed[i]) - 0.15 * (i % 2 == 0 and BUV.WagIdx - 1 or BUV.TrainLen - BUV.WagIdx) / BUV.TrainLen
         local state = left and self.LeftDoorState or self.RightDoorState
         local commandOpen = zeroSpeed and (left and self.DoorLeft or not left and self.DoorRight)
         forceOpen = forceOpen or left and workingLeft and reserveLeft or right and workingRight and reserveRight
@@ -181,8 +190,8 @@ function TRAIN_SYSTEM:Think(dT)
 
         if block then
             if state[i] > 0 then
-                dir[i] = math.max(-1.5, dir[i] - dT / 2 * speed[i])
-                state[i] = math.Clamp(state[i] + (dir[i] / speed[i] * dT), 0, 1)
+                dir[i] = math.max(-1.5, dir[i] - dT / 2 * speed)
+                state[i] = math.Clamp(state[i] + (dir[i] / speed * dT), 0, 1)
             end
             if state[i] == 0 then dir[i] = 0 end
 
@@ -197,17 +206,17 @@ function TRAIN_SYSTEM:Think(dT)
             local push = Wag["DoorManualOpenPush" .. idx].Value > 0
             local pull = Wag["DoorManualOpenPull" .. idx].Value > 0
             if push then
-                dir[i] = math.Clamp(dir[i] + dT / 0.5 * speed[i], -0.5, 0.5)
+                dir[i] = math.Clamp(dir[i] + dT / 0.5 * speed, -0.5, 0.5)
             elseif pull or poweron and not zeroSpeed then
-                dir[i] = math.Clamp(dir[i] + dT / -0.5 * speed[i], -0.5, 0.5)
+                dir[i] = math.Clamp(dir[i] + dT / -0.5 * speed, -0.5, 0.5)
             elseif dir[i] ~= 0 then
                 if dir[i] > 0 then
-                    dir[i] = math.max(0, dir[i] - dT / 4 * speed[i])
+                    dir[i] = math.max(0, dir[i] - dT / 4 * speed)
                 else
-                    dir[i] = math.min(0, dir[i] + dT / 4 * speed[i])
+                    dir[i] = math.min(0, dir[i] + dT / 4 * speed)
                 end
             end
-            state[i] = math.Clamp(state[i] + (dir[i] / speed[i] * dT), 0, 1)
+            state[i] = math.Clamp(state[i] + (dir[i] / speed * dT), 0, 1)
             if state[i] == 0 or state[i] == 1 then dir[i] = 0 end
 
         elseif poweron then
@@ -234,10 +243,10 @@ function TRAIN_SYSTEM:Think(dT)
                 if not commandClose then self.AutoReverse[idx] = 3 end
                 if self.AutoReverse[idx] == 3 and commandClose then self.AutoReverse[idx] = 1 self.ManualReverse = true end
             else
-                dir[i] = math.Clamp(dir[i] + dT / (commandOpen and 2 * speed[i] or -speed[i]), -1.5, 1)
+                dir[i] = math.Clamp(dir[i] + dT / (commandOpen and 2 * speed or -speed), -1.5, 1)
             end
 
-            state[i] = math.Clamp(state[i] + (dir[i] / speed[i] * dT), 0, 1)
+            state[i] = math.Clamp(state[i] + (dir[i] / speed * dT), 0, 1)
             if state[i] == 0 or state[i] == 1 then dir[i] = 0 end
             if self.AutoReverse[idx] and self.AutoReverse[idx] >= 2 and state[i] == 0 then
                 self.AutoReverse[idx] = nil
@@ -264,6 +273,8 @@ function TRAIN_SYSTEM:Think(dT)
         elseif not self.Depart and announceState ~= "Closing" and readyToOpen and not forceOpen then
             announceState = "Open"
         end
+
+        if poweron and self.Starting and self.Starting - CurTime() < 0.3 then announceState = "Closing" end
 
         if self.AutoReverse[idx] then
             self.ReverseWork = true

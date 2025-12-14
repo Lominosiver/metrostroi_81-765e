@@ -376,7 +376,14 @@ function TRAIN_SYSTEM:Think(dT)
                 self.EmergencyValve = false
             end
 
+            if not self.EmergencyValveWasOpen then
+                Train:SetPackedRatio("EmerValveAutost", CurTime() + 1.65)
+                self.EmergencyValveWasOpen = true
+            end
+
             self.Leak = true
+        elseif self.EmergencyValveWasOpen then
+            self.EmergencyValveWasOpen = false
         end
 
         self.Train:SetPackedRatio("EmergencyValve_dPdT", -leak)

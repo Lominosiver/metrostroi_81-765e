@@ -19,7 +19,7 @@ local MAINMSG_RVFAIL = 4
 local ErrorsA = {
     {"RvErr", "Сбой РВ."},
     {"KmErr", "Сбой КМ."},
-    {"ArsFail", "Неисправность АРС. Переведи\nблокиратор в положение АТС%d"},
+    {"ArsFail",  "Неисправность АРС.", "Неисправность АРС. Переведи\nблокиратор в положение АТС%d"},
     {"BuvDiscon", "Нет связи с БУВ-С.", "Нет связи с БУВ-С на %d вагоне."},
     {"NoOrient", "Вагон не ориентирован.", "Вагон %d не ориентирован."},
     {"BrakeLine", "Низкое давление ТМ."},
@@ -1175,7 +1175,7 @@ if SERVER then
                     if Train.RV["KRO5-6"] == 0 then
                         local AllowDriveInput = BARS.Brake == 0 and BARS.Drive > 0
                         if AllowDriveInput or Train.KV765.TractiveSetting <= 0 then
-                            kvSetting = Train.KV765.TractiveSetting
+                            kvSetting = Train.PpzKm.Value > 0 and Train.KV765.TractiveSetting or self.ControllerState or kvSetting
                             overrideKv = false
                         end
 
@@ -1252,8 +1252,11 @@ if SERVER then
 
                     local driveInput = RvKro > 0 and (Train.KV765.Position > 0 or kvSetting > 0) or RvKrr > 0 and (Train.EmerX1.Value + Train.EmerX2.Value > 0)
                     self.DisableDrive = BARS.DisableDrive or self.Errors.DisableDrive and Train.KV765.Position > 0
-                    self.BARS1 = (BARS.StillBrake < 1) and BARS.ATS1 and (driveInput or speed > 0)
-                    self.BARS2 = (BARS.StillBrake < 1) and BARS.ATS2 and (driveInput or speed > 0)
+                    self.BARS1 = (BARS.StillBrake < 1) and BARS.ATS1 and (driveInput or speed > 0.5)
+                    self.BARS2 = (BARS.StillBrake < 1) and BARS.ATS2 and (driveInput or speed > 0.5)
+
+                    self:CheckError("ArsFail", BARS.Active < 1, BARS.ATS1 and 1 or BARS.ATS2 and 2 or nil)
+                    self:CheckError("KmErr", Train.KV765.Online < 1)
 
                     Train:SetNW2Bool("KB", BARS.KB)
                     Train:SetNW2Bool("VityazNextNoFq", BARS.NextNoFq)
@@ -1333,8 +1336,8 @@ if SERVER then
                         elseif self.State2 == 31 or self.State2 == 32 then
                             for i = 1, self.WagNum do
                                 local train = self.Trains[self.Trains[i]]
-                                Train:SetNW2Int("VityazBrakeStrength" .. i, math.abs(train.BrakeStrength or 0) * 10)
-                                Train:SetNW2Int("VityazDriveStrength" .. i, math.abs(train.DriveStrength or 0) * 10)
+                                Train:SetNW2Int("VityazBrakeStrength" .. i, math.abs(train.BrakeStrength or 0) * 100)
+                                Train:SetNW2Int("VityazDriveStrength" .. i, math.abs(train.DriveStrength or 0) * 100)
                                 Train:SetNW2Int("VityazPower" .. i, train.ElectricEnergyUsed)
                                 Train:SetNW2Int("VityazI" .. i, train.I)
                                 Train:SetNW2Int("VityazU" .. i, train.HVVoltage)
@@ -1439,6 +1442,7 @@ if SERVER then
                 end
 
                 Train:SetNW2Bool("AOState", self.AO)
+
                 if not self.InitTimer then
                     self:CommitError()
                 end
@@ -1575,8 +1579,11 @@ if SERVER then
         self:CState("BUPWork", self.State > 0)
         Train:SetNW2Int("VityazSelected", self.Selected)
         if self.State ~= 5 then self.LegacyScreen = false end
+        if Train.PpzUpi.Value < 0.5 then
+            Train:SetNW2Int("VityazState", 0)
+        end
         if Train.PpzAts2.Value + Train.PpzAts1.Value > 0 and Train:GetNW2Int("VityazState") == 5 or Train:GetNW2Int("VityazState") < 5 or not Power then
-            Train:SetNW2Int("VityazState", self.State)
+            Train:SetNW2Int("VityazState", self.State * Train.PpzUpi.Value)
             Train:SetNW2Int("VityazState2", self.State2)
             Train:SetNW2Bool("VityazLegacyScreen", self.LegacyScreen)
 
@@ -1639,8 +1646,9 @@ else
         if not drawThrottle and skipOther then return end
         if not skipOther then self.DrawTimer = CurTime() end
 
-        local state = self.Train:GetNW2Int("SF23F8") * self.Train:GetNW2Int("VityazState", 0)
-        if state ~= -2 then
+        local state = self.Train:GetNW2Int("VityazState", 0)
+        skipOther = skipOther or state == -2
+        if not skipOther then
             self.State = state
             self.State2 = self.Train:GetNW2Int("VityazState2", 0)
             self.MainScreen = self.State2 == 0
@@ -1654,7 +1662,7 @@ else
         if not skipOther and self:Ui765(dT) then
             self:VityazMonitor(self.Train)
         end
-        if drawThrottle then
+        if state ~= -2 and drawThrottle and self.NormalWork then
             self:DrawMainThrottle()
         end
         cam.End2D()

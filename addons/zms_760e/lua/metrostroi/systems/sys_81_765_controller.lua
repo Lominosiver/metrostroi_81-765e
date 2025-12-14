@@ -7,6 +7,7 @@ local SettingDelay = 0.2  -- Seconds
 local ZeroTimer = 1.6  -- Seconds
 
 function TRAIN_SYSTEM:Initialize()
+    self.VisualPosition = -3
     self.Position = -3
     self.TargetPosition = -3
 
@@ -108,39 +109,40 @@ function TRAIN_SYSTEM:TriggerInput(name, value)
 end
 
 function TRAIN_SYSTEM:Think(dT)
-    if self.ControllerTimer and CurTime() - self.ControllerTimer > 0.06 and self.Position ~= self.TargetPosition then
-        local previousPosition = self.Position
+    if self.ControllerTimer and CurTime() - self.ControllerTimer > 0.06 and self.VisualPosition ~= self.TargetPosition then
+        local previousPosition = self.VisualPosition
         self.ControllerTimer = CurTime()
-        if self.TargetPosition > self.Position then
-            self.Position = self.Position + 1
+        if self.TargetPosition > self.VisualPosition then
+            self.VisualPosition = self.VisualPosition + 1
         else
-            self.Position = self.Position - 1
+            self.VisualPosition = self.VisualPosition - 1
         end
 
-        self.Train:PlayOnce("KV_" .. previousPosition .. "_" .. self.Position, "cabin", 0.25, 0.95)
+        self.Train:PlayOnce("KV_" .. previousPosition .. "_" .. self.VisualPosition, "cabin", 0.25, 0.95)
     end
 
-    if self.Position == self.TargetPosition then self.ControllerTimer = nil end
+    if self.VisualPosition == self.TargetPosition then self.ControllerTimer = nil end
 
-    self.Train.Panel:TriggerInput("SetController", self.Position)
+    self.Train.Panel:TriggerInput("SetController", self.VisualPosition)
 
     -- Is controller online (can change tractive power)
     -- FIXME: how realistic is it?
     self.Online = self.Train.BUKP and self.Train.BUKP.State == 5 and self.Train:GetNW2Int("VityazMainMsg", 0) == 0 and 1 or 0
+    self.Online = self.Online * self.Train.PpzKm.Value
     self.IsOverriden = self.TractiveSettingOverride ~= nil
 
     if self.Online > 0 then
-        if self.Position == 0 and math.abs(self.TractiveSetting) >= 40 and not self.ZeroTimer then
+        if self.VisualPosition == 0 and math.abs(self.TractiveSetting) >= 40 and not self.ZeroTimer then
             self.ZeroTimer = CurTime()
-        elseif self.ZeroTimer and not (self.Position == 0 and math.abs(self.TractiveSetting) > 2) then
+        elseif self.ZeroTimer and not (self.VisualPosition == 0 and math.abs(self.TractiveSetting) > 2) then
             self.ZeroTimer = nil
-        elseif self.Position == 0 and self.ZeroTimer and math.abs(self.TractiveSetting) > 2 and CurTime() - self.ZeroTimer >= ZeroTimer then
+        elseif self.VisualPosition == 0 and self.ZeroTimer and math.abs(self.TractiveSetting) > 2 and CurTime() - self.ZeroTimer >= ZeroTimer then
             self.ZeroTimer = nil
             self.TractiveSetting = 0
             self.TargetTractiveSetting = 0
         end
 
-        if self.MotionBlocked and self.Position <= 0 then
+        if self.MotionBlocked and self.VisualPosition <= 0 then
             self.MotionBlocked = false
         end
 
@@ -149,7 +151,7 @@ function TRAIN_SYSTEM:Think(dT)
         end
 
         if self.TractiveSettingOverride == nil then
-            if self.Position == -3 then
+            if self.VisualPosition == -3 then
                 self.TargetTractiveSetting = -100
                 self.TractiveSetting = -100
 
@@ -157,21 +159,21 @@ function TRAIN_SYSTEM:Think(dT)
                 self.TargetTractiveSetting = 0
                 self.TractiveSetting = 0
 
-            elseif not self.MotionBlocked or self.Position <= 0 then
-                if self.Position > 0 and self.TractiveSetting < 0 or self.Position < 0 and self.TractiveSetting > 0 then
+            elseif not self.MotionBlocked or self.VisualPosition <= 0 then
+                if self.VisualPosition > 0 and self.TractiveSetting < 0 or self.VisualPosition < 0 and self.TractiveSetting > 0 then
                     self.TargetTractiveSetting = 0
                     self.TractiveSetting = 0
                 end
 
-                if self.TargetTractiveSetting == 0 and (self.Position > 0.5 or self.Position < -0.5) then
-                    self.TargetTractiveSetting = self.Position > 0 and 20 or -20
+                if self.TargetTractiveSetting == 0 and (self.VisualPosition > 0.5 or self.VisualPosition < -0.5) then
+                    self.TargetTractiveSetting = self.VisualPosition > 0 and 20 or -20
                     self.DelayBypass = CurTime() + SettingDelay + 0.05
                 end
 
                 if math.abs(self.TargetTractiveSetting) > 10 then
                     local target = math.abs(self.TargetTractiveSetting)
                     local current = math.abs(self.TractiveSetting)
-                    local direction = math.abs(self.Position)
+                    local direction = math.abs(self.VisualPosition)
                     direction = direction > 1.2 and 1 or direction < 0.8 and -1 or 0
 
                     local new = target + (math.abs(target - current) < 5 and 10 * direction or 0)
@@ -195,7 +197,7 @@ function TRAIN_SYSTEM:Think(dT)
                         end
                     end
 
-                    if new ~= target and (not self.DeltaDelay or direction < 0 or self.DelayBypass > CurTime() or CurTime() >= self.DeltaDelay) then
+                    if new ~= target and (not self.DeltaDelay or self.DelayBypass > CurTime() or CurTime() >= self.DeltaDelay) then
                         target = new
                         if target > 100 then target = 100
                         elseif target < 20 then target = 0 end
@@ -220,6 +222,7 @@ function TRAIN_SYSTEM:Think(dT)
             self.TractiveSetting = self.TractiveSettingOverride
         end
 
+        self.Position = self.VisualPosition
     else
         self.TractiveSetting = 0
         self.TargetTractiveSetting = 0
