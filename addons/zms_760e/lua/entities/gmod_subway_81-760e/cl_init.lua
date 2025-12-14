@@ -2394,7 +2394,7 @@ ENT.ButtonMap["Lighting"] = {
     }
 }
 
-ENT.ButtonMap["VityazButtons"] = {
+ENT.ButtonMap["MfduButtons"] = {
     pos = Vector(490.6, 11.6, -7.5),
     ang = Angle(0, -90, 72.59),
     width = 275,
@@ -2403,259 +2403,259 @@ ENT.ButtonMap["VityazButtons"] = {
     hideseat = 0.2,
     buttons = {
         -- {
-        --     ID = "VityazTVSet",
+        --     ID = "MfduTvSet",
         --     x = 10,
         --     y = 10,
         --     w = 15,
         --     h = 15,
         --     tooltip = "Витязь: Упр ТВ",
         --     model = {
-        --         var = "VityazTV",
+        --         var = "MfduTv",
         --         speed = 16,
         --     }
         -- },
         -- {
-        --     ID = "VityazTV1Set",
+        --     ID = "MfduTv1Set",
         --     x = 10,
         --     y = 28,
         --     w = 15,
         --     h = 15,
         --     tooltip = "Витязь: ТВ1",
         --     model = {
-        --         var = "VityazTV1",
+        --         var = "MfduTv1",
         --         speed = 16,
         --     }
         -- },
         -- {
-        --     ID = "VityazTV2Set",
+        --     ID = "MfduTv2Set",
         --     x = 10,
         --     y = 46,
         --     w = 15,
         --     h = 15,
         --     tooltip = "Витязь: ТВ2",
         --     model = {
-        --         var = "VityazTV2",
+        --         var = "MfduTv2",
         --         speed = 16,
         --     }
         -- },
         -- {
-        --     ID = "VityazPSet",
+        --     ID = "SkifPSet",
         --     x = 10,
         --     y = 64,
         --     w = 15,
         --     h = 15,
         --     tooltip = "Витязь: ",
         --     model = {
-        --         var = "VityazP",
+        --         var = "SkifP",
         --         speed = 16,
         --     }
         -- },
         {
-            ID = "Vityaz1Set",
+            ID = "Mfdu1Set",
             x = 3 * 0 + 15.5 * 0 + 50,
             y = 165,
             w = 15,
             h = 15,
             tooltip = "Витязь: 1",
             model = {
-                var = "Vityaz1",
+                var = "Mfdu1",
                 speed = 16,
             }
         },
         {
-            ID = "Vityaz2Set",
+            ID = "Mfdu2Set",
             x = 3 * 1 + 15.5 * 1 + 50,
             y = 165,
             w = 15,
             h = 15,
             tooltip = "Витязь: 2",
             model = {
-                var = "Vityaz2",
+                var = "Mfdu2",
                 speed = 16,
             }
         },
         {
-            ID = "Vityaz3Set",
+            ID = "Mfdu3Set",
             x = 3 * 2 + 15.5 * 2 + 50,
             y = 165,
             w = 15,
             h = 15,
             tooltip = "Витязь: 3",
             model = {
-                var = "Vityaz3",
+                var = "Mfdu3",
                 speed = 16,
             }
         },
         {
-            ID = "Vityaz4Set",
+            ID = "Mfdu4Set",
             x = 3 * 3 + 15.5 * 3 + 50,
             y = 165,
             w = 15,
             h = 15,
             tooltip = "Витязь: 4",
             model = {
-                var = "Vityaz4",
+                var = "Mfdu4",
                 speed = 16,
             }
         },
         {
-            ID = "Vityaz5Set",
+            ID = "Mfdu5Set",
             x = 3 * 4 + 15.5 * 4 + 50,
             y = 165,
             w = 15,
             h = 15,
             tooltip = "Витязь: 5",
             model = {
-                var = "Vityaz5",
+                var = "Mfdu5",
                 speed = 16,
             }
         },
         {
-            ID = "Vityaz6Set",
+            ID = "Mfdu6Set",
             x = 3 * 5 + 15.5 * 5 + 50,
             y = 165,
             w = 15,
             h = 15,
             tooltip = "Витязь: 6",
             model = {
-                var = "Vityaz6",
+                var = "Mfdu6",
                 speed = 16,
             }
         },
         {
-            ID = "Vityaz7Set",
+            ID = "Mfdu7Set",
             x = 3 * 6 + 15.5 * 6 + 50,
             y = 165,
             w = 15,
             h = 15,
             tooltip = "Витязь: 7",
             model = {
-                var = "Vityaz7",
+                var = "Mfdu7",
                 speed = 16,
             }
         },
         {
-            ID = "Vityaz8Set",
+            ID = "Mfdu8Set",
             x = 3 * 7 + 15.5 * 7 + 50,
             y = 165,
             w = 15,
             h = 15,
             tooltip = "Витязь: 8",
             model = {
-                var = "Vityaz8",
+                var = "Mfdu8",
                 speed = 16,
             }
         },
         {
-            ID = "Vityaz9Set",
+            ID = "Mfdu9Set",
             x = 3 * 8 + 15.5 * 8 + 50,
             y = 165,
             w = 15,
             h = 15,
             tooltip = "Витязь: 9",
             model = {
-                var = "Vityaz9",
+                var = "Mfdu9",
                 speed = 16,
             }
         },
         {
-            ID = "Vityaz0Set",
+            ID = "Mfdu0Set",
             x = 3 * 9 + 15.5 * 9 + 50,
             y = 165,
             w = 15,
             h = 15,
             tooltip = "Витязь: 0",
             model = {
-                var = "Vityaz0",
+                var = "Mfdu0",
                 speed = 16,
             }
         },
         {
-            ID = "VityazF5Set",
+            ID = "MfduF5Set",
             x = 255,
             y = 80,
             w = 20,
             h = 20,
             tooltip = "Витязь: Сброс",
             model = {
-                var = "VityazF5",
+                var = "MfduF5",
                 speed = 16,
             }
         },
         {
-            ID = "VityazF6Set",
+            ID = "MfduF6Set",
             x = 255,
             y = 45,
             w = 20,
             h = 20,
             tooltip = "Витязь: Вверх",
             model = {
-                var = "VityazF6",
+                var = "MfduF6",
                 speed = 16,
             }
         },
         {
-            ID = "VityazF7Set",
+            ID = "MfduF7Set",
             x = 255,
             y = 65,
             w = 20,
             h = 20,
             tooltip = "Витязь: Вниз",
             model = {
-                var = "VityazF7",
+                var = "MfduF7",
                 speed = 16,
             }
         },
         {
-            ID = "VityazF8Set",
+            ID = "MfduF8Set",
             x = 255,
             y = 120,
             w = 20,
             h = 20,
             tooltip = "Витязь: Ввод",
             model = {
-                var = "VityazF8",
+                var = "MfduF8",
                 speed = 16,
             }
         },
         {
-            ID = "VityazF9Set",
+            ID = "MfduF9Set",
             x = 255,
             y = 100,
             w = 20,
             h = 20,
             tooltip = "Витязь: Выбор",
             model = {
-                var = "VityazF9",
+                var = "MfduF9",
                 speed = 16,
             }
         },
         {
-            ID = "VityazHelpSet",
+            ID = "MfduHelpSet",
             x = 255,
             y = 25,
             w = 20,
             h = 20,
             tooltip = "Витязь: ?",
             model = {
-                var = "VityazHelp",
+                var = "MfduHelp",
                 speed = 16,
             }
         },
         {
-            ID = "VityazKontrSet",
+            ID = "MfduKontrSet",
             x = 255,
             y = 5,
             w = 20,
             h = 20,
             tooltip = "Витязь: КОНТР",
             model = {
-                var = "VityazKontr",
+                var = "MfduKontr",
                 speed = 16,
             }
         },
         {
-            ID = "!VityazLamp",
+            ID = "!MfduLamp",
             x = 27,
             y = 176,
             radius = 8,
@@ -2663,7 +2663,7 @@ ENT.ButtonMap["VityazButtons"] = {
                 lamp = {
                     model = "models/metrostroi_train/81-760/81_760_led_small_mfdu.mdl",
                     ang = Angle(-90, 10, 0),
-                    var = "VityazLamp",
+                    var = "MfduLamp",
                     z = -9,
                     color = Color(255, 255, 255) --Color(175,250,20)
                 },
@@ -4398,14 +4398,14 @@ ENT.Lights = {
     },
 }
 
-ENT.ButtonMap["Vityaz"] = {
+ENT.ButtonMap["MFDU"] = {
     pos = Vector(490.89, 8.8, -7.6),
     ang = Angle(0, -90.01, 72.585),
     width = 1024,
     height = 1024,
     scale = 0.01,
     hideseat = 0.2,
-    system = "Vityaz",
+    system = "MFDU",
     hide = 0.5,
 }
 
@@ -4626,7 +4626,7 @@ ENT.PakPositions = {
 
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
-    self.Vityaz = self:CreateRT("760Vityaz", 1024, 1024)
+    self.MFDU = self:CreateRT("765MFDU", 1024, 1024)
     self.BNTScreen = self:CreateRT("760BNT", 1024, 1024)
     -- self.Speedometer = self:CreateRT("760Speedometer", 1024, 1024)
     -- self.BMCIS = self:CreateRT("760BMCIS", 1024, 1024)
@@ -5812,8 +5812,8 @@ function ENT:Draw()
 end
 
 function ENT:DrawPost(special)
-    self.RTMaterial:SetTexture("$basetexture", self.Vityaz)
-    self:DrawOnPanel("Vityaz", function(...)
+    self.RTMaterial:SetTexture("$basetexture", self.MFDU)
+    self:DrawOnPanel("MFDU", function(...)
         surface.SetMaterial(self.RTMaterial)
         surface.SetDrawColor(255, 255, 255)
         surface.DrawTexturedRectRotated(518 - 18, 520 - 80, 1024 - 20, 1024 - 160, 0)

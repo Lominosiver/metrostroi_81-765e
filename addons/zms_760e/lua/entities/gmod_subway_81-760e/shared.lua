@@ -984,7 +984,7 @@ ENT.Cameras = {
     {Vector(445.5 + 11, 52, -1), Angle(0, 90, 0), "Train.760.CameraASNPIGLA"},
     {Vector(416.8 + 63, 45, -7), Angle(25, 20, 0), "Train.760.CameraCams"},
     {Vector(425.8 + 54, 25, -7), Angle(20, 0, 0), "БУ-ИК (Блок упр. Информац. Компл.)"},
-    {Vector(425.8 + 57, 4, -10), Angle(20, 0, 0), "Train.760.CameraVityaz"},
+    {Vector(425.8 + 57, 4, -10), Angle(20, 0, 0), "Train.760.CameraSkif"},
     {Vector(427.5 + 40, -40, -25), Angle(55, -70, 0), "Train.760.CameraKRMH"},
     {Vector(407, 18, 9), Angle(0, 180, 0), "Train.760.CameraPVZ"},
     {Vector(520, 0, 15), Angle(60, 0, 0), "Автосцепка"},
@@ -1253,7 +1253,7 @@ ENT.Spawner = {
                     if ent.SA1 then
                         timer.Simple(first and 2 or 1, function()
                             if not IsValid(ent) then return end
-                            ent:SetNW2Int("VityazWagNum", ent.BUKP.WagNum)
+                            ent:SetNW2Int("SkifWagNum", ent.BUKP.WagNum)
                             for i = 1, ent.BUKP.WagNum do
                                 ent:CANWrite("BUKP", ent:GetWagonNumber(), "BUV", ent.BUKP.Trains[i], "Orientate", i % 2 > 0)
                             end

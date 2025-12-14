@@ -10,10 +10,9 @@ local MainMsg = {
     "Сбой РВ"
 }
 
-function TRAIN_SYSTEM:Ui765(dT)
-    local mainMsg = self.Train:GetNW2Int("VityazMainMsg", 0)
-    local rv = self.Train:GetNW2Int("VityazRV", 0)
-    self.dT = dT
+function TRAIN_SYSTEM:SkifMonitor()
+    local mainMsg = self.Train:GetNW2Int("SkifMainMsg", 0)
+    local rv = self.Train:GetNW2Int("SkifRV", 0)
     if self.MainMsg and self.MainMsg > 0 and mainMsg == 0 then
         if not self.ClientInitTimer then
             self.ClientInitTimer = CurTime() + math.Rand(0.3, 1.4)
@@ -27,19 +26,19 @@ function TRAIN_SYSTEM:Ui765(dT)
         self.MainMsg = mainMsg
     end
 
-    self.NormalWork = self.MainMsg == 0 and self.State == 5 and not self.LegacyScreen
+    self.NormalWork = self.MainMsg == 0 and self.State == 5
     if self.NormalWork then
         local Wag = self.Train
 
         self.AlsArs = Wag:GetNW2Bool("PmvFreq")
         local ao = Wag:GetNW2Bool("AOState", false)
-        local vigilance = Wag:GetNW2Bool("VityazKB", false)
-        local speedNextNofq = Wag:GetNW2Bool("VityazNextNoFq", false)
-        local speedNext = self.AlsArs and (speedNextNofq and "0" or Wag:GetNW2Int("VityazSpeedLimitNext", "0")) or "---"
-        local speedLimit = Wag:GetNW2Int("VityazSpeedLimit", 0)
+        local vigilance = Wag:GetNW2Bool("SkifKB", false)
+        local speedNextNofq = Wag:GetNW2Bool("SkifNextNoFq", false)
+        local speedNext = self.AlsArs and (speedNextNofq and "0" or Wag:GetNW2Int("SkifSpeedLimitNext", "0")) or "---"
+        local speedLimit = Wag:GetNW2Int("SkifSpeedLimit", 0)
         self.SpeedNext = isnumber(speedNext) and speedNext < 30 and (speedLimit > 30 and speedNextNofq and "ОЧ" or "0") or tostring(speedNext)
         self.SpeedLimit = ao and "АО" or speedLimit == 19 and (not vigilance and "ОЧ" or "20") or speedLimit < 30 and not vigilance and "0" or tostring(speedLimit)
-        self.Speed = Wag:GetNW2Int("VityazSpeed", 0)
+        self.Speed = Wag:GetNW2Int("SkifSpeed", 0)
 
         self.Page = 0
         self.SubPage = 1
@@ -81,8 +80,17 @@ function TRAIN_SYSTEM:Ui765(dT)
             self:DrawMain(self.Train)
         end
 
-    elseif self.State == 1 and rv ~= 0 then
-        self:DrawIdle("Идентификация", true)
+    elseif rv ~= 0 then
+
+        if self.State == 1 then
+            self:DrawIdle("Идентификация", true)
+        elseif self.State == 2 then
+            self:DrawIdle("Режим депо", true)
+        elseif self.State == 4 then
+            self:DrawIdle("Проверка кнопок", true)
+        else
+            self:DrawIdle("Вагоны не идентифицированы", true)
+        end
 
     elseif self.MainMsg > 0 or self.State >= 1 and self.State < 5 and rv == 0 then
         local msg = MainMsg[self.MainMsg > 0 and self.MainMsg or 1]
@@ -91,8 +99,6 @@ function TRAIN_SYSTEM:Ui765(dT)
         else
             self:DrawIdle(msg)
         end
-    else
-        return true
     end
 end
 
@@ -400,7 +406,7 @@ function TRAIN_SYSTEM:DrawIdle(msg, passwd)
     surface.DrawTexturedRect(scrW - 280, scrOffsetY + scrH - 245, 240, 240)
 
     if passwd then
-        passwd = self.Train:GetNW2String("VityazPass", "")
+        passwd = self.Train:GetNW2String("SkifPass", "")
         local w = draw.SimpleText(passwd, "Mfdu765.IdleMessage", scrW / 2, scrOffsetY + 300, colorBlue, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
         if CurTime() % 1.0 > 0.5 then
             draw.SimpleText("|", "Mfdu765.IdleMessage", scrW / 2 + w / 2 + 4, scrOffsetY + 294, colorBlue, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
@@ -460,7 +466,7 @@ function TRAIN_SYSTEM:DrawThrottle(throttle, x0, y0, w)
 end
 
 function TRAIN_SYSTEM:DrawTopBar(Wag, title)
-    local line = Wag:GetNW2String("VityazLineName", "---")
+    local line = Wag:GetNW2String("SkifLineName", "---")
     local line1, line2
     if #line >= 28 and #string.Replace(line, "-", "") > 0 then
         local lines = string.Split(line, "-")
@@ -485,9 +491,9 @@ function TRAIN_SYSTEM:DrawTopBar(Wag, title)
 
     draw.SimpleText(title, "Mfdu765.TopBar", scrW / 2, y, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
-    local timeStr = Wag:GetNW2String("VityazTime", "------")
+    local timeStr = Wag:GetNW2String("SkifTime", "------")
     local time = string.format("%s:%s:%s", timeStr:sub(1, 2), timeStr:sub(3, 4), timeStr:sub(5, 6))
-    local dateStr = Wag:GetNW2String("VityazDate")
+    local dateStr = Wag:GetNW2String("SkifDate")
     local date = string.format("%s.%s.%s", dateStr:sub(1, 2), dateStr:sub(3, 4), dateStr:sub(5, 8))
     draw.SimpleText(date, "Mfdu765.TopBarSmall", scrW - x, y - 12, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     draw.SimpleText(time, "Mfdu765.TopBarSmall", scrW - x, y + 12, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -531,39 +537,39 @@ local sizeStatusIconsGap = (sizeMessageW - sizeStatusIcon * 10) / 9
 local sizeMessageBorder = 6
 local sizeStatusVoltageMargin = 32
 local voltageList = {
-    {"VityazLvMin", "бс min"},
-    {"VityazLvMax", "бс max"},
-    {"VityazHvMin", "кс min"},
-    {"VityazHvMax", "кс max"},
+    {"SkifLvMin", "бс min"},
+    {"SkifLvMax", "бс max"},
+    {"SkifHvMin", "кс min"},
+    {"SkifHvMax", "кс max"},
 }
 local pneumoList = {
-    {"VityazPNM", "нм"},
-    {"VityazPTM", "тм"},
-    {"VityazPMin", "тц min"},
-    {"VityazPMax", "тц max"},
+    {"SkifPNM", "нм"},
+    {"SkifPTM", "тм"},
+    {"SkifPMin", "тц min"},
+    {"SkifPMax", "тц max"},
 }
 local rightBarList = {
-    {"VityazARS1", "АРС1"},
-    {"VityazARS2", "АРС2"},
-    {"VityazBvAll", "БВ"},
-    {"VityazBTB", "БТБ", true},
-    {"VityazKTR", "КТР"},
-    {"VityazALS", "АЛС"},
-    {"VityazBOSD", "БОСД"},
+    {"SkifARS1", "АРС1"},
+    {"SkifARS2", "АРС2"},
+    {"SkifBvAll", "БВ"},
+    {"SkifBTB", "БТБ", true},
+    {"SkifKTR", "КТР"},
+    {"SkifALS", "АЛС"},
+    {"SkifBOSD", "БОСД"},
 }
 local statusGetters = {
     -- ВО
-    function(self, Wag) return Wag:GetNW2Bool("VityazVoGood", false) and colorMain or colorRed end,
+    function(self, Wag) return Wag:GetNW2Bool("SkifVoGood", false) and colorMain or colorRed end,
     -- Двери
-    function(self, Wag) return Wag:GetNW2Int("VityazDoorsAll", 0) == 1 and colorGreen or Wag:GetNW2Int("VityazDoorsAll", 0) == 2 and colorYellow or colorRed end,
+    function(self, Wag) return Wag:GetNW2Int("SkifDoorsAll", 0) == 1 and colorGreen or Wag:GetNW2Int("SkifDoorsAll", 0) == 2 and colorYellow or colorRed end,
     -- Тяг.привод
     function(self, Wag) return colorMain end,
     -- Напряжение
-    function(self, Wag) return Wag:GetNW2Int("VityazHvAll", 0) == 1 and colorGreen or Wag:GetNW2Int("VityazHvAll", 0) == 2 and colorYellow or colorRed end,
+    function(self, Wag) return Wag:GetNW2Int("SkifHvAll", 0) == 1 and colorGreen or Wag:GetNW2Int("SkifHvAll", 0) == 2 and colorYellow or colorRed end,
     -- Пневматика
     function(self, Wag) return colorMain end,
     -- Кондиционер
-    function(self, Wag) return Wag:GetNW2Bool("VityazCondAny", false) and (Wag:GetNW2Bool("VityazCond", false) and colorYellow or colorBlue) or colorMain end,
+    function(self, Wag) return Wag:GetNW2Bool("SkifCondAny", false) and (Wag:GetNW2Bool("SkifCond", false) and colorYellow or colorBlue) or colorMain end,
     -- Автоведение
     function(self, Wag) return colorMain end,
     -- Сообщения
@@ -576,27 +582,27 @@ local statusGetters = {
     -- Противоюз
     function(self, Wag) return colorMainDisabled end,
     -- Ст.тормоз
-    function(self, Wag) return Wag:GetNW2Bool("VityazParkEnabled", false) and colorGreen or colorMainDisabled end,
+    function(self, Wag) return Wag:GetNW2Bool("SkifParkEnabled", false) and colorGreen or colorMainDisabled end,
     -- Пневмотормоз
-    function(self, Wag) return Wag:GetNW2Bool("VityazPtApplied", false) and colorYellow or colorMainDisabled end,
+    function(self, Wag) return Wag:GetNW2Bool("SkifPtApplied", false) and colorYellow or colorMainDisabled end,
     -- Пт вкл в хв
-    function(self, Wag) return Wag:GetNW2Bool("VityazPtAppliedRear", false) and colorYellow or colorMainDisabled end,
+    function(self, Wag) return Wag:GetNW2Bool("SkifPtAppliedRear", false) and colorYellow or colorMainDisabled end,
     -- Экст.т.
-    function(self, Wag) return Wag:GetNW2Bool("VityazEmerActive", false) and colorRed or colorMainDisabled end,
+    function(self, Wag) return Wag:GetNW2Bool("SkifEmerActive", false) and colorRed or colorMainDisabled end,
     -- Автоведение
     function(self, Wag) return colorMainDisabled end,
     -- Пр.Ост.
     function(self, Wag)
-        if not Wag:GetNW2Bool("VityazProst", false) then return colorMainDisabled end
-        local metka = Wag:GetNW2Bool("VityazProstMetka", false)
-        local vityazs = Wag:GetNW2Int("VityazS", -1000) / 100
+        if not Wag:GetNW2Bool("SkifProst", false) then return colorMainDisabled end
+        local metka = Wag:GetNW2Bool("SkifProstMetka", false)
+        local vityazs = Wag:GetNW2Int("SkifS", -1000) / 100
         local prostact = vityazs ~= -1000 and metka and vityazs > 200
-        return Wag:GetNW2Bool("VityazProstActive", false) and (CurTime() % 1 < 0.4 and colorGreen or colorMain) or prostact and colorGreen or colorMain
+        return Wag:GetNW2Bool("SkifProstActive", false) and (CurTime() % 1 < 0.4 and colorGreen or colorMain) or prostact and colorGreen or colorMain
     end,
     -- Кос
-    function(self, Wag) return not Wag:GetNW2Bool("VityazKos", false) and colorMainDisabled or Wag:GetNW2Bool("VityazProstKos", false) and Wag:GetNW2Bool("VityazProstMetka", false) and colorGreen or colorMain end,
+    function(self, Wag) return not Wag:GetNW2Bool("SkifKos", false) and colorMainDisabled or Wag:GetNW2Bool("SkifProstKos", false) and Wag:GetNW2Bool("SkifProstMetka", false) and colorGreen or colorMain end,
     -- КРР
-    function(self, Wag) return Wag:GetNW2Bool("VityazKRR", false) and colorYellow or colorMainDisabled end,
+    function(self, Wag) return Wag:GetNW2Bool("SkifKRR", false) and colorYellow or colorMainDisabled end,
     -- Подъем
     function(self, Wag) return Wag:GetNW2Bool("AccelRateLamp", false) and colorGreen or colorMainDisabled end,
 }
@@ -604,10 +610,10 @@ local errorsCat = {
     {"А", colorRed}, {"Б", colorYellow}, {"В", colorBlue}
 }
 function TRAIN_SYSTEM:DrawStatus(Wag)
-    local errCat = Wag:GetNW2Int("VityazErrorCat", 0)
+    local errCat = Wag:GetNW2Int("SkifErrorCat", 0)
     if errorsCat[errCat] then
         local cat, color = unpack(errorsCat[errCat])
-        local msg = string.Split(Wag:GetNW2String("VityazErrorStr", ""), "\n")
+        local msg = string.Split(Wag:GetNW2String("SkifErrorStr", ""), "\n")
         local x, y = sizeStatusSide + sizeBorder, scrOffsetY + scrH - sizeFooter - sizeMessageH - sizeMainMargin
         drawBox(x, y, sizeMessageW, sizeMessageH, color, nil, sizeMessageBorder)
         if #msg > 1 then
@@ -687,7 +693,7 @@ function TRAIN_SYSTEM:DrawStatus(Wag)
         if idx > 10 then break end
         local x, y = (idx - 1) * (sizeButtonW + sizeButtonGap), scrOffsetY + scrH - sizeFooter
         local getter = statusGetters[idx]
-        icon = idx == 6 and icon[Wag:GetNW2Bool("VityazCond", false) and 2 or 1] or icon[1]
+        icon = idx == 6 and icon[Wag:GetNW2Bool("SkifCond", false) and 2 or 1] or icon[1]
         surface.SetDrawColor(getter and getter(self, Wag) or colorMainDisabled)
         surface.SetMaterial(icon)
         surface.DrawTexturedRect(x + sizeButtonBorder, y + sizeButtonBorder, sizeButtonW - sizeButtonBorder * 2, sizeFooter - sizeButtonBorder * 2)
@@ -705,8 +711,8 @@ end
 
 function TRAIN_SYSTEM:DrawMainThrottle()
     local Wag = self.Train
-    local thr = Wag:GetNW2Int("VityazThrottle", 0)
-    local override = Wag:GetNW2Bool("VityazOverrideKv")
+    local thr = Wag:GetNW2Int("SkifThrottle", 0)
+    local override = Wag:GetNW2Bool("SkifOverrideKv")
     if override or override ~= self.LastOverride or not self.LastThrUpd or thr * (self.Throttle or 0) < 0 then
         self.Throttle = thr
     else
@@ -756,8 +762,8 @@ function TRAIN_SYSTEM:DrawGrid(x, y, w, h, vertical, cellGap, labels, labelFont,
     if not istable(wagNumbers) then
         local ind = not wagNumbers
         wagNumbers = {}
-        for idx = 1, self.Train:GetNW2Int("VityazWagNum", 0) do
-            table.insert(wagNumbers, tostring(ind and idx or self.Train:GetNW2Int("VityazWagNum" .. idx, "?????")))
+        for idx = 1, self.Train:GetNW2Int("SkifWagNum", 0) do
+            table.insert(wagNumbers, tostring(ind and idx or self.Train:GetNW2Int("SkifWagNum" .. idx, "?????")))
         end
     end
 
@@ -845,24 +851,24 @@ function TRAIN_SYSTEM:DrawDoorsPage(Wag, x, y, w, h)
         sizeMainMargin, sizeMainMargin / 2,
         function(wagIdx, doorIdx)
             local color
-            local isHead = Wag:GetNW2Bool("VityazHasCabin" .. wagIdx, false)
-            local buvDisabled = not Wag:GetNW2Bool("VityazBUVState" .. wagIdx, false)
-            local pvu = not buvDisabled and Wag:GetNW2Bool("VityazPVU" .. wagIdx .. "2", false)
+            local isHead = Wag:GetNW2Bool("SkifHasCabin" .. wagIdx, false)
+            local buvDisabled = not Wag:GetNW2Bool("SkifBUVState" .. wagIdx, false)
+            local pvu = not buvDisabled and Wag:GetNW2Bool("SkifPVU" .. wagIdx .. "2", false)
             local addr = false
             if doorIdx == 1 then
-                color = isHead and Wag:GetNW2Bool("VityazDoorML" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
+                color = isHead and Wag:GetNW2Bool("SkifDoorML" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
                 pvu = false
             elseif doorIdx == 11 then
-                color = isHead and Wag:GetNW2Bool("VityazDoorMR" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
+                color = isHead and Wag:GetNW2Bool("SkifDoorMR" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
                 pvu = false
             elseif doorIdx == 6 then
-                color = isHead and Wag:GetNW2Bool("VityazDoorT" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
+                color = isHead and Wag:GetNW2Bool("SkifDoorT" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
                 pvu = false
             else
                 local left = doorIdx < 6
                 local door = string.format("%d%s%d", left and doorIdx - 1 or 11 - doorIdx, left and "L" or "R", wagIdx)
-                addr = Wag:GetNW2Bool("VityazAddressDoors" .. (left and "L" or "R") .. wagIdx, false)
-                color = not buvDisabled and Wag:GetNW2Bool("VityazDoor" .. door, false) and colorGreen or Wag:GetNW2Bool("VityazDoorReverse" .. door, false) and colorYellow or colorRed
+                addr = Wag:GetNW2Bool("SkifAddressDoors" .. (left and "L" or "R") .. wagIdx, false)
+                color = not buvDisabled and Wag:GetNW2Bool("SkifDoor" .. door, false) and colorGreen or Wag:GetNW2Bool("SkifDoorReverse" .. door, false) and colorYellow or colorRed
             end
             return color, color and (buvDisabled and "X" or pvu and "Р" or addr and "И" or nil)
         end
@@ -874,8 +880,8 @@ function TRAIN_SYSTEM:DrawDoorsPage(Wag, x, y, w, h)
     local blRightPos = surface.GetTextSize("Правые") / 2 + rightTextPos + 32
     draw.SimpleText("Левые", "Mfdu765.DoorsSide", leftTextPos, sideTextPos, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     draw.SimpleText("Правые", "Mfdu765.DoorsSide", rightTextPos, sideTextPos, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    draw.RoundedBox(sizeCellBorderRadius, blLeftPos, sideTextPos - sizeDoorBlock / 2, sizeDoorBlock, sizeDoorBlock, Wag:GetNW2Bool("VityazDoorBlockL", false) and colorGreen or colorRed)
-    draw.RoundedBox(sizeCellBorderRadius, blRightPos, sideTextPos - sizeDoorBlock / 2, sizeDoorBlock, sizeDoorBlock, Wag:GetNW2Bool("VityazDoorBlockR", false) and colorGreen or colorRed)
+    draw.RoundedBox(sizeCellBorderRadius, blLeftPos, sideTextPos - sizeDoorBlock / 2, sizeDoorBlock, sizeDoorBlock, Wag:GetNW2Bool("SkifDoorBlockL", false) and colorGreen or colorRed)
+    draw.RoundedBox(sizeCellBorderRadius, blRightPos, sideTextPos - sizeDoorBlock / 2, sizeDoorBlock, sizeDoorBlock, Wag:GetNW2Bool("SkifDoorBlockR", false) and colorGreen or colorRed)
     draw.SimpleText("Б", "Mfdu765.CellText", blLeftPos + sizeDoorBlock / 2, sideTextPos, colorBlack, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     draw.SimpleText("Б", "Mfdu765.CellText", blRightPos + sizeDoorBlock / 2, sideTextPos, colorBlack, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
@@ -884,7 +890,7 @@ local asyncLabels = {
     "СБОР СХЕМЫ", "БВ", "Отказ ИНВ", "Защита ИНВ", "Перегрев ИНВ", "Отказ ЭТ", "Неиспр. ВТР"
 }
 local asyncStates = {
-    "VityazScheme", "VityazBV"
+    "SkifScheme", "SkifBV"
 }
 function TRAIN_SYSTEM:DrawAsyncPage(Wag, x, y, w, h)
     local gw, gh = w * 0.35 - sizeBorder * 2, h - 64 - sizeBorder * 6
@@ -895,13 +901,13 @@ function TRAIN_SYSTEM:DrawAsyncPage(Wag, x, y, w, h)
         false, "Mfdu765.AsyncLabels",
         sizeMainMargin, sizeMainMargin / 2,
         function(wagIdx, idx)
-            if not Wag:GetNW2Bool("VityazAsyncInverter" .. wagIdx, false) then return end
+            if not Wag:GetNW2Bool("SkifAsyncInverter" .. wagIdx, false) then return end
             local k = asyncStates[idx]
             local text = nil
             if idx == 2 then
-                if not Wag:GetNW2Bool("VityazBattery" .. wagIdx, false) or not Wag:GetNW2Bool("VityazBUVState" .. wagIdx, false) or not Wag:GetNW2Bool("VityazSF" .. wagIdx .. "52", false) then
+                if not Wag:GetNW2Bool("SkifBattery" .. wagIdx, false) or not Wag:GetNW2Bool("SkifBUVState" .. wagIdx, false) or not Wag:GetNW2Bool("SkifSF" .. wagIdx .. "52", false) then
                     text = "X"
-                elseif Wag:GetNW2Bool("VityazPVU" .. wagIdx .. "1", false) then
+                elseif Wag:GetNW2Bool("SkifPVU" .. wagIdx .. "1", false) then
                     text = "Р"
                 end
             end
@@ -911,15 +917,15 @@ function TRAIN_SYSTEM:DrawAsyncPage(Wag, x, y, w, h)
 
     local barW = sizeThrottleBarW * 0.9
     local xb, yb = x + sizeThrottleMargin, scrOffsetY + sizeTopBar + sizeMainMargin + sizeThrottleLabelsH
-    for idx = 1, Wag:GetNW2Int("VityazWagNum", 0) do
+    for idx = 1, Wag:GetNW2Int("SkifWagNum", 0) do
         drawBox(xb, yb, barW, sizeThrottleBarH, colorMain, colorMainDarker, sizeBorder)
-        local thr = - Wag:GetNW2Int("VityazDriveStrength" .. idx, 0)
+        local thr = - Wag:GetNW2Int("SkifDriveStrength" .. idx, 0)
         if thr == 0 then
-            thr = Wag:GetNW2Int("VityazBrakeStrength" .. idx, 0)
+            thr = Wag:GetNW2Int("SkifBrakeStrength" .. idx, 0)
         end
         self:DrawThrottle(math.Clamp(thr * 100 / 150, -100, 100), xb, yb, barW)
 
-        local color = not Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false) and colorMainDarker or Wag:GetNW2Bool("VityazHVGood" .. idx, false) and colorGreen or colorRed
+        local color = not Wag:GetNW2Bool("SkifAsyncInverter" .. idx, false) and colorMainDarker or Wag:GetNW2Bool("SkifHVGood" .. idx, false) and colorGreen or colorRed
         draw.RoundedBox(
             sizeCellBorderRadius, xb + sizeBorder, yb + sizeThrottleBarH + sizeBorder,
             barW - sizeBorder * 2, barW - sizeBorder, color
@@ -992,44 +998,44 @@ function TRAIN_SYSTEM:DrawElectric(Wag, x, y, w, h)
             return elRowIndex[row]
         else
             local idx = (col - 1)
-            if idx > Wag:GetNW2Int("VityazWagNum", 0) then return end
-            local async = Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false)
+            if idx > Wag:GetNW2Int("SkifWagNum", 0) then return end
+            local async = Wag:GetNW2Bool("SkifAsyncInverter" .. idx, false)
             if row == 1 then
-                return Wag:GetNW2Int("VityazWagNum" .. idx, "?????")
+                return Wag:GetNW2Int("SkifWagNum" .. idx, "?????")
             -- pizdec
             elseif row == 2 then
-                local val = Wag:GetNW2Int("VityazU" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifU" .. idx, 0) / 10
                 if not async then
                     return nil, nil, val >= 550 and colorGreen or colorRed
                 else
                     return val, val >= 550 and colorGreen or colorRed
                 end
             elseif row == 3 then
-                local val = Wag:GetNW2Int("VityazUBS" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifUBS" .. idx, 0) / 10
                 return val, val >= 62 and colorGreen or colorRed
             elseif row == 4 then
-                local hv = Wag:GetNW2Int("VityazU" .. idx, 0) / 10
-                local val = Lerp(math.Clamp((hv - 550) / (720 - 550), 0, 1), 0, Wag:GetNW2Int("VityazUBS" .. idx, 0) / 10) or 0
+                local hv = Wag:GetNW2Int("SkifU" .. idx, 0) / 10
+                local val = Lerp(math.Clamp((hv - 550) / (720 - 550), 0, 1), 0, Wag:GetNW2Int("SkifUBS" .. idx, 0) / 10) or 0
                 return math.Round(val), val >= 62 and colorGreen or colorRed
             elseif row == 5 then
                 if not async then return end
-                local val = Wag:GetNW2Int("VityazIMK" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifIMK" .. idx, 0) / 10
                 return val, colorGreen
             elseif row == 6 then
                 if not async then return end
-                local val = Wag:GetNW2Int("VityazI" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifI" .. idx, 0) / 10
                 return val, colorGreen
             elseif row == 7 then
                 return 0, colorGreen
             elseif row == 8 then
-                local val = Wag:GetNW2Int("VityazIVO" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifIVO" .. idx, 0) / 10
                 return val, colorGreen
             elseif row == 9 then
-                return Wag:GetNW2Int("VityazPower" .. idx, 0), colorGreen
+                return Wag:GetNW2Int("SkifPower" .. idx, 0), colorGreen
             elseif row == 10 then
-                return Wag:GetNW2Int("VityazDissipated" .. idx, 0), colorGreen
+                return Wag:GetNW2Int("SkifDissipated" .. idx, 0), colorGreen
             elseif row == 11 then
-                return Wag:GetNW2Int("VityazPower" .. idx, 0) - Wag:GetNW2Int("VityazDissipated" .. idx, 0), colorGreen
+                return Wag:GetNW2Int("SkifPower" .. idx, 0) - Wag:GetNW2Int("SkifDissipated" .. idx, 0), colorGreen
             end
         end
     end)
@@ -1047,57 +1053,57 @@ function TRAIN_SYSTEM:DrawPneumatic(Wag, x, y, w, h)
             return pnRowIndex[row]
         else
             local idx = (col - 1)
-            if idx > Wag:GetNW2Int("VityazWagNum", 0) then return end
+            if idx > Wag:GetNW2Int("SkifWagNum", 0) then return end
             if row == 1 then
-                return Wag:GetNW2Int("VityazWagNum" .. idx, "?????")
+                return Wag:GetNW2Int("SkifWagNum" .. idx, "?????")
             -- YandereDev, ty cho?
             elseif row == 2 then
-                local val = Wag:GetNW2Bool("VityazEmerActive" .. idx, false)
+                local val = Wag:GetNW2Bool("SkifEmerActive" .. idx, false)
                 return nil, nil, val and colorGreen or colorRed
             elseif row == 3 then
-                local val = Wag:GetNW2Bool("VityazPTApply" .. idx, false)
+                local val = Wag:GetNW2Bool("SkifPTApply" .. idx, false)
                 return nil, nil, val and colorGreen or colorRed
             elseif row == 4 then
-                local val = Wag:GetNW2Bool("VityazPBApply" .. idx, false)
+                local val = Wag:GetNW2Bool("SkifPBApply" .. idx, false)
                 return nil, nil, val and colorGreen or colorRed
             elseif row == 5 then
-                local val = Wag:GetNW2Bool("VityazDPBT" .. idx, false)
+                local val = Wag:GetNW2Bool("SkifDPBT" .. idx, false)
                 return nil, nil, val and colorGreen or colorRed
             elseif row == 6 then
-                local val = Wag:GetNW2Int("VityazPskk" .. idx, 0) >= 10
+                local val = Wag:GetNW2Int("SkifPskk" .. idx, 0) >= 10
                 return nil, nil, val and colorGreen or colorRed
             elseif row == 7 then
-                local val = Wag:GetNW2Bool("VityazBrakeEquip" .. idx, false)
+                local val = Wag:GetNW2Bool("SkifBrakeEquip" .. idx, false)
                 return nil, nil, val and colorGreen or colorRed
             elseif row == 8 then
-                local val = Wag:GetNW2Int("VityazP" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifP" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", colorGreen
             elseif row == 9 then
-                local val = Wag:GetNW2Int("VityazP2" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifP2" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", colorGreen
             elseif row == 10 then
-                local val = Wag:GetNW2Int("VityazPnm" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifPnm" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", val >= 5.5 and colorGreen or colorRed
             elseif row == 11 then
-                local val = Wag:GetNW2Int("VityazPtm" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifPtm" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", val >= 2.9 and colorGreen or colorRed
             elseif row == 12 then
-                local val = Wag:GetNW2Int("VityazPstt" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifPstt" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", colorGreen
             elseif row == 13 then
-                local val = Wag:GetNW2Int("VityazPskk" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifPskk" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", colorGreen
             elseif row == 14 then
-                local val = Wag:GetNW2Int("VityazPauto1" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifPauto1" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", val >= 1.0 and colorGreen or colorRed
             elseif row == 15 then
-                local val = Wag:GetNW2Int("VityazPauto2" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifPauto2" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", val >= 1.0 and colorGreen or colorRed
             elseif row == 16 then
-                local val = Wag:GetNW2Int("VityazPauto3" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifPauto3" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", val >= 1.0 and colorGreen or colorRed
             elseif row == 17 then
-                local val = Wag:GetNW2Int("VityazPauto4" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("SkifPauto4" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", val >= 1.0 and colorGreen or colorRed
             end
         end
@@ -1109,16 +1115,16 @@ local sizeVoIndexW, sizeVoIndexH = 220, 48
 local sizeVoCellMargin = 16
 local voFields = {
     {
-        {"БУКСЫ", "VityazBuksGood"},
-        {"МК", function(Wag, idx) return not Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false) and -2 or Wag:GetNW2Int("VityazMKState" .. idx, -1) end, function(val) return val > 0 and colorGreen or val > -2 and (val < 0 and colorRed or colorMainDisabled) or nil end},
-        {"Освещение", "VityazLightsWork"},
-        {"ТКПР", "VityazPantDisabled"},
-        {"Напряжение КС", "VityazHVGood"},
-        {"ПСН", "VityazPSNEnabled"},
-        {"Рессора", "VityazRessoraGood"},
-        {"БУПУ", "VityazPUGood"},
-        {"БУД", "VityazBUDWork"},
-        {"Ориентация", "VityazWagOr", function(val) return nil, val and "О" or "П", val and colorYellow or colorGreen end},
+        {"БУКСЫ", "SkifBuksGood"},
+        {"МК", function(Wag, idx) return not Wag:GetNW2Bool("SkifAsyncInverter" .. idx, false) and -2 or Wag:GetNW2Int("SkifMKState" .. idx, -1) end, function(val) return val > 0 and colorGreen or val > -2 and (val < 0 and colorRed or colorMainDisabled) or nil end},
+        {"Освещение", "SkifLightsWork"},
+        {"ТКПР", "SkifPantDisabled"},
+        {"Напряжение КС", "SkifHVGood"},
+        {"ПСН", "SkifPSNEnabled"},
+        {"Рессора", "SkifRessoraGood"},
+        {"БУПУ", "SkifPUGood"},
+        {"БУД", "SkifBUDWork"},
+        {"Ориентация", "SkifWagOr", function(val) return nil, val and "О" or "П", val and colorYellow or colorGreen end},
     }, {
         {"", function() return true end},
         {"", function() return true end},
@@ -1129,19 +1135,19 @@ local voFields = {
         {"", function() return true end, function() return nil end},
         {"", function() return true end, function() return nil end},
     }, {
-        {"", "VityazDPBT1"},
-        {"", "VityazDPBT2"},
-        {"", "VityazDPBT3"},
-        {"", "VityazDPBT4"},
-        {"", "VityazDPBT5"},
-        {"", "VityazDPBT6"},
-        {"", "VityazDPBT7"},
-        {"", "VityazDPBT8"},
+        {"", "SkifDPBT1"},
+        {"", "SkifDPBT2"},
+        {"", "SkifDPBT3"},
+        {"", "SkifDPBT4"},
+        {"", "SkifDPBT5"},
+        {"", "SkifDPBT6"},
+        {"", "SkifDPBT7"},
+        {"", "SkifDPBT8"},
     }, {
-        {"", "VityazPant1"},
-        {"", "VityazPant2"},
-        {"", "VityazPant3"},
-        {"", "VityazPant4"},
+        {"", "SkifPant1"},
+        {"", "SkifPant2"},
+        {"", "SkifPant3"},
+        {"", "SkifPant4"},
         {"", function() return true end, function() return nil end},
         {"", function() return true end, function() return nil end},
         {"", function() return true end, function() return nil end},
@@ -1205,9 +1211,9 @@ function TRAIN_SYSTEM:DrawCondPage(Wag, x, y, w, h)
         0, sizeVoCellMargin / 2,
         function(idx, field)
             if field == 3 then
-                return Wag:GetNW2Bool("VityazHasCabin" .. idx, false) and (Wag:GetNW2Bool("VityazCondK" .. idx, false) and colorGreen or colorRed) or nil
+                return Wag:GetNW2Bool("SkifHasCabin" .. idx, false) and (Wag:GetNW2Bool("SkifCondK" .. idx, false) and colorGreen or colorRed) or nil
             end
-            return Wag:GetNW2Bool("VityazCond" .. field .. idx, false) and colorGreen or colorRed
+            return Wag:GetNW2Bool("SkifCond" .. field .. idx, false) and colorGreen or colorRed
         end
     )
 
@@ -1221,28 +1227,28 @@ function TRAIN_SYSTEM:DrawCondPage(Wag, x, y, w, h)
     draw.SimpleText("Внешняя:", "Mfdu765.BodyTextSmall", x + cw * 2 + cw / 2, gy + gh + 128, colorMain, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
     draw.SimpleText("18.5 ℃", "Mfdu765.BodyTextSmallBold", x + cw * 2 + cw / 2 + 100, gy + gh + 128, colorMain, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 
-    draw.SimpleText("Режим: " .. (Wag:GetNW2Bool("VityazCond", false) and "Лето" or "Зима"), "Mfdu765.BodyTextLarge", x + w / 2 - sizeButtonW / 2, gy + gh + 212, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    surface.SetDrawColor(Wag:GetNW2Bool("VityazCondAny", false) and (Wag:GetNW2Bool("VityazCond", false) and colorYellow or colorBlue) or colorMain)
-    surface.SetMaterial(icons[6][Wag:GetNW2Bool("VityazCond", false) and 2 or 1])
+    draw.SimpleText("Режим: " .. (Wag:GetNW2Bool("SkifCond", false) and "Лето" or "Зима"), "Mfdu765.BodyTextLarge", x + w / 2 - sizeButtonW / 2, gy + gh + 212, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    surface.SetDrawColor(Wag:GetNW2Bool("SkifCondAny", false) and (Wag:GetNW2Bool("SkifCond", false) and colorYellow or colorBlue) or colorMain)
+    surface.SetMaterial(icons[6][Wag:GetNW2Bool("SkifCond", false) and 2 or 1])
     local icw, ich = sizeButtonW * 0.7, sizeFooter * 0.7
     surface.DrawTexturedRect(x + w / 2 + 70, gy + gh + 218 - ich / 2, icw, ich)
 
-    draw.SimpleText("Загрузка: " .. (Wag:GetNW2Bool("VityazCondAny", false) and "33 %" or "0 %"), "Mfdu765.BodyTextSmall", x + 4, gy + gh + 290, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Загрузка: " .. (Wag:GetNW2Bool("SkifCondAny", false) and "33 %" or "0 %"), "Mfdu765.BodyTextSmall", x + 4, gy + gh + 290, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 local mainGridLabels = {
     "Двери", "БВ", "Сбор схемы", "ПТ вкл", "Ст. тормоз", "БУВ", "БТБ гот."
 }
 local mainGridData = {
-    {"VityazDoors", "VityazShowDoors"},
-    {"VityazBV", "VityazShowBV"},
-    {"VityazScheme", "VityazShowScheme"},
-    {"VityazPTApply", "VityazShowPTApply"},
-    {"VityazPBApply", "VityazShowPBApply"},
-    {"VityazBUVState", "VityazShowBUVState"},
-    {"VityazBTBReady", "VityazShowBTBReady"},
+    {"SkifDoors", "SkifShowDoors"},
+    {"SkifBV", "SkifShowBV"},
+    {"SkifScheme", "SkifShowScheme"},
+    {"SkifPTApply", "SkifShowPTApply"},
+    {"SkifPBApply", "SkifShowPBApply"},
+    {"SkifBUVState", "SkifShowBUVState"},
+    {"SkifBTBReady", "SkifShowBTBReady"},
 }
-local noAsync = { ["VityazBV"] = true, ["VityazScheme"] = true }
+local noAsync = { ["SkifBV"] = true, ["SkifScheme"] = true }
 local mainGridDraw = {}
 function TRAIN_SYSTEM:DrawMainStatus(Wag, x, y, w, h)
     local gx, gy, gw, gh = x - 10, y + 64, w, h - 64
@@ -1258,7 +1264,7 @@ function TRAIN_SYSTEM:DrawMainStatus(Wag, x, y, w, h)
         false, "Mfdu765.MainGridLabels",
         sizeMainMargin, sizeMainMargin / 2,
         function(idx, field)
-            return not (not Wag:GetNW2Bool("VityazAsyncInverter" .. idx, false) and noAsync[mainGridData[field][1]]) and (Wag:GetNW2Bool(mainGridData[field][1] .. idx, false) and colorGreen or colorRed) or nil
+            return not (not Wag:GetNW2Bool("SkifAsyncInverter" .. idx, false) and noAsync[mainGridData[field][1]]) and (Wag:GetNW2Bool(mainGridData[field][1] .. idx, false) and colorGreen or colorRed) or nil
         end,
         function(field)
             return mainGridDraw[field]
@@ -1294,11 +1300,11 @@ function TRAIN_SYSTEM:DrawAutodrive(Wag, x, y, w, h)
             elseif field == 2 then
                 return nil, "0", colorMain, "Mfdu765.AutodriveVals"
             else
-                return "toggle", field == 3 and Wag:GetNW2Bool("VityazKos", false) or field == 4 and Wag:GetNW2Bool("VityazProst", false)
+                return "toggle", field == 3 and Wag:GetNW2Bool("SkifKos", false) or field == 4 and Wag:GetNW2Bool("SkifProst", false)
             end
         end,
         function(field)
-            return field > 2 and Wag:GetNW2Int("VityazSelected", 0) == field - 2 and colorBlue or true
+            return field > 2 and Wag:GetNW2Int("SkifSelected", 0) == field - 2 and colorBlue or true
         end
     )
 end

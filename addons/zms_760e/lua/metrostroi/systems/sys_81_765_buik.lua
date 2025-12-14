@@ -226,7 +226,7 @@ if SERVER then
             self:InformerWork(Wag)
 
         else
-            self.Active = self.State == STATE_INACTIVE_CABIN and Wag:GetNW2Int("VityazMainMsg", 1) == 0 or false
+            self.Active = self.State == STATE_INACTIVE_CABIN and Wag:GetNW2Int("SkifMainMsg", 1) == 0 or false
             if self.State == STATE_INACTIVE and Wag.BUKP and Wag.BUKP.State == 5 and Wag.PpzUpi.Value > 0.5 and isnumber(self.WagNum) and self.WagNum >= 1 then
                 self.State = STATE_INACTIVE_CABIN
             end
@@ -278,7 +278,7 @@ if SERVER then
     end
 
     function TRAIN_SYSTEM:TrainInfo(Wag)
-        local bukpMessage = Wag:GetNW2Int("VityazMainMsg", 1)
+        local bukpMessage = Wag:GetNW2Int("SkifMainMsg", 1)
         self.Active = bukpMessage == 0 and Wag.BUKP.Active > 0
         if not self.Active and self.ActiveOnly then
             self.State = STATE_INACTIVE_CABIN
@@ -324,8 +324,8 @@ if SERVER then
 
         local alsArs = Wag:GetNW2Bool("PmvFreq")
         self:CheckDisplayState(1, alsArs and "2/6" or "ДАУ", STATE_NORMAL)
-        self:CheckDisplayState(2, "АРС1", ars_states[Wag:GetNW2Int("VityazARS1", -1)] or STATE_INACTIVE)
-        self:CheckDisplayState(3, "АРС2", ars_states[Wag:GetNW2Int("VityazARS2", -1)] or STATE_INACTIVE)
+        self:CheckDisplayState(2, "АРС1", ars_states[Wag:GetNW2Int("SkifARS1", -1)] or STATE_INACTIVE)
+        self:CheckDisplayState(3, "АРС2", ars_states[Wag:GetNW2Int("SkifARS2", -1)] or STATE_INACTIVE)
         self:CheckDisplayState(4, Wag.PmvAtsBlock.Value == 1 and "АТС1" or Wag.PmvAtsBlock.Value == 2 and "АТС2" or Wag.PmvAtsBlock.Value == 3 and "УОС" or "ШТАТ", STATE_NORMAL)
         self:CheckDisplayState(5, "НД", alsArs and not Wag.BARS.NoFreq and (Wag.BARS.LN and STATE_NORMAL or STATE_RED) or STATE_INACTIVE)
         self:CheckDisplayState(6, "0", not Wag.BARS.NoFreq and math.floor(Wag.BARS.SpeedLimit) < 21 and STATE_RED or STATE_NORMAL)

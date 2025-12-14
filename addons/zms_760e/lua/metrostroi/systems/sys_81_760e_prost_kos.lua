@@ -37,8 +37,8 @@ function TRAIN_SYSTEM:Think(dT)
     --self.Timer = self.Timer or CurTime()
     local power = Train.Electric.Battery80V > 62
     local RV = 1 - Train.RV["KRO5-6"]
-    self.Prost = power and Train.BUKP.Prost and Train.BUKP.State == 5 and Train:GetNW2Int("VityazMainMsg", 0) == 0 and RV > 0
-    self.Kos = power and Train.BUKP.Kos and Train.BUKP.State == 5 and Train:GetNW2Int("VityazMainMsg", 0) == 0 and RV > 0
+    self.Prost = power and Train.BUKP.Prost and Train.BUKP.State == 5 and Train:GetNW2Int("SkifMainMsg", 0) == 0 and RV > 0
+    self.Kos = power and Train.BUKP.Kos and Train.BUKP.State == 5 and Train:GetNW2Int("SkifMainMsg", 0) == 0 and RV > 0
     if not power and (self.Metka1 or self.BlockDoorsL or self.BlockDoorsR) then
         self.BlockDoorsL = false
         self.BlockDoorsR = false
@@ -215,7 +215,7 @@ function TRAIN_SYSTEM:Think(dT)
             self.BlockDoorsR = false
         end
 
-        if RV > 0 and power and Train.BUKP.State == 5 and Train:GetNW2Int("VityazMainMsg", 0) == 0 and not Train.BKL then
+        if RV > 0 and power and Train.BUKP.State == 5 and Train:GetNW2Int("SkifMainMsg", 0) == 0 and not Train.BKL then
             if not self.Kos then
                 if self.Metka[4] or self.Metka[2] then
                     self.sum = self.sum + (self.v0 + Train.Speed * Train.SpeedSign) * self.DeltaTime / 7.2
