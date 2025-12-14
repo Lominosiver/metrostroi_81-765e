@@ -3,11 +3,6 @@ if SERVER then
     return
 end
 
-local MAINMSG_NONE = 0
-local MAINMSG_RVOFF = 1
-local MAINMSG_REAR = 2
-local MAINMSG_2RV = 3
-local MAINMSG_RVFAIL = 4
 local MainMsg = {
     "РВ Выключены",
     "Хвостовой ПУ",
@@ -76,6 +71,9 @@ function TRAIN_SYSTEM:Ui765(dT)
             elseif page == 6 then
                 self.Page = 6
                 self:DrawPage(self.DrawCondPage, "Климатическая система")
+            elseif page == 7 then
+                self.Page = 7
+                self:DrawPage(self.DrawAutodrive, "Автоведение")
             end
         end
 
@@ -366,6 +364,13 @@ surface.CreateFont("Mfdu765.IdleMessage", {
     extended = true,
     size = 64,
     weight = 600,
+})
+
+surface.CreateFont("Mfdu765.AutodriveVals", {
+    font = "Open Sans",
+    extended = true,
+    size = 50,
+    weight = 700,
 })
 
 local function drawBox(x, y, w, h, color, bgColor, borderSize)
@@ -747,6 +752,7 @@ end
 local sizeCellBorderRadius = 8
 function TRAIN_SYSTEM:DrawGrid(x, y, w, h, vertical, cellGap, labels, labelFont, wagNumbers, wagNumbersFont, leftOffset, topOffset, getter, drawRow)
     if not isfunction(getter) then return end
+    local wagc = istable(wagNumbers) and #wagNumbers or 8
     if not istable(wagNumbers) then
         local ind = not wagNumbers
         wagNumbers = {}
@@ -762,8 +768,8 @@ function TRAIN_SYSTEM:DrawGrid(x, y, w, h, vertical, cellGap, labels, labelFont,
         cellGap = cellGap[1]
     end
 
-    local colCount = vertical and 8 or #labels
-    local rowCount = vertical and #labels or 8
+    local colCount = vertical and wagc or #labels
+    local rowCount = vertical and #labels or wagc
     local cellW = (w - cellGap * (colCount - 1)) / colCount
     local cellH = (h - cellGap * (rowCount - 1)) / rowCount
     local x0 = x
@@ -775,7 +781,7 @@ function TRAIN_SYSTEM:DrawGrid(x, y, w, h, vertical, cellGap, labels, labelFont,
             draw.SimpleText(
                 tostring(rowLabel),
                 vertical and labelFont or wagNumbersFont, x - leftOffset, y + cellH / 2,
-                colorMain, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER
+                istable(drawCurRow) and drawCurRow or colorMain, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER
             )
         end
         for col = 1, colCount do
@@ -793,11 +799,20 @@ function TRAIN_SYSTEM:DrawGrid(x, y, w, h, vertical, cellGap, labels, labelFont,
             if drawCurRow then
                 local wagIdx = vertical and col or row
                 local color, text, textColor, textFont = getter(wagIdx, vertical and row or col)
-                if color then
-                    draw.RoundedBox(sizeCellBorderRadius, x + cellMarginX, y + cellMarginY, cellW - cellMarginX * 2, cellH - cellMarginY * 2, color)
-                end
-                if text then
-                    draw.SimpleText(text, textFont or "Mfdu765.CellText", x + cellW / 2, y + cellH / 2, textColor or colorBlack, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                if color == "toggle" then
+                    local cx, cy, cw, ch = x + cellMarginX, y + cellMarginY + (cellH - 50) / 2, (cellW - cellMarginX * 2) / 2 - 1, 50
+                    draw.RoundedBox(sizeCellBorderRadius, cx, cy, cw, ch, not text and colorRed or colorMainDisabled)
+                    draw.SimpleText("Выкл", textFont or "Mfdu765.CellText", cx + cw / 2, cy + ch / 2, text and colorMain or colorBlack, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    cx = cx + cw + 2
+                    draw.RoundedBox(sizeCellBorderRadius, cx, cy, cw, ch, text and colorGreen or colorMainDisabled)
+                    draw.SimpleText("Вкл", textFont or "Mfdu765.CellText", cx + cw / 2, cy + ch / 2, not text and colorMain or colorBlack, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                else
+                    if color then
+                        draw.RoundedBox(sizeCellBorderRadius, x + cellMarginX, y + cellMarginY, cellW - cellMarginX * 2, cellH - cellMarginY * 2, color)
+                    end
+                    if text then
+                        draw.SimpleText(text, textFont or "Mfdu765.CellText", x + cellW / 2, y + cellH / 2, textColor or colorBlack, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    end
                 end
             end
 
@@ -1247,6 +1262,43 @@ function TRAIN_SYSTEM:DrawMainStatus(Wag, x, y, w, h)
         end,
         function(field)
             return mainGridDraw[field]
+        end
+    )
+end
+
+local autodriveTagLabels = { "Данные метки:" }
+local autodriveTagHeader = { "1", "2", "3", "4", "5", "6", "7", "8" }
+local autodriveDetailLabels = { "Таймер метки:", "Кол-во чтений метки:", "Режим КОС:", "Режим ПРОСТ:" }
+local autodriveDetailHeader = { "" }
+function TRAIN_SYSTEM:DrawAutodrive(Wag, x, y, w, h)
+    local gx, gy, gw, gh = x + 200, y + 45, w - 210, 80
+    self:DrawGrid(
+        gx, gy, gw, gh, true, sizeMainMargin * 0.75,
+        autodriveTagLabels, "Mfdu765.AsyncLabels",
+        autodriveTagHeader, "Mfdu765.AsyncLabels",
+        sizeMainMargin, 6,
+        function(idx)
+            return nil, "00", colorMain, "Mfdu765.AutodriveVals"
+        end
+    )
+
+    gx, gy, gw, gh = x + w / 2, y + 160, 180, h - 165
+    self:DrawGrid(
+        gx, gy, gw, gh, true, 0,
+        autodriveDetailLabels, "Mfdu765.AsyncLabels",
+        autodriveDetailHeader, "Mfdu765.AsyncLabels",
+        sizeMainMargin * 2, 0,
+        function(_, field)
+            if field == 1 then
+                return nil, "00000000", colorMain, "Mfdu765.AutodriveVals"
+            elseif field == 2 then
+                return nil, "0", colorMain, "Mfdu765.AutodriveVals"
+            else
+                return "toggle", field == 3 and Wag:GetNW2Bool("VityazKos", false) or field == 4 and Wag:GetNW2Bool("VityazProst", false)
+            end
+        end,
+        function(field)
+            return field > 2 and Wag:GetNW2Int("VityazSelected", 0) == field - 2 and colorBlue or true
         end
     )
 end
