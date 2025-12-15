@@ -40,9 +40,21 @@ local ErrorsC = {
     {"PassLights", "Освещение не включено.", "Освещение не включено\nна %d вагоне.",},
 }
 
+local function errById(idx)
+    for catIdx, tbl in ipairs({ErrorsA, ErrorsB, ErrorsC}) do
+        if idx <= #tbl then
+            return tbl[idx], catIdx
+        end
+        idx = idx - #tbl
+    end
+end
+
 local ErrRingContinuous = {
     RightBlock = true,
     LeftBlock = true,
+}
+local NoLogErr = {
+    "Doors"
 }
 
 local Error2id = {}
@@ -114,7 +126,9 @@ function TRAIN_SYSTEM:Initialize()
     self.Password = ""
     self.Selected = 0
     self.MsgPage = 1
-    self.Messages = {{}}
+    self.MsgVer = 0
+    self.Messages = {}
+    self.MessagesMap = {}
     self.CondLeto = true
     self.Time = "0"
     self.RouteNumber = "0"
@@ -378,7 +392,10 @@ if SERVER then
         elseif self.State == 5 and value and RV ~= 0 then
             if char and self.State2 ~= 01 then
                 self.State2 = tonumber(char .. "1")
+                self.Select = false
                 self.AutoChPage = nil
+
+                if self.State2 == 81 then self.MsgPage = 1 self:PrepareMessages() end
             end
 
             local page = math.floor(self.State2 / 10)
@@ -386,7 +403,7 @@ if SERVER then
                 local down = name == BTN_DOWN
                 if self.Select then
                     self.Select = self.Select + (down and 1 or -1)
-                    local max = page == 8 and #self.Messages[self.MsgPage] or 2
+                    local max = page == 8 and math.Clamp(#self.Messages - 26 * (self.MsgPage - 1), 1, 26) or 2
                     if self.Select < 1 then self.Select = max
                     elseif self.Select > max then self.Select = 1 end
                 elseif page == 1 then
@@ -394,9 +411,11 @@ if SERVER then
                     if self.State2 < 11 then self.State2 = 17
                     elseif self.State2 > 17 then self.State2 = 11 end
                 elseif page == 8 then
-                    self.MsgPage = self.MsgPage + (down and 1 or -1)
-                    if self.MsgPage < 1 then self.MsgPage = #self.Messages
-                    elseif self.MsgPage > self.MsgPageCount then self.MsgPage = 1 end
+                    self.MsgPage = self.MsgPage + (down and -1 or 1)
+                    local max = math.max(1, math.ceil(#self.Messages / 26))
+                    if self.MsgPage < 1 then self.MsgPage = max
+                    elseif self.MsgPage > max then self.MsgPage = 1 end
+                    self:PrepareMessages()
                 end
             elseif not self.Select and name == BTN_MODE and (page == 6 or page == 7 or page == 8 or page == 0) then
                 self.Select = 1
@@ -423,7 +442,7 @@ if SERVER then
 
             if name == BTN_UP and self.Selected > 1 then self.Selected = self.Selected - 1 end
             if name == BTN_DOWN and self.Selected < self.WagNum then self.Selected = self.Selected + 1 end
-            if name == BTN_ENTER then self.State2 = 0 self.LegacyScreen = false end
+            if name == BTN_ENTER then self.State2 = 0 self.Select = false end
         end
 
         if self.State == 5 and name == "AttentionMessage" and value then
@@ -439,40 +458,56 @@ if SERVER then
     end
 
     function TRAIN_SYSTEM:BeginWagonsCheck()
-        self.WagChecks = self.WagChecks or {}
         self.WagErrors = {}
     end
 
     function TRAIN_SYSTEM:EndWagonsCheck()
-        for name in pairs(self.WagChecks) do
-            local wag = self.WagErrors[name]
-            self:CheckError(name, wag, wag)
+        for name, wags in pairs(self.WagErrors) do
+            for idx = 1, self.WagNum do
+                self:CheckError(name, wags[idx], idx)
+            end
         end
     end
 
     function TRAIN_SYSTEM:CheckWagError(idx, name, cond)
         local id = Error2id[name] or 0
         if id < 1 then print("WARN! No BUKP error named " .. (name or "nil")) return end
-        self.WagChecks[name] = true
+        if not self.WagErrors[name] then self.WagErrors[name] = {} end
         if not cond then return end
-        if not self.WagErrors[name] then self.WagErrors[name] = idx return end
-        self.WagErrors[name] = true
+        self.WagErrors[name].any = true
+        self.WagErrors[name][idx] = true
     end
 
     function TRAIN_SYSTEM:CheckError(name, cond, param)
         local id = Error2id[name] or 0
         if id < 1 then print("WARN! No BUKP error named " .. (name or "nil")) return end
         if id > #ErrorsA and self.BErrorsTimer and CurTime() - self.BErrorsTimer < 0 then return end
+        local ident = name .. (isnumber(param) and param or "")
+
+        local log = not NoLogErr[name] and not (self.BErrorsTimer and self.BErrorsTimer >= CurTime() or self.InitTimer and self.InitTimer >= CurTime())
+
         if cond then
+            if log and not self.MessagesMap[ident] then
+                local idx = table.insert(self.Messages, {name, param or nil, {self.DateStrShort or "--.--.--", self.Time or "--:--:--"}})
+                self.MessagesMap[ident] = idx
+                if self.State2 == 81 then self.SendMessages = true end
+            end
+
             if self.Errors[id] ~= false then
                 self.Errors[id] = CurTime()
                 self.Errors[name] = CurTime()
-                self.ErrorParams[id] = isnumber(param) and param or nil
+                self.ErrorParams[id] = isnumber(param) and (not self.ErrorParams[id] and param or self.ErrorParams[id] and true) or self.ErrorParams[id]
             end
-        elseif (id <= #ErrorsA or ErrRingContinuous[name]) and self.Errors[id] and self.Errors[id] ~= CurTime() or self.Errors[id] == false then
+        elseif (id <= #ErrorsA or ErrRingContinuous[name]) and self.Errors[id] and self.Errors[id] ~= CurTime() or self.Errors[id] == false and (not self.WagErrors[name] or not self.WagErrors[name].any) then
             self.Errors[id] = nil
             self.Errors[name] = nil
             self.ErrorParams[id] = nil
+        end
+
+        if log and self.MessagesMap[ident] and (not cond and isnumber(param) or not self.Errors[id] and self.Errors[id] ~= false) then
+            self.Messages[self.MessagesMap[ident]][4] = {self.DateStrShort or "--.--.--", self.Time or "--:--:--"}
+            self.MessagesMap[ident] = nil
+            if self.State2 == 81 then self.SendMessages = true end
         end
     end
 
@@ -518,6 +553,10 @@ if SERVER then
 
         self.Error = errId
         self.ErrorParams[0] = param
+        if self.SendMessages then
+            if self.State2 == 81 then self:PrepareMessages() end
+            self.SendMessages = false
+        end
     end
 
     function TRAIN_SYSTEM:ClearErrors()
@@ -528,6 +567,28 @@ if SERVER then
         end
         self.Error = 0
         self.ErrorParams[0] = nil
+    end
+
+    function TRAIN_SYSTEM:PrepareMessages()
+        local len = 0
+        for idx = 1, 26 do
+            local msgIdx = #self.Messages - (self.MsgPage - 1) * 26 - idx + 1
+            if msgIdx < 1 then break end
+            local name, param, appeared, solved = unpack(self.Messages[msgIdx])
+            local err, cat = errById(Error2id[name])
+            local text = err[3] and param and string.format(err[3], param) or err[2]
+            text = string.Replace(text, "\n", " ")
+            self.Train:SetNW2String("SkifLogMsg" .. idx, text)
+            self.Train:SetNW2String("SkifLogCat" .. idx, cat == 1 and "А" or cat == 2 and "Б" or "В")
+            self.Train:SetNW2String("SkifLogApDate" .. idx, appeared and appeared[1] or "")
+            self.Train:SetNW2String("SkifLogApTime" .. idx, appeared and appeared[2] or "")
+            self.Train:SetNW2String("SkifLogSolved" .. idx, solved and solved[2] or "")
+            len = len + 1
+        end
+
+        self.MsgVer = self.MsgVer + 1
+        self.Train:SetNW2Int("SkifLogLen", len)
+        self.Train:SetNW2Int("SkifLogVer", self.MsgVer)
     end
 
     function TRAIN_SYSTEM:CheckBuv(train)
@@ -625,7 +686,7 @@ if SERVER then
                 }
 
                 self.dat = dat
-                if self.Date and self.Time and self.Time:sub(1, 2) == "00" and self.Time:sub(3, 4) == "00" and self.Time:sub(5, 6) == "00" and CurTime() - self.CurTime1 >= 1 then
+                if self.Date and self.Time and self.Time:sub(1, 2) == "00" and self.Time:sub(4, 5) == "00" and self.Time:sub(7, 8) == "00" and CurTime() - self.CurTime1 >= 1 then
                     self.CurTime1 = CurTime()
                     if not self.Date1 then
                         self.Date1 = {
@@ -644,7 +705,7 @@ if SERVER then
                         self.Date1.day = "01"
                         self.Date1.month = "01"
                         if dat.year == "9999" then
-                            self.Date1.year = Format("%04d", 2010)
+                            self.Date1.year = Format("%04d", 2016)
                         else
                             self.Date1.year = Format("%04d", tonumber(dat.year) + 1)
                         end
@@ -655,15 +716,26 @@ if SERVER then
             end
 
             if self.TimeEntered then
-                self.Time = os.date("%H%M%S", self.Timer1)
+                self.Time = os.date("%H:%M:%S", self.Timer1)
                 self.Timer1 = self.Timer1 + self.DeltaTime
             else
-                self.Time = os.date("!%H%M%S", Metrostroi.GetSyncTime())
+                self.Time = os.date("!%H:%M:%S", Metrostroi.GetSyncTime())
+            end
+
+            if self.Date1 then
+                self.DateStr = string.format("%s.%s.%s", self.Date1.day, self.Date1.month, self.Date1.year)
+                self.DateStrShort = string.format("%s.%s.%s", self.Date1.day, self.Date1.month, self.Date1.year:sub(3, 4))
+            elseif self.dat then
+                self.DateStr = string.format("%s.%s.%s", self.dat.day, self.dat.month, self.dat.year)
+                self.DateStrShort = string.format("%s.%s.%s", self.dat.day, self.dat.month, self.dat.year:sub(3, 4))
+            else
+                self.DateStr = os.date("%d.%m.%Y", Metrostroi.GetSyncTime())
+                self.DateStrShort = os.date("%d.%m.%y", Metrostroi.GetSyncTime())
             end
 
             if self.State >= 2 then
                 Train:SetNW2String("SkifTime", self.Time)
-                Train:SetNW2String("SkifDate", self.Date1 and self.Date1.day .. self.Date1.month .. self.Date1.year or self.dat.day .. self.dat.month .. self.dat.year) --or self.Date1.day..self.Date1.month..self.Date1.year)
+                Train:SetNW2String("SkifDate", self.DateStr)
             end
             if self.State == 2 then
                 Train:SetNW2String("SkifRouteNumber", self.RouteNumber)
@@ -710,6 +782,7 @@ if SERVER then
                 if initialized then
                     self.State = 5
                     self.State2 = 0
+                    self.Select = false
                     self.Errors = {}
                     self.Prost = true
                     self.Kos = true
@@ -960,9 +1033,11 @@ if SERVER then
                     if self.Errors.Doors and err11ch then
                         if not self.AutoChPage then self.AutoChPage = self.State2 end
                         self.State2 = 21
+                        self.Select = false
                     end
                     if not self.Errors.Doors and err11ch and self.AutoChPage and not self.AwaitOpenDoors then
                         self.State2 = self.AutoChPage or self.State2
+                        self.Select = false
                     end
                     if self.AwaitOpenDoors and (not self.AutoChPage or self.Errors.Doors) then
                         self.AwaitOpenDoors = false
@@ -973,6 +1048,7 @@ if SERVER then
                         self.sfBroken = sfBroken
                         if sfBroken then
                             self.State2 = 15 + tonumber(sfBroken[1])
+                            self.Select = false
                         end
                     end
 
@@ -1255,6 +1331,7 @@ if SERVER then
                 if not self.AutoChPage then self.AutoChPage = self.State2 end
                 self.State2 = 21
                 self.AwaitOpenDoors = true
+                self.Select = false
             end
 
             self.ControllerState = kvSetting
@@ -1333,6 +1410,7 @@ if SERVER then
         if Train.PpzAts2.Value + Train.PpzAts1.Value > 0 and Train:GetNW2Int("SkifState") == 5 or Train:GetNW2Int("SkifState") < 5 or not Power then
             Train:SetNW2Int("SkifState", self.State * Train.Electric.UPIPower)
             Train:SetNW2Int("SkifState2", self.State2)
+            Train:SetNW2Int("SkifSelect", self.Select or 0)
             Train:SetNW2Bool("SkifLegacyScreen", self.LegacyScreen)
 
             local line = "---"
@@ -1372,6 +1450,7 @@ else
         if not skipOther then
             self.State = state
             self.State2 = self.Train:GetNW2Int("SkifState2", 0)
+            self.Select = self.Train:GetNW2Int("SkifSelect", 0)
             self.MainScreen = self.State2 == 0
         end
         render.PushRenderTarget(self.Train.MFDU, 0, 0, 1024, 1024)

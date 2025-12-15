@@ -1260,7 +1260,7 @@ ENT.Spawner = {
 
                             ent.BUKP.Errors = {}
                             ent.BUKP.InitTimer = CurTime() + 0.0
-                            ent.BUKP.Timer2 = CurTime() + 3
+                            ent.BUKP.BErrorsTimer = CurTime() + 3
                             ent.BUKP.State = 5
                             ent.BUKP.State2 = 0
                             ent.BUKP.Prost = true

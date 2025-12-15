@@ -75,6 +75,9 @@ function TRAIN_SYSTEM:SkifMonitor()
             elseif page == 7 then
                 self.Page = 7
                 self:DrawPage(self.DrawAutodrive, "Автоведение")
+            elseif page == 8 then
+                self.Page = 8
+                self:DrawPage(self.DrawMessages, "Журнал")
             end
         end
 
@@ -381,6 +384,27 @@ surface.CreateFont("Mfdu765.AutodriveVals", {
     weight = 700,
 })
 
+surface.CreateFont("Mfdu765.MsgText", {
+    font = "Open Sans",
+    extended = true,
+    size = 24,
+    weight = 500,
+})
+
+surface.CreateFont("Mfdu765.MsgHeader", {
+    font = "Open Sans",
+    extended = true,
+    size = 28,
+    weight = 500,
+})
+
+surface.CreateFont("Mfdu765.MsgTextBold", {
+    font = "Open Sans",
+    extended = true,
+    size = 28,
+    weight = 600,
+})
+
 local function drawBox(x, y, w, h, color, bgColor, borderSize)
     surface.SetDrawColor(color)
     surface.DrawRect(x, y, w, h)
@@ -492,13 +516,8 @@ function TRAIN_SYSTEM:DrawTopBar(Wag, title)
     end
 
     draw.SimpleText(title, "Mfdu765.TopBar", scrW / 2, y, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-
-    local timeStr = Wag:GetNW2String("SkifTime", "------")
-    local time = string.format("%s:%s:%s", timeStr:sub(1, 2), timeStr:sub(3, 4), timeStr:sub(5, 6))
-    local dateStr = Wag:GetNW2String("SkifDate")
-    local date = string.format("%s.%s.%s", dateStr:sub(1, 2), dateStr:sub(3, 4), dateStr:sub(5, 8))
-    draw.SimpleText(date, "Mfdu765.TopBarSmall", scrW - x, y - 12, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    draw.SimpleText(time, "Mfdu765.TopBarSmall", scrW - x, y + 12, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText(Wag:GetNW2String("SkifDate", ""), "Mfdu765.TopBarSmall", scrW - x, y - 12, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText(Wag:GetNW2String("SkifTime", "--:--:--"), "Mfdu765.TopBarSmall", scrW - x, y + 12, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
 local sizeMainLinesH = 50
@@ -1351,4 +1370,82 @@ function TRAIN_SYSTEM:DrawSfPage(Wag, x, y, w, h, pg)
             return colorGreen
         end
     )
+end
+
+local sizeMsgDate, sizeMsgTime, sizeMsgCat = 80, 80, 40
+local sizeMsgHeader, sizeMsgFooter = 40, 50
+local msgNull = {timeAppeared = "--:--:--"}
+function TRAIN_SYSTEM:DrawMessages(Wag, x, y, w, h)
+    local ver = Wag:GetNW2Int("SkifLogVer", -1)
+    if self.MsgVer ~= ver then
+        self.MsgData = {}
+        for idx = 1, Wag:GetNW2Int("SkifLogLen", 0) do
+            local solved = Wag:GetNW2String("SkifLogSolved" .. idx, "")
+            table.insert(self.MsgData, {
+                text = Wag:GetNW2String("SkifLogMsg" .. idx, ""),
+                cat = Wag:GetNW2String("SkifLogCat" .. idx, ""),
+                dateAppeared = Wag:GetNW2String("SkifLogApDate" .. idx, ""),
+                timeAppeared = Wag:GetNW2String("SkifLogApTime" .. idx, ""),
+                timeSolved = solved ~= "" and solved or nil,
+            })
+        end
+        self.MsgVer = ver
+    end
+
+    local x0, y0 = x, y
+    local sizeMsgText = w - sizeMsgDate - sizeMsgTime - sizeMsgCat - sizeBorder * 3
+    local sizeMsgH = (h - sizeMsgHeader - sizeMsgFooter - sizeBorder * 2) / 26
+    x, y = x + sizeMsgDate / 2, y + sizeMsgHeader / 2
+    draw.SimpleText("Дата", "Mfdu765.MsgHeader", x, y - 2, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    x = x + sizeMsgDate / 2 + sizeBorder + sizeMsgTime / 2
+    draw.SimpleText("Время", "Mfdu765.MsgHeader", x, y - 2, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    x = x + sizeMsgTime / 2 + sizeBorder + sizeMsgCat / 2
+    draw.SimpleText("Тип", "Mfdu765.MsgHeader", x, y - 2, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    x = x + sizeMsgCat / 2 + sizeBorder + sizeMsgText / 2
+    draw.SimpleText("Описание сообщения", "Mfdu765.MsgHeader", x, y - 2, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
+    local textX = x
+    local selected = self.Select > 0 and self.Select or 1
+    x, y = x0, y0 + sizeMsgHeader + sizeBorder
+    for idx, msg in ipairs(self.MsgData or {}) do
+        local textColor = selected == idx and colorBlack or colorMain
+        if selected == idx then
+            surface.SetDrawColor(colorBlue)
+            surface.DrawRect(x, y, w, sizeMsgH)
+        end
+        x = x + sizeMsgDate / 2
+        draw.SimpleText(msg.dateAppeared, "Mfdu765.MsgText", x, y + sizeMsgH / 2 - 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        x = x + sizeMsgDate / 2 + sizeBorder + sizeMsgTime / 2
+        draw.SimpleText(msg.timeAppeared, "Mfdu765.MsgText", x, y + sizeMsgH / 2 - 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        x = x + sizeMsgTime / 2 + sizeBorder + sizeMsgCat / 2
+        draw.SimpleText(msg.cat, "Mfdu765.MsgText", x, y + sizeMsgH / 2 - 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        x = x + sizeMsgCat / 2 + sizeBorder + 2
+        draw.SimpleText(msg.text, "Mfdu765.MsgText", x, y + sizeMsgH / 2 - 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        x = x0
+        y = y + sizeMsgH
+    end
+
+    surface.SetDrawColor(colorMainDisabled)
+    surface.DrawRect(x0, y0 + sizeMsgHeader, w, sizeBorder)
+    surface.DrawRect(x0, y0 + h - sizeMsgFooter - sizeBorder, w, sizeBorder)
+    x = x0
+    x = x + sizeMsgDate
+    surface.DrawRect(x, y0, sizeBorder, h - sizeMsgFooter)
+    x = x + sizeBorder + sizeMsgTime
+    surface.DrawRect(x, y0, sizeBorder, h - sizeMsgFooter)
+    x = x + sizeBorder + sizeMsgCat
+    surface.DrawRect(x, y0, sizeBorder, h - sizeMsgFooter)
+
+    x = x0 + sizeMsgDate + sizeBorder / 2
+    y = y0 + h - sizeMsgFooter / 2
+    local msg = self.MsgData and self.MsgData[selected] or msgNull
+    draw.SimpleText("Возник:", "Mfdu765.MsgHeader", x - 2, y - 2, colorMain, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+    draw.SimpleText(msg.timeAppeared, "Mfdu765.MsgTextBold", x + 2, y - 2, msg.timeSolved and colorGreen or colorRed, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    x = textX
+    if not msg.timeSolved then
+        draw.SimpleText("Не устранен", "Mfdu765.MsgHeader", x, y - 2, colorRed, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    else
+        draw.SimpleText("Устранен:", "Mfdu765.MsgHeader", x - 2, y - 2, colorMain, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(msg.timeSolved, "Mfdu765.MsgTextBold", x + 2, y - 2, colorGreen, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    end
 end
