@@ -100,7 +100,7 @@ function TRAIN_SYSTEM:SkifMonitor()
         if self.State == 1 then
             self:DrawIdle("Идентификация", true)
         elseif self.State == 2 then
-            -- self:DrawDepot("Режим депо")
+            self:DrawDepot()
         else
             self:DrawIdent()
         end
@@ -880,6 +880,27 @@ function TRAIN_SYSTEM:DrawIdent()
         draw.SimpleText(idx, "Mfdu765.DoorsSide", cx + cw / 2, cy - 2, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
         draw.RoundedBox(sizeCellBorderRadius, cx, cy, cw, ch, self.Train:GetNW2Bool("SkifWagI" .. idx, false) and colorGreen or colorRed)
         cx = cx + sizeIdentGap + cw
+    end
+end
+
+function TRAIN_SYSTEM:DrawDepot()
+    surface.SetDrawColor(colorBlack)
+    surface.DrawRect(scrOffsetX, scrOffsetY, scrW + scrOffsetX, scrH + scrOffsetY)
+    draw.SimpleText("Скиньте референсы режима депо :)", "Mfdu765.IdleMessage", scrW / 2, scrOffsetY + 400, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Discord:", "Mfdu765.DoorsSide", scrW / 2 - 8, scrOffsetY + 600, colorBlue, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+    draw.SimpleText("zont_", "Mfdu765.DoorsSide", scrW / 2 + 8, scrOffsetY + 600, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+
+    local sel = self.Train:GetNW2Int("SkifDepotSel", 0)
+    local ent = self.Train:GetNW2String("SkifEnter", "-")
+    if self.State2 == 0 then
+        draw.SimpleText(sel == 0 and "Кол-во вагонов:" or "Номера вагонов...", "Mfdu765.DoorsSide", scrW / 2 - 4, scrOffsetY + 50, ent == "-" and colorMain or colorBlue, sel == 0 and TEXT_ALIGN_RIGHT or TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        if sel == 0 then
+            draw.SimpleText(ent ~= "-" and ent or self.WagNum, "Mfdu765.DoorsSide", scrW / 2 + 4, scrOffsetY + 50, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        end
+    else
+        local wagnum = ent ~= "-" and ent or tostring(self.Train:GetNW2String("SkifWagNum" .. sel, "?????"))
+        draw.SimpleText(string.format("Вагон %d:", sel), "Mfdu765.DoorsSide", scrW / 2 - 4, scrOffsetY + 50, ent == "-" and colorMain or colorBlue, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(wagnum, "Mfdu765.DoorsSide", scrW / 2 + 4, scrOffsetY + 50, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
 end
 
