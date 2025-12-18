@@ -280,6 +280,7 @@ if SERVER then
         Wag:SetNW2Int("BUIK:NextSpeed", Wag:GetNW2Int("SkifNextSpeedLimit", 0))
         Wag:SetNW2Bool("BUIK:SpeedometerBlink", Wag:GetNW2Bool("SkifNoFreqReal", false) or Wag:GetNW2Bool("SkifBarsBrake", false))
         Wag:SetNW2Bool("BUIK:MaxSpeedBlink", Wag:GetNW2Bool("SkifNoFreq", false))
+        Wag:SetNW2Int("BUIK:Odometer", math.floor((Wag.Odometer or 0) / 1000))
     end
 
     function TRAIN_SYSTEM:TrainInfo(Wag)
@@ -1270,7 +1271,7 @@ else
         surface.SetDrawColor(colorInactive)
         surface.DrawRect(x, y - sizePgMargin, 2, sizeFooterH)
         draw.SimpleText("км", "BUIKOdometer", scr_w - sizeSpeedometrW - sizeRightMargin, y + sizePgH / 2, colorActive, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-        draw.SimpleText(Wag:GetNW2String("BUIK:Odometer", "--------"), "BUIKClock", scr_w - sizeSpeedometrW - sizeRightMargin - 88, y + sizePgH / 2, colorActive, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(string.format("%8d", Wag:GetNW2Int("BUIK:Odometer", 0)), "BUIKClock", scr_w - sizeSpeedometrW - sizeRightMargin - 76, y + sizePgH / 2, colorActive, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
     end
 
     local sizeStatusGapX = 24

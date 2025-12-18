@@ -992,11 +992,11 @@ ENT.Cameras = {
     {Vector(412 + 17, 49, 1), Angle(0, 180, 0), "Train.760.CameraPPZ"},
     {Vector(445.5 + 11, 52, -1), Angle(0, 90, 0), "Train.760.CameraASNPIGLA"},
     {Vector(416.8 + 63, 45, -7), Angle(25, 20, 0), "Train.760.CameraCams"},
-    {Vector(425.8 + 54, 25, -7), Angle(20, 0, 0), "БУ-ИК (Блок упр. Информац. Компл.)"},
-    {Vector(425.8 + 57, 4, -10), Angle(20, 0, 0), "Train.760.CameraSkif"},
+    {Vector(425.8 + 54, 25, -7), Angle(20, 0, 0), "Train.765.CameraBuik"},
+    {Vector(425.8 + 57, 4, -10), Angle(20, 0, 0), "Train.765.CameraMfdu"},
     {Vector(427.5 + 40, -40, -25), Angle(55, -70, 0), "Train.760.CameraKRMH"},
     {Vector(407, 18, 9), Angle(0, 180, 0), "Train.760.CameraPVZ"},
-    {Vector(520, 0, 15), Angle(60, 0, 0), "Автосцепка"},
+    {Vector(520, 0, 15), Angle(60, 0, 0), "Train.765.CameraCouple"},
 }
 
 ---------------------------------------------------
@@ -1209,6 +1209,12 @@ ENT.Spawner = {
                     ent.Electric:TriggerInput("Power", true)
                 end
                 local first = i == 1 or _LastSpawner ~= CurTime()
+                if IsValid(ent.Owner) and first and ent.Owner.GetUTimeTotalTime then
+                    _Odometer = math.floor(ent.Owner:GetUTimeTotalTime() * 1000 / 3600 * 1000)
+                end
+                if _Odometer then
+                    ent.Odometer = _Odometer
+                end
                 if ent.SA1 then
                     local leaveOff = {
                         PPZUU1 = true,

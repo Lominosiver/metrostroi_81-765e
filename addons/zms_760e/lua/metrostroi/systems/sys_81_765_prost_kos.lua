@@ -6,6 +6,17 @@ local BrakeSettings = {
     [0] = 0,
     20, 50, 80
 }
+local RollingMatrix = {
+    { -- < 6 wag
+        20, 10,
+        8, 1.7,
+        1.6, 0.2,
+    }, { -- >= 6 wag
+        20, 14,
+        10, 1.9,
+        1.7, 0.2,
+    },
+}
 local decelCalibrationTau = 2
 
 function TRAIN_SYSTEM:Initialize()
@@ -70,8 +81,9 @@ local function getBrakeDistance(speed)
     -- wagc=5 twagc=1 speed=50 result=83
     -- wagc=5 twagc=1 speed=60 result=115
     -- wagc=5 twagc=1 speed=70 result=157
-    if speed < 3.6 then return 3.6 end
-    if speed < 10 then return 6 end
+    if speed < 2.7 then return 0.5 end
+    if speed < 6 then return 2 end
+    if speed < 10 then return 4 end
     return 0.0498 * math.pow(speed, 1.894)
 end
 
@@ -102,10 +114,16 @@ function TRAIN_SYSTEM:Think()
     if not self.LastThink then self.LastThink = CurTime() self.LastThinkSpeed = speed return end
     local dT = CurTime() - self.LastThink
 
-    if self.Distance then self.Distance = self.Distance - dT * 0.5 * (self.LastThinkSpeed + speed) / 3.6 end
+    local dist = dT * 0.5 * (self.LastThinkSpeed + speed) / 3.6
+    if self.Distance then self.Distance = self.Distance - dist end
     local decel = self.LastThinkSpeed and self.LastThinkSpeed > speed and (self.LastThinkSpeed - speed) / dT or nil
     self.LastThink = CurTime()
     self.LastThinkSpeed = speed
+
+    if not Wag.Odometer then
+        Wag.Odometer = 0
+    end
+    Wag.Odometer = Wag.Odometer + math.abs(dist)
 
     -- For brake distance calibration
     -- if speed > 5 and BUKP.Kos and math.floor(speed * 10) % 100 == 0 then
@@ -153,7 +171,7 @@ function TRAIN_SYSTEM:Think()
     end
 
     if prostWork and self.ProstActive < 1 then
-        self.ProstActive = self.Receiving and not kvBrake and 1 or 0
+        self.ProstActive = self.Receiving and self.LastTag and self.LastTag.typ ~= 1 and not kvBrake and 1 or 0
     elseif not prostWork or not self.Distance or self.ProstActive > 0 and kvBrake then
         self.ProstActive = 0
     end
@@ -162,7 +180,7 @@ function TRAIN_SYSTEM:Think()
         self.OPV = 0
         self.BlockDoorsL = true
         self.BlockDoorsR = true
-    elseif not self.LastTag then
+    elseif not self.LastTag or not work then
         self.BlockDoorsL = false
         self.BlockDoorsR = false
     elseif self.OPV < 1 and self.Distance and math.abs(self.Distance) < 3.2 then
@@ -225,12 +243,14 @@ function TRAIN_SYSTEM:Think()
         -- print(tspeed, delta)
 
         if speed < 15 then
+            local wagc = BUKP.MotorWagc + BUKP.TrailerWagc
+            local roll = RollingMatrix[wagc < 6 and 1 or 2]
             if speed > 10 then
-                self.Command = self.Distance > 20 and 0 or self.Distance > 10 and -BrakeSettings[1] or self.Distance > 5 and -BrakeSettings[2] or -BrakeSettings[3]
+                self.Command = self.Distance > roll[1] and 0 or self.Distance > roll[2] and -BrakeSettings[1] or self.Distance > 5 and -BrakeSettings[2] or -BrakeSettings[3]
             elseif speed > 4 then
-                self.Command = self.Distance > 8 and 0 or self.Distance > 1.7 and -BrakeSettings[2] or -BrakeSettings[3]
+                self.Command = self.Distance > roll[3] and 0 or self.Distance > roll[4] and -BrakeSettings[2] or -BrakeSettings[3]
             else
-                self.Command = self.Distance > 1.6 and 0 or self.Distance > 0.2 and -BrakeSettings[2] or -BrakeSettings[3]
+                self.Command = self.Distance > roll[5] and 0 or self.Distance > roll[6] and -BrakeSettings[2] or -BrakeSettings[3]
             end
         elseif delta > (self.Distance > 150 and 0 or -2.2) then
             local decelMap = self.BrakeDecel[speed < 35 and 1 or speed < 60 and 2 or 3]

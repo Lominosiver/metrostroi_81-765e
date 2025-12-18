@@ -58,8 +58,8 @@
     - [ ] BUD per-door work (and rewrite)
     - [ ] Still brake PN1/PN2 revise
     - [ ] Pneumatic weight load PN setting adjustment
-    - [ ] UOS on MFDU
-    - [ ] Rewrite speed limit logics in BUKP
+    - [x] UOS on MFDU
+    - [x] Rewrite speed limit logics in BUKP
 - [ ] 81-765/766/767/.2/.4 (modeling 765, maybe getting rest from 760A code, maybe dependencies (systems) too)
   - [ ] Models
     - [ ] Mask

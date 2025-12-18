@@ -201,7 +201,7 @@ function TRAIN_SYSTEM:Think(dT)
         if TwoToSix and self.F4 and self.F6 then self.LN = true end
         self.BadFq = (ALS.OneFreq == 1 or ALS.TwoFreq == 1 and not self.LN or self.NoFreq) and TwoToSix and not ALS.AO
         if self.BadFq and (self.F4 or self.F3 or self.F2 or self.F1) then self.SpeedLimit = self.LN and 40 or (self.KB and 20 or 0) end
-        if self.SpeedLimit < 20 and self.KB then self.SpeedLimit = 20 end
+        if self.SpeedLimit < 20 and self.KB and not ALS.AO then self.SpeedLimit = 20 end
         --[[
         if ALS.AO and TwoToSix then
             if self.F5 then--0		
