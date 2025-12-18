@@ -71,8 +71,8 @@
     - [ ] Remove RUMBLE dependency
     - [ ] Door Alarm
     - [ ] Door drive
-    - [x] Early variant
-    - [ ] Improved variant
+      - [x] Early variant
+      - [ ] Improved variant
   - [ ] Variations
     - [ ] Base entity class 81-765
     - [ ] Derived entities 81-765.0, 766.0, 767.0, .2, .4

@@ -276,11 +276,10 @@ if SERVER then
 
     function TRAIN_SYSTEM:Speedometer(Wag)
         Wag:SetNW2Float("BUIK:ActualSpeed", Wag.BARS.Speed)
-        local maxSpeed = (Wag.BARS.SpeedLimit > 21 or Wag.BARS.KB) and math.floor(Wag.BARS.SpeedLimit) or 0
-        Wag:SetNW2Int("BUIK:MaxSpeed", maxSpeed)
-        Wag:SetNW2Int("BUIK:NextSpeed", math.min(maxSpeed, Wag.BARS.NextNoFq and 0 or math.floor(Wag.BARS.NextLimit)))
-        Wag:SetNW2Bool("BUIK:SpeedometerBlink", Wag.BARS.NoFreq or Wag.BARS.Brake > 0)
-        Wag:SetNW2Bool("BUIK:MaxSpeedBlink", Wag.BARS.NoFreq)
+        Wag:SetNW2Int("BUIK:MaxSpeed", Wag:GetNW2Int("SkifSpeedLimit", 0))
+        Wag:SetNW2Int("BUIK:NextSpeed", Wag:GetNW2Int("SkifNextSpeedLimit", 0))
+        Wag:SetNW2Bool("BUIK:SpeedometerBlink", Wag:GetNW2Bool("SkifNoFreqReal", false) or Wag:GetNW2Bool("SkifBarsBrake", false))
+        Wag:SetNW2Bool("BUIK:MaxSpeedBlink", Wag:GetNW2Bool("SkifNoFreq", false))
     end
 
     function TRAIN_SYSTEM:TrainInfo(Wag)
@@ -328,7 +327,7 @@ if SERVER then
 
         end
 
-        local alsArs = Wag:GetNW2Bool("PmvFreq")
+        local alsArs = Wag:GetNW2Bool("SkifAlsArs")
         self:CheckDisplayState(1, alsArs and "2/6" or "ДАУ", STATE_NORMAL)
         self:CheckDisplayState(2, "АРС1", ars_states[Wag:GetNW2Int("SkifARS1", -1)] or STATE_INACTIVE)
         self:CheckDisplayState(3, "АРС2", ars_states[Wag:GetNW2Int("SkifARS2", -1)] or STATE_INACTIVE)

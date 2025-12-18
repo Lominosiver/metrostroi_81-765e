@@ -148,21 +148,15 @@ function TRAIN_SYSTEM:Think(dT)
     self.PN3 = 0
 
     if EnableALS and Train.BUKP.Active > 0 and PowerALS then
-        local V = math.floor(self.Speed + 0.05)
-        local Vlimit = 20
-        local VLimit2
+        local Vlimit = 0
         if self.F4 then Vlimit = 40 end
         if self.F3 then Vlimit = 60 end
         if self.F2 then Vlimit = 70 end
         if self.F1 or self.AB then Vlimit = 80 end
-        --if (    self.KB) and (Vlimit ~= 0) and (V > Vlimit) then self.Overspeed = true end
-        --if (    self.KB) and (Vlimit == 0) and (V > 20) then self.Overspeed = true end
-        --if (not self.KB) and (V > Vlimit) and (V > (self.RealNoFreq and 0 or 3)) then self.Overspeed = true end
-        --if (    self.KB) and (Vlimit == 0) and self.Train.ARSType and self.Train.ARSType == 3 and not self.Train["PA-KSD"].VRD then self.Overspeed = true end
-        --self.Ring = self.Overspeed and (speed > 5)
-        -- Determine next limit and current limit
-        self.SpeedLimit = VLimit2 or Vlimit + 0.5
-        self.NextLimit = VLimit2 or Vlimit
+
+        self.SpeedLimit = Vlimit + 0.5
+        self.NextLimit = Vlimit
+
         local count = 0
         if self.F1 then
             self.NextLimit = 80
@@ -185,7 +179,7 @@ function TRAIN_SYSTEM:Think(dT)
         end
 
         if self.F5 then
-            self.NextLimit = 20
+            self.NextLimit = 0
             count = count + 1
         end
 
@@ -197,7 +191,7 @@ function TRAIN_SYSTEM:Think(dT)
         if self.F6 then count = count + 1 end
         self.NextNoFq = not self.AB and (DAU or ((not self.F1 and not self.F2 and not self.F3 and not self.F4 and not self.F5) or TwoToSix and self.LN and count == 1) and not ALS.AO or ALS.AO and not self.F5)
         if TwoToSix and self.F6 and self.SpeedLimit > 21 then self.NextNoFq = false end
-        if not TwoToSix and (self.NextLimit ~= math.max(20, Vlimit) or self.F6) and not self.AB then
+        if not TwoToSix and (math.max(20, self.NextLimit) ~= math.max(20, Vlimit) or self.F6) and not self.AB then
             self.SpeedLimit = 0
             self.NextLimit = self.SpeedLimit
             self.NoFreq = true

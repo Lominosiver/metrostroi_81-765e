@@ -712,7 +712,6 @@ if SERVER then
         if Power then
             self.DeltaTime = CurTime() - self.CurTime
             self.CurTime = CurTime()
-            Train:SetNW2Int("SkifSpeedLimit", BARS.NoFreq and 19 or math.floor(BARS.SpeedLimit))
             if self.DateEntered or self.Date1 or self.Date then
                 self.Date = self.Date1 and self.Date1.day .. self.Date1.month .. self.Date1.year or self.Date
                 local dat = {
@@ -1165,11 +1164,18 @@ if SERVER then
                     self:CheckError("ArsFail", BARS.Active < 1, BARS.ATS1 and 1 or BARS.ATS2 and 2 or nil)
                     self:CheckError("KmErr", Train.KV765.Online < 1)
 
+                    Train:SetNW2Bool("SkifNoFreq", BARS.NoFreq and not BARS.KB)
+                    Train:SetNW2Bool("SkifNoFreqReal", BARS.NoFreq)
+                    Train:SetNW2Bool("SkifNextNoFreq", BARS.NextNoFq and not BARS.NoFreq)
+                    Train:SetNW2Bool("SkifSao", Train.ALSCoil.AO)
+                    Train:SetNW2Bool("SkifUos", Train.PmvAtsBlock.Value == 3)
+                    Train:SetNW2Bool("SkifAlsArs", Train.PmvFreq.Value > 0)
+                    Train:SetNW2Bool("SkifBarsBrake", Train.BARS.Brake > 0)
+
+                    Train:SetNW2Int("SkifSpeedLimit", (Train.ALSCoil.AO or BARS.NoFreq and not BARS.KB) and 0 or Train.BARS.SpeedLimit)
+                    Train:SetNW2Int("SkifNextSpeedLimit", (BARS.NoFreq or BARS.NextNoFq) and 0 or Train.BARS.NextLimit)
+
                     Train:SetNW2Bool("KB", BARS.KB)
-                    Train:SetNW2Bool("SkifNextNoFq", BARS.NextNoFq)
-                    Train:SetNW2Int("SkifSpeedLimitNext", BARS.NextNoFq and -1 or (BARS.NextLimit or 0))
-                    Train:SetNW2Bool("SkifKB", BARS.KB)
-                    Train:SetNW2Bool("SkifUOS", BARS.UOS)
                     Train:SetNW2Bool("DisableDrive", self.DisableDrive)
                     Train:SetNW2Bool("SkifBTB", Train.BUV.BTB)
                     Train:SetNW2Bool("SkifKRR", RvKrr > 0)

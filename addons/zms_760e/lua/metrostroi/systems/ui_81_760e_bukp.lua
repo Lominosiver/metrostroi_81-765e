@@ -30,14 +30,11 @@ function TRAIN_SYSTEM:SkifMonitor()
     if self.NormalWork then
         local Wag = self.Train
 
-        self.AlsArs = Wag:GetNW2Bool("PmvFreq")
-        local ao = Wag:GetNW2Bool("AOState", false)
-        local vigilance = Wag:GetNW2Bool("SkifKB", false)
-        local speedNextNofq = Wag:GetNW2Bool("SkifNextNoFq", false)
-        local speedNext = self.AlsArs and (speedNextNofq and "0" or Wag:GetNW2Int("SkifSpeedLimitNext", "0")) or "---"
-        local speedLimit = Wag:GetNW2Int("SkifSpeedLimit", 0)
-        self.SpeedNext = isnumber(speedNext) and speedNext < 30 and (speedLimit > 30 and speedNextNofq and "ОЧ" or "0") or tostring(speedNext)
-        self.SpeedLimit = ao and "АО" or speedLimit == 19 and (not vigilance and "ОЧ" or "20") or speedLimit < 30 and not vigilance and "0" or tostring(speedLimit)
+        self.AlsArs = Wag:GetNW2Bool("SkifAlsArs")
+        self.UOS = Wag:GetNW2Bool("SkifUos", false)
+        self.FreqMode = self.UOS and "УОС" or self.AlsArs and "2/6" or "ДАУ"
+        self.SpeedNext = Wag:GetNW2Bool("SkifNextNoFreq", false) and "ОЧ" or Wag:GetNW2Int("SkifNextSpeedLimit", 0)
+        self.SpeedLimit = Wag:GetNW2Bool("SkifSao", false) and "АО" or Wag:GetNW2Bool("SkifNoFreq", false) and "ОЧ" or Wag:GetNW2Int("SkifSpeedLimit", 0)
         self.Speed = Wag:GetNW2Int("SkifSpeed", 0)
 
         self.Page = 0
@@ -543,7 +540,7 @@ local posPageStartY = sizeTopBar + sizeMainMargin + sizeBorder
 local posAlsModeY = posPageStartY + sizeMainLinesGap
 local posMainLinesStartX = sizeThrottleW + sizeMainMargin
 function TRAIN_SYSTEM:DrawMainPage()
-    draw.SimpleText("Режим " .. (self.AlsArs and "2/6" or "ДАУ"), "Mfdu765.TopBar", posMainLinesStartX, posAlsModeY, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Режим " .. self.FreqMode, "Mfdu765.TopBar", posMainLinesStartX, posAlsModeY, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
     local x, y = posMainLinesStartX + sizeSpeedMargin, posAlsModeY + sizeMainLinesGap + sizeMainSpeedH
     draw.SimpleText(tostring(self.Speed), "Mfdu765.Speed", x + 8, y - 0.2 * sizeMainSpeedH, colorGreen, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
@@ -698,7 +695,7 @@ function TRAIN_SYSTEM:DrawStatus(Wag)
 
         x = w / 2
         y = scrOffsetY + scrH - sizeFooter - sizeBorder - sizeStatus * 0.75
-        draw.SimpleText("Режим " .. (self.AlsArs and "2/6" or "ДАУ"), "Mfdu765.StatusSmall", x, y, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("Режим " .. self.FreqMode, "Mfdu765.StatusSmall", x, y, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     for idx, v in ipairs(pneumoList) do
