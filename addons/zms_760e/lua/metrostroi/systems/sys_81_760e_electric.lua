@@ -391,10 +391,12 @@ function TRAIN_SYSTEM:Think(dT, iter)
         Train:WriteTrainWire(39, EmergencyDoors * Train.EmerCloseDoors.Value)
         Train:WriteTrainWire(38, EmergencyDoors * self.ZeroSpeed * Train.DoorLeft.Value)
         Train:WriteTrainWire(37, EmergencyDoors * self.ZeroSpeed * Train.DoorRight.Value)
+
+        local EmerBattPower = Train.PmvEmerPower.Value * PBatt
         local ASNP_VV = Train.ASNP_VV
         ASNP_VV.Power = P * Train.SF42F1.Value * Train.R_ASNPOn.Value
         Panel.AppLights = --[[P * Train.SF15.Value * Train.SA8.Value]] 0
-        Panel.CabLight = P * Train.SF52F1.Value * min(2, Train.CabinLight.Value)
+        Panel.CabLight = min(1, P + EmerBattPower) * Train.SF52F1.Value * min(2 - (1 - P) * EmerBattPower, Train.CabinLight.Value)
         Panel.PanelLights = PowerReserve * Train.SF51F1.Value
         Panel.HeadlightsFull = UPIPower * Train.SF51F1.Value * RV["KRO11-12"] * max(0, Train.HeadlightsSwitch.Value - 1) + Train.EmergencyControls.Value * P
         Panel.HeadlightsHalf = UPIPower * Train.SF51F1.Value * RV["KRO11-12"] * Train.HeadlightsSwitch.Value + Train.EmergencyControls.Value * P
