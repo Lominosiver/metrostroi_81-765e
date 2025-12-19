@@ -872,7 +872,7 @@ pmvToggle("PmvCond", "Выключатель кондиционера салон
 }, 1)
 --[[
     TODO restore functionality:
-    SA2-4 мк, псн, только через ПВУ? резвервный псн вырезан?
+    SA2-4 мк, псн, только через ПВУ?
     SA6-7 сильный свет кабины под ПМО, убедиться в каких случаях работает слабый свет
     SA8 освещение ао, найти на что вообще вклияет и нужен ли
     SA10 авар.вкл. рвс (и света, по коду) - уже заменен или нет?
@@ -1271,7 +1271,7 @@ ENT.Spawner = {
                     if ent.SA1 then
                         timer.Simple(first and 2 or 1, function()
                             if not IsValid(ent) then return end
-                            ent:SetNW2Int("SkifWagNum", ent.BUKP.WagNum)
+                            ent:SetNW2Int("Skif:WagNum", ent.BUKP.WagNum)
                             for i = 1, ent.BUKP.WagNum do
                                 ent:CANWrite("BUKP", ent:GetWagonNumber(), "BUV", ent.BUKP.Trains[i], "Orientate", i % 2 > 0)
                             end

@@ -2439,17 +2439,6 @@ ENT.ButtonMap["MfduButtons"] = {
         --     }
         -- },
         -- {
-        --     ID = "SkifPSet",
-        --     x = 10,
-        --     y = 64,
-        --     w = 15,
-        --     h = 15,
-        --     tooltip = "Скиф: ",
-        --     model = {
-        --         var = "SkifP",
-        --         speed = 16,
-        --     }
-        -- },
         {
             ID = "Mfdu1Set",
             x = 3 * 0 + 15.5 * 0 + 50,

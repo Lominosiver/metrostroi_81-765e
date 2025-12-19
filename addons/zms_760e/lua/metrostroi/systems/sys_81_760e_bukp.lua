@@ -302,7 +302,7 @@ if SERVER then
             end
 
             if char and #self.Password < 4 and value then self.Password = self.Password .. char end
-            Train:SetNW2String("SkifPass", self.Password)
+            Train:SetNW2String("Skif:Pass", self.Password)
         elseif self.State == 2 and RV ~= 0 then
             if self.State2 == 0 then
                 if self.Entering then
@@ -387,7 +387,7 @@ if SERVER then
                 if self.Entering then
                     if name == BTN_CLEAR and value then self.Entering = self.Entering:sub(1, -2) end
                     if char and #self.Entering < 5 and value then self.Entering = self.Entering .. char end
-                    Train:SetNW2String("SkifEnter", self.Entering)
+                    Train:SetNW2String("Skif:Enter", self.Entering)
                 else
                     if name == BTN_UP and value and self.DepotSel > 0 then self.DepotSel = self.DepotSel - 1 end
                     if name == BTN_DOWN and value and self.DepotSel < 8 then self.DepotSel = self.DepotSel + 1 end
@@ -559,8 +559,8 @@ if SERVER then
         local param = errId > 0 and self.ErrorParams[errId] or false
         if errId == 0 then
             if self.ErrorRing then self.ErrorRing = nil end
-            self.Train:SetNW2Int("SkifErrorCat", 0)
-            self.Train:SetNW2String("SkifErrorStr", "")
+            self.Train:SetNW2Int("Skif:ErrorCat", 0)
+            self.Train:SetNW2String("Skif:ErrorStr", "")
         else
             local str = ErrorsCat[category][errId - start + 1]
             local changed = self.Error ~= errId or self.ErrorParams[0] ~= param
@@ -573,11 +573,11 @@ if SERVER then
             end
 
             if changed then
-                self.Train:SetNW2Int("SkifErrorCat", category)
+                self.Train:SetNW2Int("Skif:ErrorCat", category)
                 if isnumber(param) and str[3] then
-                    self.Train:SetNW2String("SkifErrorStr", string.format(str[3], param))
+                    self.Train:SetNW2String("Skif:ErrorStr", string.format(str[3], param))
                 else
-                    self.Train:SetNW2String("SkifErrorStr", str[2])
+                    self.Train:SetNW2String("Skif:ErrorStr", str[2])
                 end
             end
         end
@@ -609,17 +609,17 @@ if SERVER then
             local err, cat = errById(Error2id[name])
             local text = err[3] and isnumber(param) and string.format(err[3], param) or err[2]
             text = string.Replace(text, "\n", " ")
-            self.Train:SetNW2String("SkifLogMsg" .. idx, text)
-            self.Train:SetNW2String("SkifLogCat" .. idx, cat == 1 and "А" or cat == 2 and "Б" or "В")
-            self.Train:SetNW2String("SkifLogApDate" .. idx, appeared and appeared[1] or "")
-            self.Train:SetNW2String("SkifLogApTime" .. idx, appeared and appeared[2] or "")
-            self.Train:SetNW2String("SkifLogSolved" .. idx, solved and solved[2] or "")
+            self.Train:SetNW2String("Skif:LogMsg" .. idx, text)
+            self.Train:SetNW2String("Skif:LogCat" .. idx, cat == 1 and "А" or cat == 2 and "Б" or "В")
+            self.Train:SetNW2String("Skif:LogApDate" .. idx, appeared and appeared[1] or "")
+            self.Train:SetNW2String("Skif:LogApTime" .. idx, appeared and appeared[2] or "")
+            self.Train:SetNW2String("Skif:LogSolved" .. idx, solved and solved[2] or "")
             len = len + 1
         end
 
         self.MsgVer = self.MsgVer + 1
-        self.Train:SetNW2Int("SkifLogLen", len)
-        self.Train:SetNW2Int("SkifLogVer", self.MsgVer)
+        self.Train:SetNW2Int("Skif:LogLen", len)
+        self.Train:SetNW2Int("Skif:LogVer", self.MsgVer)
     end
 
     function TRAIN_SYSTEM:CheckBuv(train)
@@ -677,7 +677,7 @@ if SERVER then
 
         if Power and not self.Timer then
             self.Timer = CurTime()
-            Train:SetNW2Int("SkifTimer", CurTime())
+            Train:SetNW2Int("Skif:Timer", CurTime())
         elseif not Power then
             self.Timer = nil
         end
@@ -687,7 +687,7 @@ if SERVER then
             self.State2 = 0
             self.SkifTimer = false
             self.Password = ""
-            Train:SetNW2String("SkifPass", "")
+            Train:SetNW2String("Skif:Pass", "")
             self.States = {}
             self.PVU = {}
             for k, v in ipairs(self.Trains) do
@@ -698,7 +698,7 @@ if SERVER then
         end
 
         local RV = (1 - Train.RV["KRO5-6"]) + Train.RV["KRR15-16"]
-        Train:SetNW2Int("SkifRV", RV * Train.Electric.UPIPower)
+        Train:SetNW2Int("Skif:RV", RV * Train.Electric.UPIPower)
         if self.State ~= 5 then self.MainMsg = RV * Train.Electric.UPIPower > 0 and MAINMSG_NONE or MAINMSG_RVOFF end
         self.Active = (RV * Train.PpzActiveCabin.Value ~= 0) and 1 or 0
 
@@ -769,19 +769,19 @@ if SERVER then
             end
 
             if self.State >= 2 then
-                Train:SetNW2String("SkifTime", self.Time)
-                Train:SetNW2String("SkifDate", self.DateStr)
-                Train:SetNW2Int("SkifWagNum", self.WagNum)
+                Train:SetNW2String("Skif:Time", self.Time)
+                Train:SetNW2String("Skif:Date", self.DateStr)
+                Train:SetNW2Int("Skif:WagNum", self.WagNum)
             end
             if self.State == 2 then
-                Train:SetNW2String("SkifRouteNumber", self.RouteNumber)
-                Train:SetNW2String("SkifDepotCode", self.DepotCode)
-                Train:SetNW2String("SkifDepeatStation", self.DepeatStation)
-                Train:SetNW2String("SkifPath", self.Path)
-                Train:SetNW2String("SkifDir", self.Dir)
-                Train:SetNW2String("SkifDBand", self.DBand)
-                Train:SetNW2String("SkifDeadlock", self.Deadlock)
-                Train:SetNW2String("SkifEnter", self.Entering or "-")
+                Train:SetNW2String("Skif:RouteNumber", self.RouteNumber)
+                Train:SetNW2String("Skif:DepotCode", self.DepotCode)
+                Train:SetNW2String("Skif:DepeatStation", self.DepeatStation)
+                Train:SetNW2String("Skif:Path", self.Path)
+                Train:SetNW2String("Skif:Dir", self.Dir)
+                Train:SetNW2String("Skif:DBand", self.DBand)
+                Train:SetNW2String("Skif:Deadlock", self.Deadlock)
+                Train:SetNW2String("Skif:Enter", self.Entering or "-")
             end
 
             if self.State == 3 then
@@ -804,9 +804,9 @@ if SERVER then
                         end
 
                         if not train.WagNOrientated and train.BUVWork and not train.BadCombination and not find then
-                            Train:SetNW2Bool("SkifWagI" .. i, true)
+                            Train:SetNW2Bool("Skif:WagI" .. i, true)
                         else
-                            Train:SetNW2Bool("SkifWagI" .. i, false)
+                            Train:SetNW2Bool("Skif:WagI" .. i, false)
                             initialized = false
                         end
                     else
@@ -941,27 +941,27 @@ if SERVER then
                         end
 
                         --Errors
-                        Train:SetNW2Bool("SkifDoors" .. i, doorclose)
-                        Train:SetNW2Bool("SkifBV" .. i, train.BVEnabled)
-                        Train:SetNW2Bool("SkifBUVState" .. i, working)
-                        Train:SetNW2Bool("SkifBattery" .. i, train.Battery)
-                        Train:SetNW2Bool("SkifBTBReady" .. i, train.BTBReady)
-                        Train:SetNW2Bool("SkifEPTGood" .. i, train.EmergencyBrakeGood)
-                        Train:SetNW2Bool("SkifEmerActive" .. i, not train.EmergencyBrake)
-                        Train:SetNW2Bool("SkifPTApply" .. i, not train.PTEnabled)
-                        Train:SetNW2Bool("SkifPSNEnabled" .. i, train.PSNEnabled)
-                        Train:SetNW2Bool("SkifPSNWork" .. i, train.PSNWork)
-                        Train:SetNW2Bool("SkifCond1" .. i, train.Cond1)
-                        Train:SetNW2Bool("SkifCond2" .. i, train.Cond2)
-                        Train:SetNW2Bool("SkifPSNBroken" .. i, not train.PSNBroken)
-                        Train:SetNW2Bool("SkifScheme" .. i, train.Scheme)
-                        Train:SetNW2Bool("SkifTPEnabled" .. i, train.EnginesBroken)
-                        Train:SetNW2Bool("SkifLVGood" .. i, not train.LVBad)
-                        Train:SetNW2Bool("SkifBVEnabled" .. i, train.BVEnabled)
-                        Train:SetNW2Bool("SkifPBApply" .. i, not train.ParkingBrakeEnabled)
-                        Train:SetNW2Bool("SkifBadCombination" .. i, not train.BadCombination)
-                        Train:SetNW2Bool("SkifAsyncInverter" .. i, train.AsyncInverter)
-                        Train:SetNW2Bool("SkifHVGood" .. i, not train.HVBad)
+                        Train:SetNW2Bool("Skif:Doors" .. i, doorclose)
+                        Train:SetNW2Bool("Skif:BV" .. i, train.BVEnabled)
+                        Train:SetNW2Bool("Skif:BUVState" .. i, working)
+                        Train:SetNW2Bool("Skif:Battery" .. i, train.Battery)
+                        Train:SetNW2Bool("Skif:BTBReady" .. i, train.BTBReady)
+                        Train:SetNW2Bool("Skif:EPTGood" .. i, train.EmergencyBrakeGood)
+                        Train:SetNW2Bool("Skif:EmerActive" .. i, not train.EmergencyBrake)
+                        Train:SetNW2Bool("Skif:PTApply" .. i, not train.PTEnabled)
+                        Train:SetNW2Bool("Skif:PSNEnabled" .. i, train.PSNEnabled)
+                        Train:SetNW2Bool("Skif:PSNWork" .. i, train.PSNWork)
+                        Train:SetNW2Bool("Skif:Cond1" .. i, train.Cond1)
+                        Train:SetNW2Bool("Skif:Cond2" .. i, train.Cond2)
+                        Train:SetNW2Bool("Skif:PSNBroken" .. i, not train.PSNBroken)
+                        Train:SetNW2Bool("Skif:Scheme" .. i, train.Scheme)
+                        Train:SetNW2Bool("Skif:TPEnabled" .. i, train.EnginesBroken)
+                        Train:SetNW2Bool("Skif:LVGood" .. i, not train.LVBad)
+                        Train:SetNW2Bool("Skif:BVEnabled" .. i, train.BVEnabled)
+                        Train:SetNW2Bool("Skif:PBApply" .. i, not train.ParkingBrakeEnabled)
+                        Train:SetNW2Bool("Skif:BadCombination" .. i, not train.BadCombination)
+                        Train:SetNW2Bool("Skif:AsyncInverter" .. i, train.AsyncInverter)
+                        Train:SetNW2Bool("Skif:HVGood" .. i, not train.HVBad)
                         local orientation = train.Orientation
                         local doorleftopened, doorrightopened = false, false
                         for d = 1, 4 do
@@ -971,8 +971,8 @@ if SERVER then
                             if r and not doorrightopened then doorrightopened = true end
                         end
 
-                        Train:SetNW2Bool("SkifDoorLeft" .. i, doorleftopened)
-                        Train:SetNW2Bool("SkifDoorRight" .. i, doorrightopened)
+                        Train:SetNW2Bool("Skif:DoorLeft" .. i, doorleftopened)
+                        Train:SetNW2Bool("Skif:DoorRight" .. i, doorrightopened)
                         self.SchemeEngaged = self.SchemeEngaged or not train.NoAssembly
 
                         for sfp, sfs in ipairs(self.SFTbl) do
@@ -984,20 +984,20 @@ if SERVER then
                         end
                         self:CheckWagError(i, "SF", sfBroken)
 
-                        Train:SetNW2Bool("SkifAddressDoorsL" .. i, orientation and train.AddressDoorsL or not orientation and train.AddressDoorsR)
-                        Train:SetNW2Bool("SkifAddressDoorsR" .. i, orientation and train.AddressDoorsR or not orientation and train.AddressDoorsL)
+                        Train:SetNW2Bool("Skif:AddressDoorsL" .. i, orientation and train.AddressDoorsL or not orientation and train.AddressDoorsR)
+                        Train:SetNW2Bool("Skif:AddressDoorsR" .. i, orientation and train.AddressDoorsR or not orientation and train.AddressDoorsL)
 
                         local cab = not not train.HasCabin
-                        Train:SetNW2Bool("SkifHasCabin" .. i, cab)
+                        Train:SetNW2Bool("Skif:HasCabin" .. i, cab)
                         if cab then
-                            Train:SetNW2Bool("SkifDoorML" .. i, orientation and train.CabDoorLeft or not orientation and train.CabDoorRight)
-                            Train:SetNW2Bool("SkifDoorMR" .. i, orientation and train.CabDoorRight or not orientation and train.CabDoorLeft)
-                            Train:SetNW2Bool("SkifDoorT" .. i, train.CabDoorPass)
+                            Train:SetNW2Bool("Skif:DoorML" .. i, orientation and train.CabDoorLeft or not orientation and train.CabDoorRight)
+                            Train:SetNW2Bool("Skif:DoorMR" .. i, orientation and train.CabDoorRight or not orientation and train.CabDoorLeft)
+                            Train:SetNW2Bool("Skif:DoorT" .. i, train.CabDoorPass)
                             doorsNotClosed = doorsNotClosed or Train.SF80F3.Value == 1 and (not train.CabDoorLeft or not train.CabDoorRight) and trainid ~= Train:GetWagonNumber()
                             cabDoors = cabDoors or not train.CabDoorLeft or not train.CabDoorRight or not train.CabDoorPass
                         end
 
-                        Train:SetNW2Bool("SkifCondK" .. i, train.CondK)
+                        Train:SetNW2Bool("Skif:CondK" .. i, train.CondK)
                     end
 
                     local noOrient = self.Errors.NoOrient
@@ -1018,38 +1018,38 @@ if SERVER then
 
                     local errPT = self.PTEnabled and CurTime() - self.PTEnabled > 2 + (Train.BUV.Slope1 and 1.2 or 0)
 
-                    Train:SetNW2Int("SkifDoorsAll", doorsNotClosed and 0 or cabDoors and 2 or 1)
-                    Train:SetNW2Int("SkifHvAll", hvGood == 0 and 0 or hvBad == 0 and 1 or 2)
-                    Train:SetNW2Int("SkifBvAll", bvEnabled == 0 and 0 or bvDisabled == 0 and 1 or 2)
-                    Train:SetNW2Bool("SkifCondAny", condAny)
-                    Train:SetNW2Bool("SkifVoGood", voGood)
-                    Train:SetNW2Int("SkifKTR", Train.EmerBrake.Value == 1 and 1 or -1)
-                    Train:SetNW2Int("SkifALS", Train.ALS.Value == 1 and 1 or -1)
-                    Train:SetNW2Int("SkifBOSD", Train.DoorBlock.Value == 1 and 0 or -1)
+                    Train:SetNW2Int("Skif:DoorsAll", doorsNotClosed and 0 or cabDoors and 2 or 1)
+                    Train:SetNW2Int("Skif:HvAll", hvGood == 0 and 0 or hvBad == 0 and 1 or 2)
+                    Train:SetNW2Int("Skif:BvAll", bvEnabled == 0 and 0 or bvDisabled == 0 and 1 or 2)
+                    Train:SetNW2Bool("Skif:CondAny", condAny)
+                    Train:SetNW2Bool("Skif:VoGood", voGood)
+                    Train:SetNW2Int("Skif:KTR", Train.EmerBrake.Value == 1 and 1 or -1)
+                    Train:SetNW2Int("Skif:ALS", Train.ALS.Value == 1 and 1 or -1)
+                    Train:SetNW2Int("Skif:BOSD", Train.DoorBlock.Value == 1 and 0 or -1)
 
-                    Train:SetNW2Bool("SkifShowDoors", doorsNotClosed)
-                    Train:SetNW2Bool("SkifShowBV", bvDisabled > 0)
-                    Train:SetNW2Bool("SkifShowScheme", self.SchemeTimer and self.SchemeTimer < CurTime())
-                    Train:SetNW2Bool("SkifShowPTApply", errPT)
-                    Train:SetNW2Bool("SkifShowPBApply", self.Errors.ParkingBrake)
-                    Train:SetNW2Bool("SkifShowBUVState", self.Errors.BuvDiscon)
-                    Train:SetNW2Bool("SkifShowBTBReady", not btbAll)
+                    Train:SetNW2Bool("Skif:ShowDoors", doorsNotClosed)
+                    Train:SetNW2Bool("Skif:ShowBV", bvDisabled > 0)
+                    Train:SetNW2Bool("Skif:ShowScheme", self.SchemeTimer and self.SchemeTimer < CurTime())
+                    Train:SetNW2Bool("Skif:ShowPTApply", errPT)
+                    Train:SetNW2Bool("Skif:ShowPBApply", self.Errors.ParkingBrake)
+                    Train:SetNW2Bool("Skif:ShowBUVState", self.Errors.BuvDiscon)
+                    Train:SetNW2Bool("Skif:ShowBTBReady", not btbAll)
 
                     local schemeShouldAssemble = schemeAny or RvKro and Train.KV765.Position > 0 and not self.PTEnabled and not self.Errors.EmergencyBrake
                     if not schemeAll and schemeShouldAssemble and not self.SchemeTimer then self.SchemeTimer = CurTime() + 1.8 end
                     if (not schemeShouldAssemble or schemeAll) and self.SchemeTimer then self.SchemeTimer = nil end
 
                     if self.ProstTimer and Train.MfduF8.Value < 0.5 then self.ProstTimer = nil end
-                    Train:SetNW2Bool("SkifProstTimer", self.ProstTimer and CurTime() - self.ProstTimer > 0.5)
-                    Train:SetNW2Bool("SkifProst", self.Prost)
-                    Train:SetNW2Bool("SkifKos", self.Kos)
+                    Train:SetNW2Bool("Skif:ProstTimer", self.ProstTimer and CurTime() - self.ProstTimer > 0.5)
+                    Train:SetNW2Bool("Skif:Prost", self.Prost)
+                    Train:SetNW2Bool("Skif:Kos", self.Kos)
 
                     if not self.Errors.NoOrient and Train.Electric.DoorsControl > 0 and Train.DoorLeft.Value > 0 and Train.DoorSelectL.Value > 0 and Train.DoorSelectR.Value == 0 and (not Train.ProstKos.BlockDoorsL or Train.DoorBlock.Value == 1) then doorLeft = true end
                     if not self.Errors.NoOrient and Train.Electric.DoorsControl > 0 and Train.DoorRight.Value > 0 and Train.DoorSelectR.Value > 0 and Train.DoorSelectL.Value == 0 and (not Train.ProstKos.BlockDoorsR or Train.DoorBlock.Value == 1) then doorRight = true end
 
-                    Train:SetNW2Bool("SkifCond", self.CondLeto)
-                    Train:SetNW2Bool("SkifDoorBlockL", self.CurrentSpeed < 1.8 and (not Train.ProstKos.BlockDoorsL or Train.DoorBlock.Value == 1))
-                    Train:SetNW2Bool("SkifDoorBlockR", self.CurrentSpeed < 1.8 and (not Train.ProstKos.BlockDoorsR or Train.DoorBlock.Value == 1))
+                    Train:SetNW2Bool("Skif:Cond", self.CondLeto)
+                    Train:SetNW2Bool("Skif:DoorBlockL", self.CurrentSpeed < 1.8 and (not Train.ProstKos.BlockDoorsL or Train.DoorBlock.Value == 1))
+                    Train:SetNW2Bool("Skif:DoorBlockR", self.CurrentSpeed < 1.8 and (not Train.ProstKos.BlockDoorsR or Train.DoorBlock.Value == 1))
                     if Train:ReadTrainWire(33) + (1 - Train.Electric.V2) > 0 and self.EmergencyBrake == 1 then self.EmergencyBrake = 0 end
 
                     if self.BLTimer and CurTime() - self.BLTimer > 0 and Train.RV.KRRPosition == 0 and Train.Electric.SD == 0 and Train.Electric.V2 > 0 and self.EmergencyBrake == 0 then
@@ -1113,20 +1113,20 @@ if SERVER then
                         end
                     end
 
-                    Train:SetNW2Bool("SkifProstActive", Train.ProstKos.ProstActive > 0)
-                    Train:SetNW2Bool("SkifKosActive", Train.ProstKos.KosActive > 0)
-                    Train:SetNW2Bool("SkifKosCommand", Train.ProstKos.CommandKos > 0)
-                    Train:SetNW2Int("SkifProstReadings", Train.ProstKos.Readings)
-                    Train:SetNW2Int("SkifProstDist", 100 * (Train.ProstKos.Distance or 0))
+                    Train:SetNW2Bool("Skif:ProstActive", Train.ProstKos.ProstActive > 0)
+                    Train:SetNW2Bool("Skif:KosActive", Train.ProstKos.KosActive > 0)
+                    Train:SetNW2Bool("Skif:KosCommand", Train.ProstKos.CommandKos > 0)
+                    Train:SetNW2Int("Skif:ProstReadings", Train.ProstKos.Readings)
+                    Train:SetNW2Int("Skif:ProstDist", 100 * (Train.ProstKos.Distance or 0))
                     if Train.ProstKos.LastTag then
-                        Train:SetNW2Int("SkifProstData1", Train.ProstKos.LastTag.id % 0x100)
-                        Train:SetNW2Int("SkifProstData2", Train.ProstKos.LastTag.typ)
-                        Train:SetNW2Int("SkifProstData3", math.floor(Train.ProstKos.LastTag.dist / 0x100))
-                        Train:SetNW2Int("SkifProstData4", math.floor(Train.ProstKos.LastTag.dist % 0x100))
-                        Train:SetNW2Int("SkifProstData5", math.floor(Train.ProstKos.LastTag.station / 0x100))
-                        Train:SetNW2Int("SkifProstData6", math.floor(Train.ProstKos.LastTag.station % 0x100))
-                        Train:SetNW2Int("SkifProstData7", Train.ProstKos.LastTag.path)
-                        Train:SetNW2Int("SkifProstData8", Train.ProstKos.LastTag.doors and 1 or 0)
+                        Train:SetNW2Int("Skif:ProstData1", Train.ProstKos.LastTag.id % 0x100)
+                        Train:SetNW2Int("Skif:ProstData2", Train.ProstKos.LastTag.typ)
+                        Train:SetNW2Int("Skif:ProstData3", math.floor(Train.ProstKos.LastTag.dist / 0x100))
+                        Train:SetNW2Int("Skif:ProstData4", math.floor(Train.ProstKos.LastTag.dist % 0x100))
+                        Train:SetNW2Int("Skif:ProstData5", math.floor(Train.ProstKos.LastTag.station / 0x100))
+                        Train:SetNW2Int("Skif:ProstData6", math.floor(Train.ProstKos.LastTag.station % 0x100))
+                        Train:SetNW2Int("Skif:ProstData7", Train.ProstKos.LastTag.path)
+                        Train:SetNW2Int("Skif:ProstData8", Train.ProstKos.LastTag.doors and 1 or 0)
                     end
 
                     if ptApplied and kvSetting > 0 and not self.PTEnabled then self.PTEnabled = CurTime() end
@@ -1136,24 +1136,24 @@ if SERVER then
                     self:CheckError("HV", self.HVBad and CurTime() - self.HVBad > 10)
 
                     local buv = self.Trains[self.Trains[1]]
-                    Train:SetNW2Int("SkifBUVStrength", math.abs(Train.BUV.Strength))
+                    Train:SetNW2Int("Skif:BUVStrength", math.abs(Train.BUV.Strength))
                     if buv and buv.LV then
-                        Train:SetNW2Int("SkifPNM", buv.TLPressure * 10)
-                        Train:SetNW2Int("SkifPTM", buv.BLPressure * 10)
-                        Train:SetNW2Int("SkifUbs", buv.LV)
-                        if min then Train:SetNW2Int("SkifPMin", min * 10) end
-                        if max then Train:SetNW2Int("SkifPMax", max * 10) end
-                        if uLvmin then Train:SetNW2Int("SkifLvMin", uLvmin) end
-                        if uLvmax then Train:SetNW2Int("SkifLvMax", uLvmax) end
-                        if uHvmin then Train:SetNW2Int("SkifHvMin", uHvmin) end
-                        if uHvmax then Train:SetNW2Int("SkifHvMax", uHvmax) end
+                        Train:SetNW2Int("Skif:PNM", buv.TLPressure * 10)
+                        Train:SetNW2Int("Skif:PTM", buv.BLPressure * 10)
+                        Train:SetNW2Int("Skif:Ubs", buv.LV)
+                        if min then Train:SetNW2Int("Skif:PMin", min * 10) end
+                        if max then Train:SetNW2Int("Skif:PMax", max * 10) end
+                        if uLvmin then Train:SetNW2Int("Skif:LvMin", uLvmin) end
+                        if uLvmax then Train:SetNW2Int("Skif:LvMax", uLvmax) end
+                        if uHvmin then Train:SetNW2Int("Skif:HvMin", uHvmin) end
+                        if uHvmax then Train:SetNW2Int("Skif:HvMax", uHvmax) end
                     end
 
                     local speed = 99
                     self.Speed = math.Round(Train.ALSCoil.Speed * 10) / 10
                     speed = self.Speed
 
-                    Train:SetNW2Int("SkifSpeed", BARS.Speed)
+                    Train:SetNW2Int("Skif:Speed", BARS.Speed)
                     self.CurrentSpeed = speed == 99 and 0 or speed
 
                     local driveInput = RvKro > 0 and (Train.KV765.Position > 0 or kvSetting > 0) or RvKrr > 0 and (Train.EmerX1.Value + Train.EmerX2.Value > 0)
@@ -1164,112 +1164,112 @@ if SERVER then
                     self:CheckError("ArsFail", BARS.Active < 1, BARS.ATS1 and 1 or BARS.ATS2 and 2 or nil)
                     self:CheckError("KmErr", Train.KV765.Online < 1)
 
-                    Train:SetNW2Bool("SkifNoFreq", BARS.NoFreq and not BARS.KB)
-                    Train:SetNW2Bool("SkifNoFreqReal", BARS.NoFreq)
-                    Train:SetNW2Bool("SkifNextNoFreq", BARS.NextNoFq and not BARS.NoFreq)
-                    Train:SetNW2Bool("SkifSao", Train.ALSCoil.AO)
-                    Train:SetNW2Bool("SkifUos", Train.PmvAtsBlock.Value == 3)
-                    Train:SetNW2Bool("SkifAlsArs", Train.PmvFreq.Value > 0)
-                    Train:SetNW2Bool("SkifBarsBrake", Train.BARS.Brake > 0)
+                    Train:SetNW2Bool("Skif:NoFreq", BARS.NoFreq and not BARS.KB)
+                    Train:SetNW2Bool("Skif:NoFreqReal", BARS.NoFreq)
+                    Train:SetNW2Bool("Skif:NextNoFreq", BARS.NextNoFq and not BARS.NoFreq)
+                    Train:SetNW2Bool("Skif:Sao", Train.ALSCoil.AO)
+                    Train:SetNW2Bool("Skif:Uos", Train.PmvAtsBlock.Value == 3)
+                    Train:SetNW2Bool("Skif:AlsArs", Train.PmvFreq.Value > 0)
+                    Train:SetNW2Bool("Skif:BarsBrake", Train.BARS.Brake > 0)
 
-                    Train:SetNW2Int("SkifSpeedLimit", (Train.ALSCoil.AO or BARS.NoFreq and not BARS.KB) and 0 or Train.BARS.SpeedLimit)
-                    Train:SetNW2Int("SkifNextSpeedLimit", (BARS.NoFreq or BARS.NextNoFq) and 0 or Train.BARS.NextLimit)
+                    Train:SetNW2Int("Skif:SpeedLimit", (Train.ALSCoil.AO or BARS.NoFreq and not BARS.KB) and 0 or Train.BARS.SpeedLimit)
+                    Train:SetNW2Int("Skif:NextSpeedLimit", (BARS.NoFreq or BARS.NextNoFq) and 0 or Train.BARS.NextLimit)
 
                     Train:SetNW2Bool("KB", BARS.KB)
                     Train:SetNW2Bool("DisableDrive", self.DisableDrive)
-                    Train:SetNW2Bool("SkifBTB", Train.BUV.BTB)
-                    Train:SetNW2Bool("SkifKRR", RvKrr > 0)
-                    Train:SetNW2Bool("SkifEmerActive", self.Errors.EmergencyBrake)
-                    Train:SetNW2Bool("SkifParkEnabled", self.Errors.ParkingBrake)
-                    Train:SetNW2Bool("SkifPtApplied", not not ptApplied)
-                    Train:SetNW2Bool("SkifPtAppliedRear", self.Trains[self.WagNum] and self.Trains[self.Trains[self.WagNum]] and self.Trains[self.Trains[self.WagNum]].PTEnabled or false)
+                    Train:SetNW2Bool("Skif:BTB", Train.BUV.BTB)
+                    Train:SetNW2Bool("Skif:KRR", RvKrr > 0)
+                    Train:SetNW2Bool("Skif:EmerActive", self.Errors.EmergencyBrake)
+                    Train:SetNW2Bool("Skif:ParkEnabled", self.Errors.ParkingBrake)
+                    Train:SetNW2Bool("Skif:PtApplied", not not ptApplied)
+                    Train:SetNW2Bool("Skif:PtAppliedRear", self.Trains[self.WagNum] and self.Trains[self.Trains[self.WagNum]] and self.Trains[self.Trains[self.WagNum]].PTEnabled or false)
                     self.AO = Train.ALSCoil.AO
 
                     for i = 1, self.WagNum do
                         local train = self.Trains[self.Trains[i]]
-                        Train:SetNW2Bool("SkifInvSf" .. i, train.SF23F4)
+                        Train:SetNW2Bool("Skif:InvSf" .. i, train.SF23F4)
                     end
 
                     if self.State2 == 11 or self.State2 == 01 then
                         for i = 1, self.WagNum do
                             local train = self.Trains[self.Trains[i]]
-                            Train:SetNW2Bool("SkifBuksGood" .. i, true)
-                            Train:SetNW2Bool("SkifMKState" .. i, not train.MKWork and -1 or train.MKCurrent > 5 and 1 or 0)
-                            Train:SetNW2Bool("SkifLightsWork" .. i, train.PassLightEnabled)
-                            Train:SetNW2Bool("SkifPantDisabled" .. i, not train.PantDisabled)
-                            Train:SetNW2Bool("SkifRessoraGood" .. i, true)
-                            Train:SetNW2Bool("SkifPUGood" .. i, true)
-                            Train:SetNW2Bool("SkifBUDWork" .. i, train.BUDWork)
-                            Train:SetNW2Bool("SkifWagOr" .. i, train.Orientation)
+                            Train:SetNW2Bool("Skif:BuksGood" .. i, true)
+                            Train:SetNW2Bool("Skif:MKState" .. i, not train.MKWork and -1 or train.MKCurrent > 5 and 1 or 0)
+                            Train:SetNW2Bool("Skif:LightsWork" .. i, train.PassLightEnabled)
+                            Train:SetNW2Bool("Skif:PantDisabled" .. i, not train.PantDisabled)
+                            Train:SetNW2Bool("Skif:RessoraGood" .. i, true)
+                            Train:SetNW2Bool("Skif:PUGood" .. i, true)
+                            Train:SetNW2Bool("Skif:BUDWork" .. i, train.BUDWork)
+                            Train:SetNW2Bool("Skif:WagOr" .. i, train.Orientation)
                         end
                     elseif self.State2 == 13 then
                         for i = 1, self.WagNum do
                             local train = self.Trains[self.Trains[i]]
                             for k = 1, 8 do
-                                Train:SetNW2Bool("SkifDPBT" .. k .. i, train["DPBT" .. k])
+                                Train:SetNW2Bool("Skif:DPBT" .. k .. i, train["DPBT" .. k])
                             end
                         end
                     elseif self.State2 == 14 then
                         for i = 1, self.WagNum do
                             local train = self.Trains[self.Trains[i]]
                             for k = 1, 4 do
-                                Train:SetNW2Bool("SkifPant" .. k .. i, not train.PantDisabled)
-                                Train:SetNW2Bool("SkifPant" .. k .. i, not train.PantDisabled)
+                                Train:SetNW2Bool("Skif:Pant" .. k .. i, not train.PantDisabled)
+                                Train:SetNW2Bool("Skif:Pant" .. k .. i, not train.PantDisabled)
                             end
                         end
                     elseif self.State2 > 15 and self.State2 < 18 then
                         for i = 1, self.WagNum do
                             local train = self.Trains[self.Trains[i]]
                             for sf in pairs(self.SFTbl[self.State2 - 15]) do
-                                Train:SetNW2Bool("SkifSf" .. sf .. i, train[sf])
+                                Train:SetNW2Bool("Skif:Sf" .. sf .. i, train[sf])
                             end
                         end
                     elseif self.State2 == 21 then
                         for i = 1, self.WagNum do
                             local train = self.Trains[self.Trains[i]]
                             local orientation = train.Orientation
-                            Train:SetNW2Bool("SkifWagOr" .. i, orientation)
+                            Train:SetNW2Bool("Skif:WagOr" .. i, orientation)
                             for d = 1, 4 do
-                                Train:SetNW2Bool("SkifDoor" .. d .. "L" .. i, train["Door" .. (orientation and d or d + 4) .. "Closed"])
-                                Train:SetNW2Bool("SkifDoor" .. d .. "R" .. i, train["Door" .. (orientation and d + 4 or d) .. "Closed"])
-                                Train:SetNW2Bool("SkifDoorReverse" .. d .. "L" .. i, train["DoorReverse" .. (orientation and d or 9 - d)])
-                                Train:SetNW2Bool("SkifDoorReverse" .. d .. "R" .. i, train["DoorReverse" .. (orientation and 9 - d or d)])
+                                Train:SetNW2Bool("Skif:Door" .. d .. "L" .. i, train["Door" .. (orientation and d or d + 4) .. "Closed"])
+                                Train:SetNW2Bool("Skif:Door" .. d .. "R" .. i, train["Door" .. (orientation and d + 4 or d) .. "Closed"])
+                                Train:SetNW2Bool("Skif:DoorReverse" .. d .. "L" .. i, train["DoorReverse" .. (orientation and d or 9 - d)])
+                                Train:SetNW2Bool("Skif:DoorReverse" .. d .. "R" .. i, train["DoorReverse" .. (orientation and 9 - d or d)])
                             end
                         end
                     elseif self.State2 == 31 or self.State2 == 32 then
                         for i = 1, self.WagNum do
                             local train = self.Trains[self.Trains[i]]
-                            Train:SetNW2Int("SkifBrakeStrength" .. i, math.abs(train.BrakeStrength or 0) * 100)
-                            Train:SetNW2Int("SkifDriveStrength" .. i, math.abs(train.DriveStrength or 0) * 100)
-                            Train:SetNW2Int("SkifPower" .. i, train.ElectricEnergyUsed)
-                            Train:SetNW2Int("SkifI" .. i, train.I)
-                            Train:SetNW2Int("SkifU" .. i, train.HVVoltage)
+                            Train:SetNW2Int("Skif:BrakeStrength" .. i, math.abs(train.BrakeStrength or 0) * 100)
+                            Train:SetNW2Int("Skif:DriveStrength" .. i, math.abs(train.DriveStrength or 0) * 100)
+                            Train:SetNW2Int("Skif:Power" .. i, train.ElectricEnergyUsed)
+                            Train:SetNW2Int("Skif:I" .. i, train.I)
+                            Train:SetNW2Int("Skif:U" .. i, train.HVVoltage)
                         end
                     elseif self.State2 == 41 then
                         for i = 1, self.WagNum do
                             local train = self.Trains[self.Trains[i]]
-                            Train:SetNW2Int("SkifIMK" .. i, train.MKCurrent and train.MKCurrent * 10)
-                            Train:SetNW2Int("SkifIVO" .. i, train.VagEqConsumption * 10)
-                            Train:SetNW2Int("SkifUBS" .. i, train.LV and train.LV * 10 or 0)
-                            Train:SetNW2Int("SkifU" .. i, train.HVVoltage and train.HVVoltage * 10 or 0)
-                            Train:SetNW2Int("SkifI" .. i, train.I)
-                            Train:SetNW2Int("SkifPower" .. i, train.ElectricEnergyUsed)
-                            Train:SetNW2Int("SkifDissipated" .. i, train.ElectricEnergyDissipated)
+                            Train:SetNW2Int("Skif:IMK" .. i, train.MKCurrent and train.MKCurrent * 10)
+                            Train:SetNW2Int("Skif:IVO" .. i, train.VagEqConsumption * 10)
+                            Train:SetNW2Int("Skif:UBS" .. i, train.LV and train.LV * 10 or 0)
+                            Train:SetNW2Int("Skif:U" .. i, train.HVVoltage and train.HVVoltage * 10 or 0)
+                            Train:SetNW2Int("Skif:I" .. i, train.I)
+                            Train:SetNW2Int("Skif:Power" .. i, train.ElectricEnergyUsed)
+                            Train:SetNW2Int("Skif:Dissipated" .. i, train.ElectricEnergyDissipated)
                         end
                     elseif self.State2 == 51 or self.State2 == 52 then
                         for i = 1, self.WagNum do
                             local train = self.Trains[self.Trains[i]]
-                            Train:SetNW2Int("SkifP" .. i, train.BCPressure * 10)
-                            Train:SetNW2Int("SkifP2" .. i, (train.BCPressure2 or train.BCPressure) * 10)
-                            Train:SetNW2Int("SkifPnm" .. i, train.TLPressure * 10)
-                            Train:SetNW2Int("SkifPtm" .. i, train.BLPressure * 10)
-                            Train:SetNW2Int("SkifPstt" .. i, train.ParkingBrakePressure * 10)
-                            Train:SetNW2Int("SkifPskk" .. i, train.HPPressure * 10)
-                            Train:SetNW2Bool("SkifBrakeEquip" .. i, train.BrakeEquip or false)
-                            Train:SetNW2Int("SkifPauto1" .. i, train.BTOKTO1 * 10)
-                            Train:SetNW2Int("SkifPauto2" .. i, train.BTOKTO2 * 10)
-                            Train:SetNW2Int("SkifPauto3" .. i, train.BTOKTO3 * 10)
-                            Train:SetNW2Int("SkifPauto4" .. i, train.BTOKTO4 * 10)
+                            Train:SetNW2Int("Skif:P" .. i, train.BCPressure * 10)
+                            Train:SetNW2Int("Skif:P2" .. i, (train.BCPressure2 or train.BCPressure) * 10)
+                            Train:SetNW2Int("Skif:Pnm" .. i, train.TLPressure * 10)
+                            Train:SetNW2Int("Skif:Ptm" .. i, train.BLPressure * 10)
+                            Train:SetNW2Int("Skif:Pstt" .. i, train.ParkingBrakePressure * 10)
+                            Train:SetNW2Int("Skif:Pskk" .. i, train.HPPressure * 10)
+                            Train:SetNW2Bool("Skif:BrakeEquip" .. i, train.BrakeEquip or false)
+                            Train:SetNW2Int("Skif:Pauto1" .. i, train.BTOKTO1 * 10)
+                            Train:SetNW2Int("Skif:Pauto2" .. i, train.BTOKTO2 * 10)
+                            Train:SetNW2Int("Skif:Pauto3" .. i, train.BTOKTO3 * 10)
+                            Train:SetNW2Int("Skif:Pauto4" .. i, train.BTOKTO4 * 10)
 
                             local green = true
                             for k = 1, 8 do
@@ -1278,7 +1278,7 @@ if SERVER then
                                     break
                                 end
                             end
-                            Train:SetNW2Bool("SkifDPBT" .. i, green)
+                            Train:SetNW2Bool("Skif:DPBT" .. i, green)
                         end
 
                     end
@@ -1288,11 +1288,11 @@ if SERVER then
                         local train = self.Trains[k]
                         for i = 1, 9 do
                             local val = self.PVU[train] and self.PVU[train][i]
-                            Train:SetNW2Bool("SkifPVU" .. i .. k, val)
+                            Train:SetNW2Bool("Skif:PVU" .. i .. k, val)
                             pvu = pvu or val
                         end
                     end
-                    Train:SetNW2Bool("SkifPvu", pvu)
+                    Train:SetNW2Bool("Skif:Pvu", pvu)
 
                     if not self.Slope and Train.AccelRate.Value > 0 and (Train.BARS.Speed <= 2 or kvSetting == 0) then
                         self.Slope = true
@@ -1333,7 +1333,7 @@ if SERVER then
             end
 
             for i = 1, 9 do
-                Train:SetNW2Int("SkifWagNum" .. i, self.Trains[i] or 0)
+                Train:SetNW2Int("Skif:WagNum" .. i, self.Trains[i] or 0)
             end
 
             local addrDoors = Train:GetNW2Bool("AddressDoors", false) and Train.Electric.UPIPower * (1 - Train.PmvAddressDoors.Value) > 0.5
@@ -1357,8 +1357,8 @@ if SERVER then
             end
 
             self.ControllerState = kvSetting
-            Train:SetNW2Int("SkifThrottle", (overrideKv or Train.ProstKos.Command < 10) and kvSetting or Train.KV765.TargetTractiveSetting)
-            Train:SetNW2Bool("SkifOverrideKv", overrideKv)
+            Train:SetNW2Int("Skif:Throttle", (overrideKv or Train.ProstKos.Command < 10) and kvSetting or Train.KV765.TargetTractiveSetting)
+            Train:SetNW2Bool("Skif:OverrideKv", overrideKv)
 
             self:CState("RV", RvWork, "BUKP")
             self:CState("Ring", Train.Ring.Value > 0, "BUKP")
@@ -1418,24 +1418,24 @@ if SERVER then
             self.Ring = false
         end
 
-        Train:SetNW2Int("SkifARS1", not BARS.BarsPower and 2 or BARS.ATS1Bypass and -1 or not self.BARS1 and 0 or self.DisableDrive and 2 or 1)
-        Train:SetNW2Int("SkifARS2", not BARS.BarsPower and 2 or BARS.ATS2Bypass and -1 or not self.BARS2 and 0 or self.DisableDrive and 2 or 1)
-        Train:SetNW2Int("SkifMainMsg", self.MainMsg)
+        Train:SetNW2Int("Skif:ARS1", not BARS.BarsPower and 2 or BARS.ATS1Bypass and -1 or not self.BARS1 and 0 or self.DisableDrive and 2 or 1)
+        Train:SetNW2Int("Skif:ARS2", not BARS.BarsPower and 2 or BARS.ATS2Bypass and -1 or not self.BARS2 and 0 or self.DisableDrive and 2 or 1)
+        Train:SetNW2Int("Skif:MainMsg", self.MainMsg)
 
         self.EmergencyBrake = self.State == 5 and self.EmergencyBrake or 0
         self:CState("BUPWork", self.State > 0)
-        Train:SetNW2Int("SkifDepotSel", self.DepotSel)
+        Train:SetNW2Int("Skif:DepotSel", self.DepotSel)
         if self.State ~= 5 then self.LegacyScreen = false end
         if Train.Electric.UPIPower < 0.5 then
-            Train:SetNW2Int("SkifState", 0)
+            Train:SetNW2Int("Skif:State", 0)
         end
-        if Train.PpzAts2.Value + Train.PpzAts1.Value > 0 and Train:GetNW2Int("SkifState") == 5 or Train:GetNW2Int("SkifState") < 5 or not Power then
-            Train:SetNW2Int("SkifState", self.State * Train.Electric.UPIPower)
-            Train:SetNW2Int("SkifState2", self.State2)
-            Train:SetNW2Int("SkifPvuWag", self.PvuWag)
-            Train:SetNW2Int("SkifPvuSel", self.PvuCursor)
-            Train:SetNW2Int("SkifSelect", self.Select or 0)
-            Train:SetNW2Bool("SkifLegacyScreen", self.LegacyScreen)
+        if Train.PpzAts2.Value + Train.PpzAts1.Value > 0 and Train:GetNW2Int("Skif:State") == 5 or Train:GetNW2Int("Skif:State") < 5 or not Power then
+            Train:SetNW2Int("Skif:State", self.State * Train.Electric.UPIPower)
+            Train:SetNW2Int("Skif:State2", self.State2)
+            Train:SetNW2Int("Skif:PvuWag", self.PvuWag)
+            Train:SetNW2Int("Skif:PvuSel", self.PvuCursor)
+            Train:SetNW2Int("Skif:Select", self.Select or 0)
+            Train:SetNW2Bool("Skif:LegacyScreen", self.LegacyScreen)
 
             local line = "---"
             local BUIK = Train.BUIK
@@ -1447,7 +1447,7 @@ if SERVER then
                     line = string.Trim(string.Replace(string.Replace(line, "линия", ""), "Линия", ""))
                 end
             end
-            Train:SetNW2String("SkifLineName", line)
+            Train:SetNW2String("Skif:LineName", line)
         end
 
         self.ZeroSpeed = self.State == 5 and self.MainMsg == 0 and self.CurrentSpeed < 1.8 and 1 or 0
@@ -1470,14 +1470,14 @@ else
         if not drawThrottle and skipOther then return end
         if not skipOther then self.DrawTimer = CurTime() end
 
-        local state = self.Train:GetNW2Int("SkifState", 0)
+        local state = self.Train:GetNW2Int("Skif:State", 0)
         local poweroff = state == 0
         skipOther = skipOther or state == -2 or poweroff
         if not skipOther then
             self.State = state
-            self.State2 = self.Train:GetNW2Int("SkifState2", 0)
-            self.Select = self.Train:GetNW2Int("SkifSelect", 0)
-            self.WagNum = self.Train:GetNW2Int("SkifWagNum", 0)
+            self.State2 = self.Train:GetNW2Int("Skif:State2", 0)
+            self.Select = self.Train:GetNW2Int("Skif:Select", 0)
+            self.WagNum = self.Train:GetNW2Int("Skif:WagNum", 0)
             self.MainScreen = self.State2 == 0
         end
         render.PushRenderTarget(self.Train.MFDU, 0, 0, 1024, 1024)

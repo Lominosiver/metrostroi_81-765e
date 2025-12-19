@@ -11,8 +11,8 @@ local MainMsg = {
 }
 
 function TRAIN_SYSTEM:SkifMonitor()
-    local mainMsg = self.Train:GetNW2Int("SkifMainMsg", 0)
-    local rv = self.Train:GetNW2Int("SkifRV", 0)
+    local mainMsg = self.Train:GetNW2Int("Skif:MainMsg", 0)
+    local rv = self.Train:GetNW2Int("Skif:RV", 0)
     if self.MainMsg and self.MainMsg > 0 and mainMsg == 0 then
         if not self.ClientInitTimer then
             self.ClientInitTimer = CurTime() + math.Rand(0.3, 1.4)
@@ -30,12 +30,12 @@ function TRAIN_SYSTEM:SkifMonitor()
     if self.NormalWork then
         local Wag = self.Train
 
-        self.AlsArs = Wag:GetNW2Bool("SkifAlsArs")
-        self.UOS = Wag:GetNW2Bool("SkifUos", false)
+        self.AlsArs = Wag:GetNW2Bool("Skif:AlsArs")
+        self.UOS = Wag:GetNW2Bool("Skif:Uos", false)
         self.FreqMode = self.UOS and "УОС" or self.AlsArs and "2/6" or "ДАУ"
-        self.SpeedNext = Wag:GetNW2Bool("SkifNextNoFreq", false) and "ОЧ" or Wag:GetNW2Int("SkifNextSpeedLimit", 0)
-        self.SpeedLimit = Wag:GetNW2Bool("SkifSao", false) and "АО" or Wag:GetNW2Bool("SkifNoFreq", false) and "ОЧ" or Wag:GetNW2Int("SkifSpeedLimit", 0)
-        self.Speed = Wag:GetNW2Int("SkifSpeed", 0)
+        self.SpeedNext = Wag:GetNW2Bool("Skif:NextNoFreq", false) and "ОЧ" or Wag:GetNW2Int("Skif:NextSpeedLimit", 0)
+        self.SpeedLimit = Wag:GetNW2Bool("Skif:Sao", false) and "АО" or Wag:GetNW2Bool("Skif:NoFreq", false) and "ОЧ" or Wag:GetNW2Int("Skif:SpeedLimit", 0)
+        self.Speed = Wag:GetNW2Int("Skif:Speed", 0)
 
         self.Page = 0
         self.SubPage = 1
@@ -443,7 +443,7 @@ function TRAIN_SYSTEM:DrawIdle(msg, passwd)
     surface.DrawTexturedRect(scrW - 280, scrOffsetY + scrH - 245, 240, 240)
 
     if passwd then
-        passwd = self.Train:GetNW2String("SkifPass", "")
+        passwd = self.Train:GetNW2String("Skif:Pass", "")
         local w = draw.SimpleText(passwd, "Mfdu765.IdleMessage", scrW / 2, scrOffsetY + 300, colorBlue, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
         if CurTime() % 1.0 > 0.5 then
             draw.SimpleText("|", "Mfdu765.IdleMessage", scrW / 2 + w / 2 + 4, scrOffsetY + 294, colorBlue, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
@@ -503,7 +503,7 @@ function TRAIN_SYSTEM:DrawThrottle(throttle, x0, y0, w)
 end
 
 function TRAIN_SYSTEM:DrawTopBar(Wag, title)
-    local line = Wag:GetNW2String("SkifLineName", "---")
+    local line = Wag:GetNW2String("Skif:LineName", "---")
     local line1, line2
     if #line >= 28 and #string.Replace(line, "-", "") > 0 then
         local lines = string.Split(line, "-")
@@ -527,8 +527,8 @@ function TRAIN_SYSTEM:DrawTopBar(Wag, title)
     end
 
     draw.SimpleText(title, "Mfdu765.TopBar", scrW / 2, y, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    draw.SimpleText(Wag:GetNW2String("SkifDate", ""), "Mfdu765.TopBarSmall", scrW - x, y - 12, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    draw.SimpleText(Wag:GetNW2String("SkifTime", "--:--:--"), "Mfdu765.TopBarSmall", scrW - x, y + 12, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText(Wag:GetNW2String("Skif:Date", ""), "Mfdu765.TopBarSmall", scrW - x, y - 12, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    draw.SimpleText(Wag:GetNW2String("Skif:Time", "--:--:--"), "Mfdu765.TopBarSmall", scrW - x, y + 12, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
 local sizeMainLinesH = 50
@@ -569,39 +569,39 @@ local sizeStatusIconsGap = (sizeMessageW - sizeStatusIcon * 10) / 9
 local sizeMessageBorder = 6
 local sizeStatusVoltageMargin = 32
 local voltageList = {
-    {"SkifLvMin", "бс min"},
-    {"SkifLvMax", "бс max"},
-    {"SkifHvMin", "кс min"},
-    {"SkifHvMax", "кс max"},
+    {"Skif:LvMin", "бс min"},
+    {"Skif:LvMax", "бс max"},
+    {"Skif:HvMin", "кс min"},
+    {"Skif:HvMax", "кс max"},
 }
 local pneumoList = {
-    {"SkifPNM", "нм"},
-    {"SkifPTM", "тм"},
-    {"SkifPMin", "тц min"},
-    {"SkifPMax", "тц max"},
+    {"Skif:PNM", "нм"},
+    {"Skif:PTM", "тм"},
+    {"Skif:PMin", "тц min"},
+    {"Skif:PMax", "тц max"},
 }
 local rightBarList = {
-    {"SkifARS1", "АРС1"},
-    {"SkifARS2", "АРС2"},
-    {"SkifBvAll", "БВ"},
-    {"SkifBTB", "БТБ", true},
-    {"SkifKTR", "КТР"},
-    {"SkifALS", "АЛС"},
-    {"SkifBOSD", "БОСД"},
+    {"Skif:ARS1", "АРС1"},
+    {"Skif:ARS2", "АРС2"},
+    {"Skif:BvAll", "БВ"},
+    {"Skif:BTB", "БТБ", true},
+    {"Skif:KTR", "КТР"},
+    {"Skif:ALS", "АЛС"},
+    {"Skif:BOSD", "БОСД"},
 }
 local statusGetters = {
     -- ВО
-    function(self, Wag) return Wag:GetNW2Bool("SkifVoGood", false) and colorMain or colorRed end,
+    function(self, Wag) return Wag:GetNW2Bool("Skif:VoGood", false) and colorMain or colorRed end,
     -- Двери
-    function(self, Wag) return Wag:GetNW2Int("SkifDoorsAll", 0) == 1 and colorGreen or Wag:GetNW2Int("SkifDoorsAll", 0) == 2 and colorYellow or colorRed end,
+    function(self, Wag) return Wag:GetNW2Int("Skif:DoorsAll", 0) == 1 and colorGreen or Wag:GetNW2Int("Skif:DoorsAll", 0) == 2 and colorYellow or colorRed end,
     -- Тяг.привод
     function(self, Wag) return colorMain end,
     -- Напряжение
-    function(self, Wag) return Wag:GetNW2Int("SkifHvAll", 0) == 1 and colorGreen or Wag:GetNW2Int("SkifHvAll", 0) == 2 and colorYellow or colorRed end,
+    function(self, Wag) return Wag:GetNW2Int("Skif:HvAll", 0) == 1 and colorGreen or Wag:GetNW2Int("Skif:HvAll", 0) == 2 and colorYellow or colorRed end,
     -- Пневматика
     function(self, Wag) return colorMain end,
     -- Кондиционер
-    function(self, Wag) return Wag:GetNW2Bool("SkifCondAny", false) and (Wag:GetNW2Bool("SkifCond", false) and colorYellow or colorBlue) or colorMain end,
+    function(self, Wag) return Wag:GetNW2Bool("Skif:CondAny", false) and (Wag:GetNW2Bool("Skif:Cond", false) and colorYellow or colorBlue) or colorMain end,
     -- Автоведение
     function(self, Wag) return colorMain end,
     -- Сообщения
@@ -609,35 +609,35 @@ local statusGetters = {
     -- Сервис
     function(self, Wag) return colorMain end,
     -- ПВУ
-    function(self, Wag) return Wag:GetNW2Bool("SkifPvu", false) and colorYellow or colorMain end,
+    function(self, Wag) return Wag:GetNW2Bool("Skif:Pvu", false) and colorYellow or colorMain end,
 
     -- Противоюз
     function(self, Wag) return colorMainDisabled end,
     -- Ст.тормоз
-    function(self, Wag) return Wag:GetNW2Bool("SkifParkEnabled", false) and colorGreen or colorMainDisabled end,
+    function(self, Wag) return Wag:GetNW2Bool("Skif:ParkEnabled", false) and colorGreen or colorMainDisabled end,
     -- Пневмотормоз
-    function(self, Wag) return Wag:GetNW2Bool("SkifPtApplied", false) and colorYellow or colorMainDisabled end,
+    function(self, Wag) return Wag:GetNW2Bool("Skif:PtApplied", false) and colorYellow or colorMainDisabled end,
     -- Пт вкл в хв
-    function(self, Wag) return Wag:GetNW2Bool("SkifPtAppliedRear", false) and colorYellow or colorMainDisabled end,
+    function(self, Wag) return Wag:GetNW2Bool("Skif:PtAppliedRear", false) and colorYellow or colorMainDisabled end,
     -- Экст.т.
-    function(self, Wag) return Wag:GetNW2Bool("SkifEmerActive", false) and colorRed or colorMainDisabled end,
+    function(self, Wag) return Wag:GetNW2Bool("Skif:EmerActive", false) and colorRed or colorMainDisabled end,
     -- Автоведение
     function(self, Wag) return colorMainDisabled end,
     -- Пр.Ост.
     function(self, Wag)
         return
-            not Wag:GetNW2Bool("SkifProst", false) and colorMainDisabled or
-            Wag:GetNW2Bool("SkifProstActive", false) and CurTime() % 0.5 < 0.25 and colorGreen or colorMain
+            not Wag:GetNW2Bool("Skif:Prost", false) and colorMainDisabled or
+            Wag:GetNW2Bool("Skif:ProstActive", false) and CurTime() % 0.5 < 0.25 and colorGreen or colorMain
     end,
     -- Кос
     function(self, Wag)
         return
-            not Wag:GetNW2Bool("SkifKos", false) and colorMainDisabled or
-            Wag:GetNW2Bool("SkifKosActive", false) and not Wag:GetNW2Bool("SkifKosCommand", false) and colorGreen or
-            Wag:GetNW2Bool("SkifKosCommand", false) and CurTime() % 0.5 < 0.25 and colorYellow or colorMain
+            not Wag:GetNW2Bool("Skif:Kos", false) and colorMainDisabled or
+            Wag:GetNW2Bool("Skif:KosActive", false) and not Wag:GetNW2Bool("Skif:KosCommand", false) and colorGreen or
+            Wag:GetNW2Bool("Skif:KosCommand", false) and CurTime() % 0.5 < 0.25 and colorYellow or colorMain
     end,
     -- КРР
-    function(self, Wag) return Wag:GetNW2Bool("SkifKRR", false) and colorYellow or colorMainDisabled end,
+    function(self, Wag) return Wag:GetNW2Bool("Skif:KRR", false) and colorYellow or colorMainDisabled end,
     -- Подъем
     function(self, Wag) return Wag:GetNW2Bool("AccelRateLamp", false) and colorGreen or colorMainDisabled end,
 }
@@ -645,10 +645,10 @@ local errorsCat = {
     {"А", colorRed}, {"Б", colorYellow}, {"В", colorBlue}
 }
 function TRAIN_SYSTEM:DrawStatus(Wag)
-    local errCat = Wag:GetNW2Int("SkifErrorCat", 0)
+    local errCat = Wag:GetNW2Int("Skif:ErrorCat", 0)
     if errorsCat[errCat] then
         local cat, color = unpack(errorsCat[errCat])
-        local msg = string.Split(Wag:GetNW2String("SkifErrorStr", ""), "\n")
+        local msg = string.Split(Wag:GetNW2String("Skif:ErrorStr", ""), "\n")
         local x, y = sizeStatusSide + sizeBorder, scrOffsetY + scrH - sizeFooter - sizeMessageH - sizeMainMargin
         drawBox(x, y, sizeMessageW, sizeMessageH, color, nil, sizeMessageBorder)
         if #msg > 1 then
@@ -728,8 +728,8 @@ function TRAIN_SYSTEM:DrawStatus(Wag)
         if idx > 10 then break end
         local x, y = (idx - 1) * (sizeButtonW + sizeButtonGap), scrOffsetY + scrH - sizeFooter
         local getter = statusGetters[idx]
-        icon = idx == 6 and icon[Wag:GetNW2Bool("SkifCond", false) and 2 or 1] or icon[1]
-        surface.SetDrawColor(self.Page == idx and (self.Select > 0 or Wag:GetNW2Int("SkifPvuWag", 0) > 0) and colorBlue or getter and getter(self, Wag) or colorMain)
+        icon = idx == 6 and icon[Wag:GetNW2Bool("Skif:Cond", false) and 2 or 1] or icon[1]
+        surface.SetDrawColor(self.Page == idx and (self.Select > 0 or Wag:GetNW2Int("Skif:PvuWag", 0) > 0) and colorBlue or getter and getter(self, Wag) or colorMain)
         surface.SetMaterial(icon)
         surface.DrawTexturedRect(x + sizeButtonBorder, y + sizeButtonBorder, sizeButtonW - sizeButtonBorder * 2, sizeFooter - sizeButtonBorder * 2)
     end
@@ -746,8 +746,8 @@ end
 
 function TRAIN_SYSTEM:DrawMainThrottle()
     local Wag = self.Train
-    local thr = Wag:GetNW2Int("SkifThrottle", 0)
-    local override = Wag:GetNW2Bool("SkifOverrideKv")
+    local thr = Wag:GetNW2Int("Skif:Throttle", 0)
+    local override = Wag:GetNW2Bool("Skif:OverrideKv")
     if override or override ~= self.LastOverride or not self.LastThrUpd or thr * (self.Throttle or 0) < 0 then
         self.Throttle = thr
     else
@@ -798,7 +798,7 @@ function TRAIN_SYSTEM:DrawGrid(x, y, w, h, vertical, cellGap, labels, labelFont,
         local ind = not wagNumbers
         wagNumbers = {}
         for idx = 1, self.WagNum do
-            table.insert(wagNumbers, tostring(ind and idx or self.Train:GetNW2Int("SkifWagNum" .. idx, "?????")))
+            table.insert(wagNumbers, tostring(ind and idx or self.Train:GetNW2Int("Skif:WagNum" .. idx, "?????")))
         end
     end
 
@@ -878,7 +878,7 @@ function TRAIN_SYSTEM:DrawIdent()
     local cx, cy = scrW / 2 - linew / 2, 400
     for idx = 1, self.WagNum do
         draw.SimpleText(idx, "Mfdu765.DoorsSide", cx + cw / 2, cy - 2, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
-        draw.RoundedBox(sizeCellBorderRadius, cx, cy, cw, ch, self.Train:GetNW2Bool("SkifWagI" .. idx, false) and colorGreen or colorRed)
+        draw.RoundedBox(sizeCellBorderRadius, cx, cy, cw, ch, self.Train:GetNW2Bool("Skif:WagI" .. idx, false) and colorGreen or colorRed)
         cx = cx + sizeIdentGap + cw
     end
 end
@@ -890,15 +890,15 @@ function TRAIN_SYSTEM:DrawDepot()
     draw.SimpleText("Discord:", "Mfdu765.DoorsSide", scrW / 2 - 8, scrOffsetY + 600, colorBlue, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
     draw.SimpleText("zont_", "Mfdu765.DoorsSide", scrW / 2 + 8, scrOffsetY + 600, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
-    local sel = self.Train:GetNW2Int("SkifDepotSel", 0)
-    local ent = self.Train:GetNW2String("SkifEnter", "-")
+    local sel = self.Train:GetNW2Int("Skif:DepotSel", 0)
+    local ent = self.Train:GetNW2String("Skif:Enter", "-")
     if self.State2 == 0 then
         draw.SimpleText(sel == 0 and "Кол-во вагонов:" or "Номера вагонов...", "Mfdu765.DoorsSide", scrW / 2 - 4, scrOffsetY + 50, ent == "-" and colorMain or colorBlue, sel == 0 and TEXT_ALIGN_RIGHT or TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         if sel == 0 then
             draw.SimpleText(ent ~= "-" and ent or self.WagNum, "Mfdu765.DoorsSide", scrW / 2 + 4, scrOffsetY + 50, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end
     else
-        local wagnum = ent ~= "-" and ent or tostring(self.Train:GetNW2String("SkifWagNum" .. sel, "?????"))
+        local wagnum = ent ~= "-" and ent or tostring(self.Train:GetNW2String("Skif:WagNum" .. sel, "?????"))
         draw.SimpleText(string.format("Вагон %d:", sel), "Mfdu765.DoorsSide", scrW / 2 - 4, scrOffsetY + 50, ent == "-" and colorMain or colorBlue, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
         draw.SimpleText(wagnum, "Mfdu765.DoorsSide", scrW / 2 + 4, scrOffsetY + 50, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
@@ -925,24 +925,24 @@ function TRAIN_SYSTEM:DrawDoorsPage(Wag, x, y, w, h)
         sizeMainMargin, sizeMainMargin / 2,
         function(wagIdx, doorIdx)
             local color
-            local isHead = Wag:GetNW2Bool("SkifHasCabin" .. wagIdx, false)
-            local buvDisabled = not Wag:GetNW2Bool("SkifBUVState" .. wagIdx, false)
-            local pvu = not buvDisabled and Wag:GetNW2Bool("SkifPVU1" .. wagIdx, false)
+            local isHead = Wag:GetNW2Bool("Skif:HasCabin" .. wagIdx, false)
+            local buvDisabled = not Wag:GetNW2Bool("Skif:BUVState" .. wagIdx, false)
+            local pvu = not buvDisabled and Wag:GetNW2Bool("Skif:PVU1" .. wagIdx, false)
             local addr = false
             if doorIdx == 1 then
-                color = isHead and Wag:GetNW2Bool("SkifDoorML" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
+                color = isHead and Wag:GetNW2Bool("Skif:DoorML" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
                 pvu = false
             elseif doorIdx == 11 then
-                color = isHead and Wag:GetNW2Bool("SkifDoorMR" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
+                color = isHead and Wag:GetNW2Bool("Skif:DoorMR" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
                 pvu = false
             elseif doorIdx == 6 then
-                color = isHead and Wag:GetNW2Bool("SkifDoorT" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
+                color = isHead and Wag:GetNW2Bool("Skif:DoorT" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
                 pvu = false
             else
                 local left = doorIdx < 6
                 local door = string.format("%d%s%d", left and doorIdx - 1 or 11 - doorIdx, left and "L" or "R", wagIdx)
-                addr = Wag:GetNW2Bool("SkifAddressDoors" .. (left and "L" or "R") .. wagIdx, false)
-                color = not buvDisabled and Wag:GetNW2Bool("SkifDoor" .. door, false) and colorGreen or Wag:GetNW2Bool("SkifDoorReverse" .. door, false) and colorYellow or colorRed
+                addr = Wag:GetNW2Bool("Skif:AddressDoors" .. (left and "L" or "R") .. wagIdx, false)
+                color = not buvDisabled and Wag:GetNW2Bool("Skif:Door" .. door, false) and colorGreen or Wag:GetNW2Bool("Skif:DoorReverse" .. door, false) and colorYellow or colorRed
             end
             return color, color and (buvDisabled and "X" or pvu and "Р" or addr and "И" or nil)
         end
@@ -954,8 +954,8 @@ function TRAIN_SYSTEM:DrawDoorsPage(Wag, x, y, w, h)
     local blRightPos = surface.GetTextSize("Правые") / 2 + rightTextPos + 32
     draw.SimpleText("Левые", "Mfdu765.DoorsSide", leftTextPos, sideTextPos, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     draw.SimpleText("Правые", "Mfdu765.DoorsSide", rightTextPos, sideTextPos, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    draw.RoundedBox(sizeCellBorderRadius, blLeftPos, sideTextPos - sizeDoorBlock / 2, sizeDoorBlock, sizeDoorBlock, Wag:GetNW2Bool("SkifDoorBlockL", false) and colorGreen or colorRed)
-    draw.RoundedBox(sizeCellBorderRadius, blRightPos, sideTextPos - sizeDoorBlock / 2, sizeDoorBlock, sizeDoorBlock, Wag:GetNW2Bool("SkifDoorBlockR", false) and colorGreen or colorRed)
+    draw.RoundedBox(sizeCellBorderRadius, blLeftPos, sideTextPos - sizeDoorBlock / 2, sizeDoorBlock, sizeDoorBlock, Wag:GetNW2Bool("Skif:DoorBlockL", false) and colorGreen or colorRed)
+    draw.RoundedBox(sizeCellBorderRadius, blRightPos, sideTextPos - sizeDoorBlock / 2, sizeDoorBlock, sizeDoorBlock, Wag:GetNW2Bool("Skif:DoorBlockR", false) and colorGreen or colorRed)
     draw.SimpleText("Б", "Mfdu765.CellText", blLeftPos + sizeDoorBlock / 2, sideTextPos, colorBlack, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     draw.SimpleText("Б", "Mfdu765.CellText", blRightPos + sizeDoorBlock / 2, sideTextPos, colorBlack, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
@@ -964,7 +964,7 @@ local asyncLabels = {
     "СБОР СХЕМЫ", "БВ", "Отказ ИНВ", "Защита ИНВ", "Перегрев ИНВ", "Отказ ЭТ", "Неиспр. ВТР"
 }
 local asyncStates = {
-    "SkifScheme", "SkifBV"
+    "Skif:Scheme", "Skif:BV"
 }
 function TRAIN_SYSTEM:DrawAsyncPage(Wag, x, y, w, h)
     local gw, gh = w * 0.35 - sizeBorder * 2, h - 64 - sizeBorder * 6
@@ -975,13 +975,13 @@ function TRAIN_SYSTEM:DrawAsyncPage(Wag, x, y, w, h)
         false, "Mfdu765.AsyncLabels",
         sizeMainMargin, sizeMainMargin / 2,
         function(wagIdx, idx)
-            if not Wag:GetNW2Bool("SkifAsyncInverter" .. wagIdx, false) then return end
+            if not Wag:GetNW2Bool("Skif:AsyncInverter" .. wagIdx, false) then return end
             local k = asyncStates[idx]
             local text = nil
             if idx == 2 then
-                if not Wag:GetNW2Bool("SkifBattery" .. wagIdx, false) or not Wag:GetNW2Bool("SkifBUVState" .. wagIdx, false) or not Wag:GetNW2Bool("SkifInvSf" .. wagIdx, false) then
+                if not Wag:GetNW2Bool("Skif:Battery" .. wagIdx, false) or not Wag:GetNW2Bool("Skif:BUVState" .. wagIdx, false) or not Wag:GetNW2Bool("Skif:InvSf" .. wagIdx, false) then
                     text = "X"
-                elseif Wag:GetNW2Bool("SkifPVU7" .. wagIdx, false) then
+                elseif Wag:GetNW2Bool("Skif:PVU7" .. wagIdx, false) then
                     text = "Р"
                 end
             end
@@ -991,15 +991,15 @@ function TRAIN_SYSTEM:DrawAsyncPage(Wag, x, y, w, h)
 
     local barW = sizeThrottleBarW * 0.9
     local xb, yb = x + sizeThrottleMargin, scrOffsetY + sizeTopBar + sizeMainMargin + sizeThrottleLabelsH
-    for idx = 1, Wag:GetNW2Int("SkifWagNum", 0) do
+    for idx = 1, Wag:GetNW2Int("Skif:WagNum", 0) do
         drawBox(xb, yb, barW, sizeThrottleBarH, colorMain, colorMainDarker, sizeBorder)
-        local thr = - Wag:GetNW2Int("SkifDriveStrength" .. idx, 0)
+        local thr = - Wag:GetNW2Int("Skif:DriveStrength" .. idx, 0)
         if thr == 0 then
-            thr = Wag:GetNW2Int("SkifBrakeStrength" .. idx, 0)
+            thr = Wag:GetNW2Int("Skif:BrakeStrength" .. idx, 0)
         end
         self:DrawThrottle(math.Clamp(thr * 100 / 150, -100, 100), xb, yb, barW)
 
-        local color = not Wag:GetNW2Bool("SkifAsyncInverter" .. idx, false) and colorMainDarker or Wag:GetNW2Bool("SkifHVGood" .. idx, false) and colorGreen or colorRed
+        local color = not Wag:GetNW2Bool("Skif:AsyncInverter" .. idx, false) and colorMainDarker or Wag:GetNW2Bool("Skif:HVGood" .. idx, false) and colorGreen or colorRed
         draw.RoundedBox(
             sizeCellBorderRadius, xb + sizeBorder, yb + sizeThrottleBarH + sizeBorder,
             barW - sizeBorder * 2, barW - sizeBorder, color
@@ -1072,44 +1072,44 @@ function TRAIN_SYSTEM:DrawElectric(Wag, x, y, w, h)
             return elRowIndex[row]
         else
             local idx = (col - 1)
-            if idx > Wag:GetNW2Int("SkifWagNum", 0) then return end
-            local async = Wag:GetNW2Bool("SkifAsyncInverter" .. idx, false)
+            if idx > Wag:GetNW2Int("Skif:WagNum", 0) then return end
+            local async = Wag:GetNW2Bool("Skif:AsyncInverter" .. idx, false)
             if row == 1 then
-                return Wag:GetNW2Int("SkifWagNum" .. idx, "?????")
+                return Wag:GetNW2Int("Skif:WagNum" .. idx, "?????")
             -- pizdec
             elseif row == 2 then
-                local val = Wag:GetNW2Int("SkifU" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:U" .. idx, 0) / 10
                 if not async then
                     return nil, nil, val >= 550 and colorGreen or colorRed
                 else
                     return val, val >= 550 and colorGreen or colorRed
                 end
             elseif row == 3 then
-                local val = Wag:GetNW2Int("SkifUBS" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:UBS" .. idx, 0) / 10
                 return val, val >= 62 and colorGreen or colorRed
             elseif row == 4 then
-                local hv = Wag:GetNW2Int("SkifU" .. idx, 0) / 10
-                local val = Lerp(math.Clamp((hv - 550) / (720 - 550), 0, 1), 0, Wag:GetNW2Int("SkifUBS" .. idx, 0) / 10) or 0
+                local hv = Wag:GetNW2Int("Skif:U" .. idx, 0) / 10
+                local val = Lerp(math.Clamp((hv - 550) / (720 - 550), 0, 1), 0, Wag:GetNW2Int("Skif:UBS" .. idx, 0) / 10) or 0
                 return math.Round(val), val >= 62 and colorGreen or colorRed
             elseif row == 5 then
                 if not async then return end
-                local val = Wag:GetNW2Int("SkifIMK" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:IMK" .. idx, 0) / 10
                 return val, colorGreen
             elseif row == 6 then
                 if not async then return end
-                local val = Wag:GetNW2Int("SkifI" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:I" .. idx, 0) / 10
                 return val, colorGreen
             elseif row == 7 then
                 return 0, colorGreen
             elseif row == 8 then
-                local val = Wag:GetNW2Int("SkifIVO" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:IVO" .. idx, 0) / 10
                 return val, colorGreen
             elseif row == 9 then
-                return Wag:GetNW2Int("SkifPower" .. idx, 0), colorGreen
+                return Wag:GetNW2Int("Skif:Power" .. idx, 0), colorGreen
             elseif row == 10 then
-                return Wag:GetNW2Int("SkifDissipated" .. idx, 0), colorGreen
+                return Wag:GetNW2Int("Skif:Dissipated" .. idx, 0), colorGreen
             elseif row == 11 then
-                return Wag:GetNW2Int("SkifPower" .. idx, 0) - Wag:GetNW2Int("SkifDissipated" .. idx, 0), colorGreen
+                return Wag:GetNW2Int("Skif:Power" .. idx, 0) - Wag:GetNW2Int("Skif:Dissipated" .. idx, 0), colorGreen
             end
         end
     end)
@@ -1127,57 +1127,57 @@ function TRAIN_SYSTEM:DrawPneumatic(Wag, x, y, w, h)
             return pnRowIndex[row]
         else
             local idx = (col - 1)
-            if idx > Wag:GetNW2Int("SkifWagNum", 0) then return end
+            if idx > Wag:GetNW2Int("Skif:WagNum", 0) then return end
             if row == 1 then
-                return Wag:GetNW2Int("SkifWagNum" .. idx, "?????")
+                return Wag:GetNW2Int("Skif:WagNum" .. idx, "?????")
             -- YandereDev, ty cho?
             elseif row == 2 then
-                local val = Wag:GetNW2Bool("SkifEmerActive" .. idx, false)
+                local val = Wag:GetNW2Bool("Skif:EmerActive" .. idx, false)
                 return nil, nil, val and colorGreen or colorRed
             elseif row == 3 then
-                local val = Wag:GetNW2Bool("SkifPTApply" .. idx, false)
+                local val = Wag:GetNW2Bool("Skif:PTApply" .. idx, false)
                 return nil, nil, val and colorGreen or colorRed
             elseif row == 4 then
-                local val = Wag:GetNW2Bool("SkifPBApply" .. idx, false)
+                local val = Wag:GetNW2Bool("Skif:PBApply" .. idx, false)
                 return nil, nil, val and colorGreen or colorRed
             elseif row == 5 then
-                local val = Wag:GetNW2Bool("SkifDPBT" .. idx, false)
+                local val = Wag:GetNW2Bool("Skif:DPBT" .. idx, false)
                 return nil, nil, val and colorGreen or colorRed
             elseif row == 6 then
-                local val = Wag:GetNW2Int("SkifPskk" .. idx, 0) >= 10
+                local val = Wag:GetNW2Int("Skif:Pskk" .. idx, 0) >= 10
                 return nil, nil, val and colorGreen or colorRed
             elseif row == 7 then
-                local val = Wag:GetNW2Bool("SkifBrakeEquip" .. idx, false)
+                local val = Wag:GetNW2Bool("Skif:BrakeEquip" .. idx, false)
                 return nil, nil, val and colorGreen or colorRed
             elseif row == 8 then
-                local val = Wag:GetNW2Int("SkifP" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:P" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", colorGreen
             elseif row == 9 then
-                local val = Wag:GetNW2Int("SkifP2" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:P2" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", colorGreen
             elseif row == 10 then
-                local val = Wag:GetNW2Int("SkifPnm" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:Pnm" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", val >= 5.5 and colorGreen or colorRed
             elseif row == 11 then
-                local val = Wag:GetNW2Int("SkifPtm" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:Ptm" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", val >= 2.9 and colorGreen or colorRed
             elseif row == 12 then
-                local val = Wag:GetNW2Int("SkifPstt" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:Pstt" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", colorGreen
             elseif row == 13 then
-                local val = Wag:GetNW2Int("SkifPskk" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:Pskk" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", colorGreen
             elseif row == 14 then
-                local val = Wag:GetNW2Int("SkifPauto1" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:Pauto1" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", val >= 1.0 and colorGreen or colorRed
             elseif row == 15 then
-                local val = Wag:GetNW2Int("SkifPauto2" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:Pauto2" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", val >= 1.0 and colorGreen or colorRed
             elseif row == 16 then
-                local val = Wag:GetNW2Int("SkifPauto3" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:Pauto3" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", val >= 1.0 and colorGreen or colorRed
             elseif row == 17 then
-                local val = Wag:GetNW2Int("SkifPauto4" .. idx, 0) / 10
+                local val = Wag:GetNW2Int("Skif:Pauto4" .. idx, 0) / 10
                 return val > 0 and string.format("%.1f", val) or "0", val >= 1.0 and colorGreen or colorRed
             end
         end
@@ -1189,16 +1189,16 @@ local sizeVoIndexW, sizeVoIndexH = 220, 48
 local sizeVoCellMargin = 16
 local voFields = {
     {
-        {"БУКСЫ", "SkifBuksGood"},
-        {"МК", function(Wag, idx) return not Wag:GetNW2Bool("SkifAsyncInverter" .. idx, false) and -2 or Wag:GetNW2Int("SkifMKState" .. idx, -1) end, function(val) return val > 0 and colorGreen or val > -2 and (val < 0 and colorRed or colorMainDisabled) or nil end},
-        {"Освещение", "SkifLightsWork"},
-        {"ТКПР", "SkifPantDisabled"},
-        {"Напряжение КС", "SkifHVGood"},
-        {"ПСН", "SkifPSNEnabled"},
-        {"Рессора", "SkifRessoraGood"},
-        {"БУПУ", "SkifPUGood"},
-        {"БУД", "SkifBUDWork"},
-        {"Ориентация", "SkifWagOr", function(val) return nil, val and "О" or "П", val and colorYellow or colorGreen end},
+        {"БУКСЫ", "Skif:BuksGood"},
+        {"МК", function(Wag, idx) return not Wag:GetNW2Bool("Skif:AsyncInverter" .. idx, false) and -2 or Wag:GetNW2Int("Skif:MKState" .. idx, -1) end, function(val) return val > 0 and colorGreen or val > -2 and (val < 0 and colorRed or colorMainDisabled) or nil end},
+        {"Освещение", "Skif:LightsWork"},
+        {"ТКПР", "Skif:PantDisabled"},
+        {"Напряжение КС", "Skif:HVGood"},
+        {"ПСН", "Skif:PSNEnabled"},
+        {"Рессора", "Skif:RessoraGood"},
+        {"БУПУ", "Skif:PUGood"},
+        {"БУД", "Skif:BUDWork"},
+        {"Ориентация", "Skif:WagOr", function(val) return nil, val and "О" or "П", val and colorYellow or colorGreen end},
     }, {
         {"", function() return true end},
         {"", function() return true end},
@@ -1209,19 +1209,19 @@ local voFields = {
         {"", function() return true end, function() return nil end},
         {"", function() return true end, function() return nil end},
     }, {
-        {"", "SkifDPBT1"},
-        {"", "SkifDPBT2"},
-        {"", "SkifDPBT3"},
-        {"", "SkifDPBT4"},
-        {"", "SkifDPBT5"},
-        {"", "SkifDPBT6"},
-        {"", "SkifDPBT7"},
-        {"", "SkifDPBT8"},
+        {"", "Skif:DPBT1"},
+        {"", "Skif:DPBT2"},
+        {"", "Skif:DPBT3"},
+        {"", "Skif:DPBT4"},
+        {"", "Skif:DPBT5"},
+        {"", "Skif:DPBT6"},
+        {"", "Skif:DPBT7"},
+        {"", "Skif:DPBT8"},
     }, {
-        {"", "SkifPant1"},
-        {"", "SkifPant2"},
-        {"", "SkifPant3"},
-        {"", "SkifPant4"},
+        {"", "Skif:Pant1"},
+        {"", "Skif:Pant2"},
+        {"", "Skif:Pant3"},
+        {"", "Skif:Pant4"},
         {"", function() return true end, function() return nil end},
         {"", function() return true end, function() return nil end},
         {"", function() return true end, function() return nil end},
@@ -1291,9 +1291,9 @@ function TRAIN_SYSTEM:DrawCondPage(Wag, x, y, w, h)
         0, sizeVoCellMargin / 2,
         function(idx, field)
             if field == 3 then
-                return Wag:GetNW2Bool("SkifHasCabin" .. idx, false) and (Wag:GetNW2Bool("SkifCondK" .. idx, false) and colorGreen or colorRed) or nil
+                return Wag:GetNW2Bool("Skif:HasCabin" .. idx, false) and (Wag:GetNW2Bool("Skif:CondK" .. idx, false) and colorGreen or colorRed) or nil
             end
-            return Wag:GetNW2Bool("SkifCond" .. field .. idx, false) and colorGreen or colorRed
+            return Wag:GetNW2Bool("Skif:Cond" .. field .. idx, false) and colorGreen or colorRed
         end
     )
 
@@ -1307,28 +1307,28 @@ function TRAIN_SYSTEM:DrawCondPage(Wag, x, y, w, h)
     draw.SimpleText("Внешняя:", "Mfdu765.BodyTextSmall", x + cw * 2 + cw / 2, gy + gh + 128, colorMain, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
     draw.SimpleText("18.5 ℃", "Mfdu765.BodyTextSmallBold", x + cw * 2 + cw / 2 + 100, gy + gh + 128, colorMain, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 
-    draw.SimpleText("Режим: " .. (Wag:GetNW2Bool("SkifCond", false) and "Лето" or "Зима"), "Mfdu765.BodyTextLarge", x + w / 2 - sizeButtonW / 2, gy + gh + 212, self.Select > 0 and colorBlue or colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    surface.SetDrawColor(Wag:GetNW2Bool("SkifCondAny", false) and (Wag:GetNW2Bool("SkifCond", false) and colorYellow or colorBlue) or colorMain)
-    surface.SetMaterial(icons[6][Wag:GetNW2Bool("SkifCond", false) and 2 or 1])
+    draw.SimpleText("Режим: " .. (Wag:GetNW2Bool("Skif:Cond", false) and "Лето" or "Зима"), "Mfdu765.BodyTextLarge", x + w / 2 - sizeButtonW / 2, gy + gh + 212, self.Select > 0 and colorBlue or colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    surface.SetDrawColor(Wag:GetNW2Bool("Skif:CondAny", false) and (Wag:GetNW2Bool("Skif:Cond", false) and colorYellow or colorBlue) or colorMain)
+    surface.SetMaterial(icons[6][Wag:GetNW2Bool("Skif:Cond", false) and 2 or 1])
     local icw, ich = sizeButtonW * 0.7, sizeFooter * 0.7
     surface.DrawTexturedRect(x + w / 2 + 70, gy + gh + 218 - ich / 2, icw, ich)
 
-    draw.SimpleText("Загрузка: " .. (Wag:GetNW2Bool("SkifCondAny", false) and "33 %" or "0 %"), "Mfdu765.BodyTextSmall", x + 4, gy + gh + 290, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    draw.SimpleText("Загрузка: " .. (Wag:GetNW2Bool("Skif:CondAny", false) and "33 %" or "0 %"), "Mfdu765.BodyTextSmall", x + 4, gy + gh + 290, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 local mainGridLabels = {
     "Двери", "БВ", "Сбор схемы", "ПТ вкл", "Ст. тормоз", "БУВ", "БТБ гот."
 }
 local mainGridData = {
-    {"SkifDoors", "SkifShowDoors"},
-    {"SkifBV", "SkifShowBV"},
-    {"SkifScheme", "SkifShowScheme"},
-    {"SkifPTApply", "SkifShowPTApply"},
-    {"SkifPBApply", "SkifShowPBApply"},
-    {"SkifBUVState", "SkifShowBUVState"},
-    {"SkifBTBReady", "SkifShowBTBReady"},
+    {"Skif:Doors", "Skif:ShowDoors"},
+    {"Skif:BV", "Skif:ShowBV"},
+    {"Skif:Scheme", "Skif:ShowScheme"},
+    {"Skif:PTApply", "Skif:ShowPTApply"},
+    {"Skif:PBApply", "Skif:ShowPBApply"},
+    {"Skif:BUVState", "Skif:ShowBUVState"},
+    {"Skif:BTBReady", "Skif:ShowBTBReady"},
 }
-local noAsync = { ["SkifBV"] = true, ["SkifScheme"] = true }
+local noAsync = { ["Skif:BV"] = true, ["Skif:Scheme"] = true }
 local mainGridDraw = {}
 function TRAIN_SYSTEM:DrawMainStatus(Wag, x, y, w, h)
     local gx, gy, gw, gh = x - 10, y + 64, w, h - 64
@@ -1344,7 +1344,7 @@ function TRAIN_SYSTEM:DrawMainStatus(Wag, x, y, w, h)
         false, "Mfdu765.MainGridLabels",
         sizeMainMargin, sizeMainMargin / 2,
         function(idx, field)
-            return not (not Wag:GetNW2Bool("SkifAsyncInverter" .. idx, false) and noAsync[mainGridData[field][1]]) and (Wag:GetNW2Bool(mainGridData[field][1] .. idx, false) and colorGreen or colorRed) or nil
+            return not (not Wag:GetNW2Bool("Skif:AsyncInverter" .. idx, false) and noAsync[mainGridData[field][1]]) and (Wag:GetNW2Bool(mainGridData[field][1] .. idx, false) and colorGreen or colorRed) or nil
         end,
         function(field)
             return mainGridDraw[field]
@@ -1364,7 +1364,7 @@ function TRAIN_SYSTEM:DrawAutodrive(Wag, x, y, w, h)
         autodriveTagHeader, "Mfdu765.AsyncLabels",
         sizeMainMargin, 6,
         function(idx)
-            return nil, string.format("%02X", Wag:GetNW2Int("SkifProstData" .. idx, 0)), colorMain, "Mfdu765.AutodriveVals"
+            return nil, string.format("%02X", Wag:GetNW2Int("Skif:ProstData" .. idx, 0)), colorMain, "Mfdu765.AutodriveVals"
         end
     )
 
@@ -1376,11 +1376,11 @@ function TRAIN_SYSTEM:DrawAutodrive(Wag, x, y, w, h)
         sizeMainMargin * 2, 0,
         function(_, field)
             if field == 1 then
-                return nil, string.format("%08d", Wag:GetNW2Int("SkifProstDist", 0)), colorMain, "Mfdu765.AutodriveVals"
+                return nil, string.format("%08d", Wag:GetNW2Int("Skif:ProstDist", 0)), colorMain, "Mfdu765.AutodriveVals"
             elseif field == 2 then
-                return nil, Wag:GetNW2Int("SkifProstReadings", 0), colorMain, "Mfdu765.AutodriveVals"
+                return nil, Wag:GetNW2Int("Skif:ProstReadings", 0), colorMain, "Mfdu765.AutodriveVals"
             else
-                return "toggle", field == 3 and Wag:GetNW2Bool("SkifKos", false) or field == 4 and Wag:GetNW2Bool("SkifProst", false)
+                return "toggle", field == 3 and Wag:GetNW2Bool("Skif:Kos", false) or field == 4 and Wag:GetNW2Bool("Skif:Prost", false)
             end
         end,
         function(field)
@@ -1416,7 +1416,7 @@ function TRAIN_SYSTEM:DrawSfPage(Wag, x, y, w, h, pg)
         0, sizeVoCellMargin / 2,
         function(idx, field)
             for _, sf in ipairs(self.SfGetters[pg][field]) do
-                if not Wag:GetNW2Bool("SkifSf" .. sf .. idx, false) then
+                if not Wag:GetNW2Bool("Skif:Sf" .. sf .. idx, false) then
                     return colorRed
                 end
             end
@@ -1429,16 +1429,16 @@ local sizeMsgDate, sizeMsgTime, sizeMsgCat = 80, 80, 40
 local sizeMsgHeader, sizeMsgFooter = 40, 50
 local msgNull = {timeAppeared = "--:--:--"}
 function TRAIN_SYSTEM:DrawMessages(Wag, x, y, w, h)
-    local ver = Wag:GetNW2Int("SkifLogVer", -1)
+    local ver = Wag:GetNW2Int("Skif:LogVer", -1)
     if self.MsgVer ~= ver then
         self.MsgData = {}
-        for idx = 1, Wag:GetNW2Int("SkifLogLen", 0) do
-            local solved = Wag:GetNW2String("SkifLogSolved" .. idx, "")
+        for idx = 1, Wag:GetNW2Int("Skif:LogLen", 0) do
+            local solved = Wag:GetNW2String("Skif:LogSolved" .. idx, "")
             table.insert(self.MsgData, {
-                text = Wag:GetNW2String("SkifLogMsg" .. idx, ""),
-                cat = Wag:GetNW2String("SkifLogCat" .. idx, ""),
-                dateAppeared = Wag:GetNW2String("SkifLogApDate" .. idx, ""),
-                timeAppeared = Wag:GetNW2String("SkifLogApTime" .. idx, ""),
+                text = Wag:GetNW2String("Skif:LogMsg" .. idx, ""),
+                cat = Wag:GetNW2String("Skif:LogCat" .. idx, ""),
+                dateAppeared = Wag:GetNW2String("Skif:LogApDate" .. idx, ""),
+                timeAppeared = Wag:GetNW2String("Skif:LogApTime" .. idx, ""),
                 timeSolved = solved ~= "" and solved or nil,
             })
         end
@@ -1504,13 +1504,13 @@ function TRAIN_SYSTEM:DrawMessages(Wag, x, y, w, h)
 end
 
 local pvuTable = {
-    { "SkifDoors", "Двери" },
-    { function(Wag, idx) return Wag:GetNW2Int("SkifMKState" .. idx, -1) >= 0 end, "МК" },
-    { "SkifLightsWork", "Свет" },
-    { "SkifPantDisabled", "ТкПр" },
-    { "SkifTPEnabled", "ТП" },
-    { "SkifPSNEnabled", "ПСН" },
-    { "SkifBV", "БВ" },
+    { "Skif:Doors", "Двери" },
+    { function(Wag, idx) return Wag:GetNW2Int("Skif:MKState" .. idx, -1) >= 0 end, "МК" },
+    { "Skif:LightsWork", "Свет" },
+    { "Skif:PantDisabled", "ТкПр" },
+    { "Skif:TPEnabled", "ТП" },
+    { "Skif:PSNEnabled", "ПСН" },
+    { "Skif:BV", "БВ" },
 }
 function TRAIN_SYSTEM:DrawPvu(Wag, x, y, w, h)
     local x0 = x + sizeMainMargin
@@ -1518,12 +1518,12 @@ function TRAIN_SYSTEM:DrawPvu(Wag, x, y, w, h)
     y = y + sizeMainMargin
 
     local cw, ch = (w - sizeMainMargin - sizeBorder - sizeMainMargin * 7) / 8, 45
-    local selWag = Wag:GetNW2Int("SkifPvuWag", 0)
-    local sel = Wag:GetNW2Int("SkifPvuSel", 0)
+    local selWag = Wag:GetNW2Int("Skif:PvuWag", 0)
+    local sel = Wag:GetNW2Int("Skif:PvuSel", 0)
 
     for idx = 1, self.WagNum do
         drawBox(x, y, cw, ch, colorMain, colorBlack, sizeBorder)
-        draw.SimpleText(tostring(Wag:GetNW2Int("SkifWagNum" .. idx, "?????")), "Mfdu765.PvuWag", x + cw / 2 - 2, y + ch / 2, selWag == idx and colorBlue or colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(tostring(Wag:GetNW2Int("Skif:WagNum" .. idx, "?????")), "Mfdu765.PvuWag", x + cw / 2 - 2, y + ch / 2, selWag == idx and colorBlue or colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         x = x + cw + sizeMainMargin
     end
     x = x0
@@ -1532,9 +1532,9 @@ function TRAIN_SYSTEM:DrawPvu(Wag, x, y, w, h)
     for pvu, pv in ipairs(pvuTable) do
         local getter, name = unpack(pv)
         for idx = 1, self.WagNum do
-            if Wag:GetNW2Bool("SkifAsyncInverter" .. idx, false) or (pvu ~= 2 and pvu ~= 5 and pvu ~= 7) then
+            if Wag:GetNW2Bool("Skif:AsyncInverter" .. idx, false) or (pvu ~= 2 and pvu ~= 5 and pvu ~= 7) then
                 local val = isfunction(getter) and getter(Wag, idx) or not isfunction(getter) and Wag:GetNW2Bool(getter .. idx, false)
-                local pvuVal = Wag:GetNW2Bool("SkifPVU" .. pvu .. idx, false)
+                local pvuVal = Wag:GetNW2Bool("Skif:PVU" .. pvu .. idx, false)
                 drawBox(x, y, cw, ch, pvuVal and colorRed or colorMain, idx == selWag and sel == pvu and colorBlue or colorBlack, sizeButtonBorder)
                 draw.SimpleText(name, "Mfdu765.PvuVal", x + cw / 2 - 2, y + ch / 2, val and colorGreen or colorRed, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end

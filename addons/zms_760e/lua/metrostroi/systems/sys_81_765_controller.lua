@@ -127,7 +127,7 @@ function TRAIN_SYSTEM:Think(dT)
 
     -- Is controller online (can change tractive power)
     -- FIXME: how realistic is it?
-    self.Online = self.Train.BUKP and self.Train.BUKP.State == 5 and self.Train:GetNW2Int("SkifMainMsg", 0) == 0 and 1 or 0
+    self.Online = self.Train.BUKP and self.Train.BUKP.State == 5 and self.Train:GetNW2Int("Skif:MainMsg", 0) == 0 and 1 or 0
     self.Online = self.Online * self.Train.PpzKm.Value
     self.IsOverriden = self.TractiveSettingOverride ~= nil
 

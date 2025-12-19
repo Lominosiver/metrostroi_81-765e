@@ -50,6 +50,7 @@
       - [x] (after MFDU UI done) BUKP legacy cleanup, old UI removal
   - [ ] Electric
       - [x] BS normalization
+      - [ ] Cabin light from emergency switch
       - [ ] PSN normalization (zaryad AKB)
       - [ ] No HV (ATZ)
       - [ ] Short circuit (ATZ)
@@ -58,6 +59,8 @@
     - [ ] BUD per-door work (and rewrite)
     - [ ] Still brake PN1/PN2 revise
     - [ ] Pneumatic weight load PN setting adjustment
+    - [ ] BU-IK Return informer reset 'notlast' message
+    - [ ] Make RVTB recover in some cases
     - [x] UOS on MFDU
     - [x] Rewrite speed limit logics in BUKP
 - [ ] 81-765/766/767/.2/.4 (modeling 765, maybe getting rest from 760A code, maybe dependencies (systems) too)
