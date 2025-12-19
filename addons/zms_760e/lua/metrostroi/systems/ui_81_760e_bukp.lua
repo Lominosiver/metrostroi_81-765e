@@ -5,7 +5,7 @@ end
 
 local MainMsg = {
     "РВ Выключены",
-    "Хвостовой ПУ",
+    "Хвостовая кабина",
     "Включены 2 РВ",
     "Сбой РВ"
 }
@@ -90,7 +90,7 @@ function TRAIN_SYSTEM:SkifMonitor()
         if self.MainMsg > 2 then
             self:DrawErr(msg)
         else
-            self:DrawIdle(msg)
+            self:DrawIdle(msg, false, self.MainMsg == 2)
         end
 
     elseif rv ~= 0 then
@@ -429,10 +429,10 @@ function TRAIN_SYSTEM:DrawErr(msg)
     draw.SimpleText(msg, "Mfdu765.IdleMessage", scrW / 2, scrOffsetY + 100, colorBlack, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 end
 
-function TRAIN_SYSTEM:DrawIdle(msg, passwd)
+function TRAIN_SYSTEM:DrawIdle(msg, passwd, rear)
     surface.SetDrawColor(colorBlack)
     surface.DrawRect(scrOffsetX, scrOffsetY, scrW + scrOffsetX, scrH + scrOffsetY)
-    draw.SimpleText(msg, "Mfdu765.IdleMessage", scrW / 2, scrOffsetY + 100, passwd and colorMain or colorYellow, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+    draw.SimpleText(msg, "Mfdu765.IdleMessage", scrW / 2, scrOffsetY + 50, (passwd or rear) and colorMain or colorYellow, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     surface.SetDrawColor(255, 255, 255)
     surface.SetMaterial(icons.mvm[1])
     surface.DrawTexturedRect(0, scrOffsetY + scrH - 270, 300, 300)
@@ -442,12 +442,52 @@ function TRAIN_SYSTEM:DrawIdle(msg, passwd)
     surface.SetMaterial(icons.pivo[1])
     surface.DrawTexturedRect(scrW - 280, scrOffsetY + scrH - 245, 240, 240)
 
+    local Wag = self.Train
+
     if passwd then
-        passwd = self.Train:GetNW2String("Skif:Pass", "")
+        passwd = Wag:GetNW2String("Skif:Pass", "")
         local w = draw.SimpleText(passwd, "Mfdu765.IdleMessage", scrW / 2, scrOffsetY + 300, colorBlue, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
         if CurTime() % 1.0 > 0.5 then
             draw.SimpleText("|", "Mfdu765.IdleMessage", scrW / 2 + w / 2 + 4, scrOffsetY + 294, colorBlue, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
         end
+    end
+
+    if rear then
+        local gap = 80
+        local x = scrW / 2 - gap * 1.5
+        local y = scrH / 2 + 20 + scrOffsetY
+        local ytop = y - 12
+        local ybot = y + 12
+
+        local ptm = Wag:GetNW2Int("Skif:Ptm", "---")
+        draw.SimpleText("Pтм", "Mfdu765.StatusSmall", x, ytop, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        draw.SimpleText(isnumber(ptm) and (ptm == 0 and "0" or string.format("%.1f", ptm / 10)) or ptm, "Mfdu765.StatusValue", x, y, colorBlue, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("атм", "Mfdu765.StatusSmall", x, ybot, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+
+        x = x + gap
+        local pnm = Wag:GetNW2Int("Skif:Pnm", "---")
+        draw.SimpleText("Pнм", "Mfdu765.StatusSmall", x, ytop, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        draw.SimpleText(isnumber(pnm) and (pnm == 0 and "0" or string.format("%.1f", pnm / 10)) or pnm, "Mfdu765.StatusValue", x, y, colorBlue, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("атм", "Mfdu765.StatusSmall", x, ybot, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+
+        x = x + gap
+        local ubs = Wag:GetNW2Int("Skif:Ubs", "---")
+        draw.SimpleText("Uбс", "Mfdu765.StatusSmall", x, ytop, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        draw.SimpleText(isnumber(ubs) and (ubs == 0 and "0" or string.format("%.1f", ubs / 10)) or ubs, "Mfdu765.StatusValue", x, y, colorGreen, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("в", "Mfdu765.StatusSmall", x, ybot, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+
+        x = x + gap
+        local uhv = Wag:GetNW2Int("Skif:Uhv", "---")
+        draw.SimpleText("Uкс", "Mfdu765.StatusSmall", x, ytop, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        draw.SimpleText(isnumber(uhv) and (uhv == 0 and "0" or string.format("%.1f", uhv / 10)) or uhv, "Mfdu765.StatusValue", x, y, colorYellow, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("в", "Mfdu765.StatusSmall", x, ybot, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+
+        x = scrW / 2
+        y = y - 180
+        ybot = y + 20 + scrOffsetY
+        local speed = Wag:GetNW2Int("Skif:Speed", "---")
+        draw.SimpleText(speed, "Mfdu765.Speed", x, y, colorGreen, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("км/ч", "Mfdu765.StatusSmall", x, ybot, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     end
 end
 

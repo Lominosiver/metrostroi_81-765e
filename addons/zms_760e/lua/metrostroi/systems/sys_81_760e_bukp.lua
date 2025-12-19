@@ -1152,8 +1152,6 @@ if SERVER then
                     local speed = 99
                     self.Speed = math.Round(Train.ALSCoil.Speed * 10) / 10
                     speed = self.Speed
-
-                    Train:SetNW2Int("Skif:Speed", BARS.Speed)
                     self.CurrentSpeed = speed == 99 and 0 or speed
 
                     local driveInput = RvKro > 0 and (Train.KV765.Position > 0 or kvSetting > 0) or RvKrr > 0 and (Train.EmerX1.Value + Train.EmerX2.Value > 0)
@@ -1414,6 +1412,12 @@ if SERVER then
                 self:CState("BVOn", Train.KV765.Position <= 0 and Train.EnableBV.Value * Train.PpzUpi.Value > 0)
                 self:CState("BVOff", Train.DisableBV.Value * Train.PpzUpi.Value > 0)
             end
+
+            Train:SetNW2Int("Skif:Ptm", math.Round(Train.Pneumatic.BrakeLinePressure, 1) * 10)
+            Train:SetNW2Int("Skif:Pnm", math.Round(Train.Pneumatic.TrainLinePressure, 1) * 10)
+            Train:SetNW2Int("Skif:Ubs", math.Round(Train.Electric.Battery80V, 1) * 10)
+            Train:SetNW2Int("Skif:Uhv", math.Round(Train.Electric.Main750V, 1) * 10)
+            Train:SetNW2Int("Skif:Speed", BARS.Speed)
         else
             self.Ring = false
         end
