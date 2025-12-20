@@ -837,7 +837,7 @@ if SERVER then
             local RvKro = (1 - Train.RV["KRO5-6"]) * Train.PpzPrimaryControls.Value
             local RvKrr = Train.RV["KRR15-16"] * Train.PpzPrimaryControls.Value
             local RvWork = self.InitTimer and true or RvKro + RvKrr > 0.5 and RvKro + RvKrr < 1.5
-            local doorLeft, doorRight, doorClose = false, false, false
+            local doorLeft, doorRight, selectLeft, selectRight, doorClose = false, false, false
             if self.State == 5 and (Train.PpzUpi.Value == 1) then
                 local Back = false
                 local sfBroken = false
@@ -1056,8 +1056,10 @@ if SERVER then
                     Train:SetNW2Bool("Skif:Prost", self.Prost)
                     Train:SetNW2Bool("Skif:Kos", self.Kos)
 
-                    if not self.Errors.NoOrient and Train.Electric.DoorsControl > 0 and Train.DoorLeft.Value > 0 and Train.DoorSelectL.Value > 0 and Train.DoorSelectR.Value == 0 and (not Train.ProstKos.BlockDoorsL or Train.DoorBlock.Value == 1) then doorLeft = true end
-                    if not self.Errors.NoOrient and Train.Electric.DoorsControl > 0 and Train.DoorRight.Value > 0 and Train.DoorSelectR.Value > 0 and Train.DoorSelectL.Value == 0 and (not Train.ProstKos.BlockDoorsR or Train.DoorBlock.Value == 1) then doorRight = true end
+                    if not self.Errors.NoOrient and Train.Electric.DoorsControl > 0 and Train.DoorSelectL.Value > 0 and Train.DoorSelectR.Value == 0 then selectLeft = true end
+                    if not self.Errors.NoOrient and Train.Electric.DoorsControl > 0 and Train.DoorSelectR.Value > 0 and Train.DoorSelectL.Value == 0 then selectRight = true end
+                    if selectLeft and Train.DoorLeft.Value > 0 and (not Train.ProstKos.BlockDoorsL or Train.DoorBlock.Value == 1) then doorLeft = true end
+                    if selectRight and Train.DoorRight.Value > 0 and (not Train.ProstKos.BlockDoorsR or Train.DoorBlock.Value == 1) then doorRight = true end
 
                     Train:SetNW2Bool("Skif:Cond", self.CondLeto)
                     Train:SetNW2Bool("Skif:DoorBlockL", self.CurrentSpeed < 1.8 and (not Train.ProstKos.BlockDoorsL or Train.DoorBlock.Value == 1))
@@ -1253,6 +1255,8 @@ if SERVER then
                                 Train:SetNW2Bool("Skif:Door" .. d .. "R" .. i, train["Door" .. (orientation and d + 4 or d) .. "Closed"])
                                 Train:SetNW2Bool("Skif:DoorReverse" .. d .. "L" .. i, train["DoorReverse" .. (orientation and d or 9 - d)])
                                 Train:SetNW2Bool("Skif:DoorReverse" .. d .. "R" .. i, train["DoorReverse" .. (orientation and 9 - d or d)])
+                                Train:SetNW2Bool("Skif:DoorAod" .. d .. "L" .. i, train["DoorAod" .. (orientation and d or 9 - d)])
+                                Train:SetNW2Bool("Skif:DoorAod" .. d .. "R" .. i, train["DoorAod" .. (orientation and 9 - d or d)])
                             end
                         end
                     elseif self.State2 == 31 or self.State2 == 32 then
@@ -1358,6 +1362,8 @@ if SERVER then
             local addrDoors = Train:GetNW2Bool("AddressDoors", false) and Train.Electric.UPIPower * (1 - Train.PmvAddressDoors.Value) > 0.5
             self:CState("OpenLeft", doorLeft)
             self:CState("OpenRight", doorRight)
+            self:CState("SelectLeft", selectLeft)
+            self:CState("SelectRight", selectRight)
             self:CState("CloseDoors", doorClose)
             self:CState("AddressDoors", addrDoors)
             self:CState("Slope", Train.RV.KRRPosition == 0 and self.Slope)

@@ -609,29 +609,16 @@ function TRAIN_SYSTEM:Think(dT)
     self.Recurperation = not self:Get("ReccOff") and 1 or 0
 
     self.BTB = Train.Pneumatic.RVTBLeak == 1
-    self.OpenLeft = not self:Get("PVU1") and (self:Get("OpenLeft") and self.Orientation or self:Get("OpenRight") and not self.Orientation)
-    self.OpenRight = not self:Get("PVU1") and (self:Get("OpenRight") and self.Orientation or self:Get("OpenLeft") and not self.Orientation)
-    self.AddressDoors = self:Get("AddressDoors")
+
+    self.SelectLeft = not self:Get("PVU1") and (self:Get("SelectLeft") and self.Orientation or self:Get("SelectRight") and not self.Orientation) and true or false
+    self.SelectRight = not self:Get("PVU1") and (self:Get("SelectRight") and self.Orientation or self:Get("SelectLeft") and not self.Orientation) and true or false
+    self.OpenLeft = not self:Get("PVU1") and (self:Get("OpenLeft") and self.Orientation or self:Get("OpenRight") and not self.Orientation) and true or false
+    self.OpenRight = not self:Get("PVU1") and (self:Get("OpenRight") and self.Orientation or self:Get("OpenLeft") and not self.Orientation) and true or false
+    self.CloseDoors = not self:Get("PVU1") and self:Get("CloseDoors") and true or false
+    self.AddressDoors = self:Get("AddressDoors") and true or false
+
     self.WagIdx = self:Get("WagIdx") or 1
     self.TrainLen = self:Get("TrainLen") or 1
-
-    local command = not self:Get("PVU1") and self:Get("CloseDoors")
-    if command and self.CloseDoorsCommand ~= command and Train.DoorsOpened then
-        self.CloseDoorsCommandAt = CurTime()
-    end
-    if not command and self.CloseDoorsCommandAt then
-        self.CloseDoorsCommandAt = nil
-    end
-    if not command then
-        self.CloseDoors = command
-    end
-    self.CloseDoorsCommand = command
-    if command and (not self.CloseDoorsCommandAt or CurTime() - self.CloseDoorsCommandAt > 1.8) then
-        self.CloseDoors = true
-        if not Train.DoorsOpened then
-            self.CloseDoorsCommandAt = nil
-        end
-    end
 
     self.Cond1 = self:Get("Cond1") and Train.Battery.Value * Train.SF56.Value * Train.SF57.Value > 0 and 1 or 0
     if P < 550 or P > 975 then self.Cond1 = 0 end

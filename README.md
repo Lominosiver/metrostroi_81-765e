@@ -56,7 +56,9 @@
       - [x] Short circuit (ATZ)
       - [ ] kW/h normalization
   - [ ] Overall logic polishing
-    - [ ] BUD per-door work (and rewrite)
+    - [x] BUD per-door work (and rewrite)
+    - [ ] BUKP background initialization right after identification
+    - [ ] Uhv without GV behaivor
     - [ ] Still brake PN1/PN2 revise
     - [ ] Pneumatic weight load PN setting adjustment
     - [ ] BU-IK Return informer reset 'notlast' message

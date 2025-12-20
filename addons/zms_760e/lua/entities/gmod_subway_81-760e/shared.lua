@@ -1266,7 +1266,10 @@ ENT.Spawner = {
                 ent.BUD.DoorRight = val == 4
                 ent.BUD.LeftDoorState = val == 4 and {1, 1, 1, 1} or {0, 0, 0, 0}
                 ent.BUD.DoorLeft = val == 4
+                for idx = 1, 8 do ent.BUD.DoorCommand[idx] = val == 4 end
+
                 ent.GV:TriggerInput("Set", val < 4 and 1 or 0)
+
                 if val <= 2 then
                     if ent.SA1 then
                         timer.Simple(first and 2 or 1, function()

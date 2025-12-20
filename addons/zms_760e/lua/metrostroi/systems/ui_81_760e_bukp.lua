@@ -968,7 +968,7 @@ function TRAIN_SYSTEM:DrawDoorsPage(Wag, x, y, w, h)
             local isHead = Wag:GetNW2Bool("Skif:HasCabin" .. wagIdx, false)
             local buvDisabled = not Wag:GetNW2Bool("Skif:BUVState" .. wagIdx, false)
             local pvu = not buvDisabled and Wag:GetNW2Bool("Skif:PVU1" .. wagIdx, false)
-            local addr = false
+            local addr, aod = false, false
             if doorIdx == 1 then
                 color = isHead and Wag:GetNW2Bool("Skif:DoorML" .. wagIdx, false) and colorGreen or isHead and colorRed or nil
                 pvu = false
@@ -982,9 +982,10 @@ function TRAIN_SYSTEM:DrawDoorsPage(Wag, x, y, w, h)
                 local left = doorIdx < 6
                 local door = string.format("%d%s%d", left and doorIdx - 1 or 11 - doorIdx, left and "L" or "R", wagIdx)
                 addr = Wag:GetNW2Bool("Skif:AddressDoors" .. (left and "L" or "R") .. wagIdx, false)
+                aod = Wag:GetNW2Bool("Skif:DoorAod" .. door, false)
                 color = not buvDisabled and Wag:GetNW2Bool("Skif:Door" .. door, false) and colorGreen or Wag:GetNW2Bool("Skif:DoorReverse" .. door, false) and colorYellow or colorRed
             end
-            return color, color and (buvDisabled and "X" or pvu and "Р" or addr and "И" or nil)
+            return color, color and (buvDisabled and "X" or aod and "А" or pvu and "Р" or addr and "И" or nil)
         end
     )
     local sideTextPos = y + posDoorsGridY / 2
