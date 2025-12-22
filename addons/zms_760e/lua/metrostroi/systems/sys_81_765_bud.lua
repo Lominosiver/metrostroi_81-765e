@@ -254,13 +254,13 @@ function TRAIN_SYSTEM:Think(dT)
                 not commandOpen and self.DoorClosed[idx] and (
                     (not zeroSpeed or not buvZeroSpeed) and "Moving" or
                     zeroSpeed and not selected and "Moving" or
-                    zeroSpeed and readyToOpen and "Open" or
+                    zeroSpeed and readyToOpen and not self.Depart and "Open" or
                     "Closed"
                 ) or
-                commandOpen and not self.DoorOpen[idx] and (block and "Closed" or addrMode and "Open" or "Opening") or
-                not buvZeroSpeed and "Moving" or
-                not self.Depart and commandOpen and "Open" or
+                commandOpen and not self.Depart and not self.DoorOpen[idx] and (block and "Closed" or addrMode and "Open" or "Opening") or
                 self.Depart and "Depart" or
+                not buvZeroSpeed and "Moving" or
+                commandOpen and "Open" or
                 -- fallback, should not reach!
                 self.DoorClosed[idx] and "Opening" or "Closing"
             )

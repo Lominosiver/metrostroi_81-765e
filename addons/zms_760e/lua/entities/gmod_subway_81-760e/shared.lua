@@ -12,8 +12,8 @@ ENT.Spawnable = true
 ENT.AdminSpawnable = false
 ENT.DontAccelerateSimulation = false
 
-ENT.Version = "0.7.23"
-ENT.IkVersion = "1.7.23"
+ENT.Version = "0.7.24"
+ENT.IkVersion = "1.7.24"
 
 
 local function GetDoorPosition(i, k, j)
@@ -1183,8 +1183,8 @@ ENT.Spawner = {
         local t = self.Think or function() end
         self.Think = function(_self)
             local retval = { t(_self) }
-            if wagnField == self.TrainInjected then
-                local wagn = wagnField:GetValue()
+            local wagn = wagnField:GetValue()
+            if wagnField == self.TrainInjected and wagn ~= self.PrevWagn then
                 local enable = wagn < 6 and wagn > 3
                 self:SetEnabled(enable)
                 if not enable then
@@ -1192,6 +1192,7 @@ ENT.Spawner = {
                 else
                     self:SetValue(false)
                 end
+                self.PrevWagn = wagn
             end
             return unpack(retval)
         end

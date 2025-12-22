@@ -40,6 +40,7 @@
       - [x] Cabin PMV/PPZ
       - [ ] Salon BNT
       - [ ] Salon CIS
+      - [ ] BMT
   - [x] BUKP => SAU Skif
       - [x] ARS1/2, ATS1/2
       - [x] Xod => ARS work logic
@@ -60,7 +61,8 @@
     - [x] UOS on MFDU
     - [x] Rewrite speed limit logics in BUKP
     - [x] BU-IK Return informer reset 'notlast' message
-    - [ ] BUKP background initialization right after identification
+    - [x] BUKP background initialization right after identification
+    - [ ] Fix throttle setting on doors not closed
     - [ ] Make RVTB recover in some cases
     - [ ] Uhv without GV behaivor
     - [ ] Still brake PN1/PN2 revise
@@ -79,8 +81,8 @@
       - [x] Early variant
       - [ ] Improved variant
   - [ ] Variations
-    - [ ] Base entity class 81-765
-    - [ ] Derived entities 81-765.0, 766.0, 767.0, .2, .4
+    - [ ] Base entity class `81-765 base`
+    - [ ] Derived entities 81-765, 766, 767, .2, .4
     - [ ] TKL/FL/Normal ARS options
       - [ ] TKL/FL option only for admins, ulx permission and/or per-map
     - [ ] Entity "Custom" for spawner that spawns base entity
