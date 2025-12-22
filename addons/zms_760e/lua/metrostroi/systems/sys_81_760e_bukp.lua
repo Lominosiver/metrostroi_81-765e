@@ -129,7 +129,7 @@ function TRAIN_SYSTEM:Initialize()
     self.Error = 0
     self.ErrorParams = {}
     self.Password = ""
-    self.DepotSel = 0
+    self.DepotSel = 1
     self.PvuWag = 0
     self.PvuCursor = 1
     self.MsgPage = 1
@@ -138,7 +138,7 @@ function TRAIN_SYSTEM:Initialize()
     self.MessagesMap = {}
     self.CondLeto = true
     self.Time = "0"
-    self.RouteNumber = "0"
+    self.RouteNumber = 0
     self.WagNum = 0
     self.DepotCode = "1"
     self.DepeatStation = "0"
@@ -146,6 +146,8 @@ function TRAIN_SYSTEM:Initialize()
     self.Dir = "0"
     self.DBand = "848"
     self.Deadlock = "0"
+    self.DepotWags = false
+    self.DepotMode = false
     self.BTB = false
     self.BRBK1 = true
     self.Loop = true
@@ -295,9 +297,12 @@ if SERVER then
             if name == BTN_CLEAR and value then self.Password = self.Password:sub(1, -2) end
             if name == BTN_ENTER and value then
                 if self.Password == self.SkifPass then
-                    self.State = 2
+                    self.State = 3
                     self.State2 = 0
-                    self.DepotSel = 0
+                    self.DepotSel = 1
+                    self.DepotWags = false
+                    self.DepotMode = true
+                    self:ReInit()
                 else
                     self.Password = ""
                 end
@@ -305,11 +310,11 @@ if SERVER then
 
             if char and #self.Password < 4 and value then self.Password = self.Password .. char end
             Train:SetNW2String("Skif:Pass", self.Password)
-        elseif self.State == 2 and RV ~= 0 then
-            if self.State2 == 0 then
+        elseif self.DepotMode and RV ~= 0 then
+            if not self.DepotWags then
                 if self.Entering then
-                    -- local num = (self.DepotSel == 1 and 8 or self.DepotSel == 2 and 6) or (self.DepotSel == 7 or self.DepotSel == 8 or self.DepotSel == 4) and 1 or (self.DepotSel == 5 or self.DepotSel == 9) and 3 or 2
-                    if name == BTN_MODE and value and #self.Entering == 1 then
+                    local len = self.DepotSel == 6 and 3 or 1
+                    if name == BTN_MODE and value then
                         -- if self.DepotSel == 1 then
                         --     self.Date1 = os.date("!*t", 75601)
                         --     if not IsValidDate(self.Entering:sub(1, 2) .. "." .. self.Entering:sub(3, 4) .. "." .. self.Entering:sub(5, 8)) then
@@ -330,37 +335,32 @@ if SERVER then
                         --     self.TimeEntered = true
                         -- end
 
-                        -- if self.DepotSel == 3 then self.RouteNumber = self.Entering end
-                        if self.DepotSel == 0 and tonumber(self.Entering) < 9 then self.WagNum = tonumber(self.Entering) end
-                        -- if self.DepotSel == 5 then self.DepotCode = self.Entering end
-                        -- if self.DepotSel == 6 then self.DepeatStation = self.Entering end
-                        -- if self.DepotSel == 7 then self.Path = self.Entering end
-                        -- if self.DepotSel == 8 then self.Dir = self.Entering end
-                        -- if self.DepotSel == 9 then self.DBand = self.Entering end
+                        local num = tonumber(self.Entering)
+                        local changed = false
+                        if self.DepotSel == 2 and num and num < 9 then changed = self.WagNum ~= num self.WagNum = num end
+                        if self.DepotSel == 6 and num and #self.Entering > 0 and #self.Entering < 4 then self.RouteNumber = num end
                         self.Entering = false
+                        if changed then
+                            self:ReInit()
+                        end
                     end
 
                     if name == BTN_MODE and value then self.Entering = false end
-                    if char and value and char and #self.Entering < 1 and value then self.Entering = self.Entering .. char end
+                    if char and value and char and #self.Entering < len and value then self.Entering = self.Entering .. char end
                     if name == BTN_CLEAR and value then self.Entering = self.Entering:sub(1, -2) end
                 else
-                    if name == BTN_UP and value and self.DepotSel > 0 then self.DepotSel = self.DepotSel - 1 end
-                    if name == BTN_DOWN and value and self.DepotSel < 1 then self.DepotSel = self.DepotSel + 1 end
+                    if name == BTN_UP and value and self.DepotSel > 1 then self.DepotSel = self.DepotSel - 1 end
+                    if name == BTN_DOWN and value and self.DepotSel < 8 then self.DepotSel = self.DepotSel + 1 end
                     if name == BTN_ENTER and value then
-                        if self.WagNum > 0 then
-                            for i = 1, self.WagNum do
-                                Train:CANWrite("BUKP", Train:GetWagonNumber(), "BUV", self.Trains[i], "Orientate", i % 2 > 0)
-                            end
-                        end
-                        self.State = 3
+                        self.DepotMode = false
                     end
 
                     if name == BTN_MODE and value then
-                        if self.DepotSel == 1 then self.State2 = 1 end
-                        if self.DepotSel == 0 then self.Entering = "" end
+                        if self.DepotSel == 3 then self.DepotWags = true end
+                        if self.DepotSel == 2 or self.DepotSel == 6 then self.Entering = "" end
                     end
                 end
-            elseif self.State2 == 1 then
+            else
                 if name == BTN_ENTER and value then
                     if self.Entering and #self.Entering == 5 then
                         local wagnum = tonumber(self.Entering)
@@ -372,9 +372,14 @@ if SERVER then
 
                         self.Trains[self.DepotSel] = wagnum
                         self.Entering = false
+                        self.WagsChanged = true
                     elseif not self.Entering then
-                        self.State2 = 0
-                        self.DepotSel = 0
+                        self.DepotWags = false
+                        self.DepotSel = 1
+                        if self.WagsChanged then
+                            self:ReInit()
+                            self.WagsChanged = nil
+                        end
                     end
                 end
 
@@ -396,7 +401,7 @@ if SERVER then
                 end
             end
         elseif self.State == 3 and name == BTN_ENTER and value and RV ~= 0 then
-            self.State = 2
+            self.DepotMode = true
         elseif self.State == 5 and value and RV ~= 0 then
             if char and self.PvuWag == 0 then
                 self.State2 = tonumber(char .. "1")
@@ -485,6 +490,15 @@ if SERVER then
                     self.ErrorParams[idx] = nil
                     break
                 end
+            end
+        end
+    end
+
+    function TRAIN_SYSTEM:ReInit()
+        self.State = 3
+        if self.WagNum > 0 then
+            for i = 1, self.WagNum do
+                self.Train:CANWrite("BUKP", self.Train:GetWagonNumber(), "BUV", self.Trains[i], "Orientate", i % 2 > 0)
             end
         end
     end
@@ -677,6 +691,12 @@ if SERVER then
             self.ErrorRing = nil
         end
 
+        if self.State == 5 then
+            for i = 1, self.WagNum do
+                if not self.Trains[self.Trains[i]] then self.State = 3 end
+            end
+        end
+
         if Power and not self.Timer then
             self.Timer = CurTime()
             Train:SetNW2Int("Skif:Timer", CurTime())
@@ -704,7 +724,7 @@ if SERVER then
         if self.State ~= 5 then self.MainMsg = RV * Train.Electric.UPIPower > 0 and MAINMSG_NONE or MAINMSG_RVOFF end
         self.Active = (RV * Train.PpzActiveCabin.Value ~= 0) and 1 or 0
 
-        if self.State < 5 and self.Prost then
+        if self.State < 5 then
             self.Prost = false
             self.Kos = false
             self.Ovr = false
@@ -775,19 +795,13 @@ if SERVER then
                 Train:SetNW2String("Skif:Date", self.DateStr)
                 Train:SetNW2Int("Skif:WagNum", self.WagNum)
             end
-            if self.State == 2 then
-                Train:SetNW2String("Skif:RouteNumber", self.RouteNumber)
-                Train:SetNW2String("Skif:DepotCode", self.DepotCode)
-                Train:SetNW2String("Skif:DepeatStation", self.DepeatStation)
-                Train:SetNW2String("Skif:Path", self.Path)
-                Train:SetNW2String("Skif:Dir", self.Dir)
-                Train:SetNW2String("Skif:DBand", self.DBand)
-                Train:SetNW2String("Skif:Deadlock", self.Deadlock)
+            if self.DepotMode then
+                Train:SetNW2Int("Skif:RouteNumber", self.RouteNumber)
                 Train:SetNW2String("Skif:Enter", self.Entering or "-")
             end
 
             if self.State == 3 then
-                local initialized = true
+                local initialized = self.WagNum > 0
                 local tbl = {}
                 for i = 1, self.WagNum do
                     local train = self.Trains[self.Trains[i]]
@@ -1465,6 +1479,8 @@ if SERVER then
             Train:SetNW2Int("Skif:State", 0)
         end
         if Train.PpzAts2.Value + Train.PpzAts1.Value > 0 and Train:GetNW2Int("Skif:State") == 5 or Train:GetNW2Int("Skif:State") < 5 or not Power then
+            Train:SetNW2Bool("Skif:DepotMode", self.DepotMode)
+            Train:SetNW2Bool("Skif:DepotWags", self.DepotWags)
             Train:SetNW2Int("Skif:State", self.State * Train.Electric.UPIPower)
             Train:SetNW2Int("Skif:State2", self.State2)
             Train:SetNW2Int("Skif:PvuWag", self.PvuWag)
@@ -1487,6 +1503,8 @@ if SERVER then
 
         self.ZeroSpeed = self.State == 5 and self.MainMsg == 0 and self.CurrentSpeed < 1.8 and 1 or 0
 
+        if self.State < 2 and self.DepotMode then self.DepotMode = false end
+        if not self.DepotMode and self.DepotWags then self.DepotWags = false end
         if self.State > 0 and self.Reset and self.Reset == 1 then self.Reset = false end
         if self.PvuWag > 0 and not (self.State == 5 and self.State2 == 01) then self.PvuWag = 0 end
     end
@@ -1509,11 +1527,11 @@ else
         local poweroff = state == 0
         skipOther = skipOther or state == -2 or poweroff
         if not skipOther then
-            self.State = state
-            self.State2 = self.Train:GetNW2Int("Skif:State2", 0)
+            self.State = self.Train:GetNW2Bool("Skif:DepotMode", false) and 2 or state
+            self.State2 = self.State ~= 2 and self.Train:GetNW2Int("Skif:State2", 0) or self.Train:GetNW2Bool("Skif:DepotWags", false) and 1 or 0
             self.Select = self.Train:GetNW2Int("Skif:Select", 0)
             self.WagNum = self.Train:GetNW2Int("Skif:WagNum", 0)
-            self.MainScreen = self.State2 == 0
+            self.MainScreen = self.State == 5 and self.State2 == 0
         end
         render.PushRenderTarget(self.Train.MFDU, 0, 0, 1024, 1024)
         if not skipOther or poweroff then

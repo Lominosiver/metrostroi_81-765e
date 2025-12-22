@@ -1043,7 +1043,7 @@ else
         size = 140,
     })
 
-    local colorWhite = Color(223, 223, 223)
+    local colorWhite = Color(233, 233, 233)
     local colorDarkerWhite = Color(190, 190, 190)
     local colorDisabled = Color(27, 27, 27)
     local colorBackground = Color(5, 7, 14)

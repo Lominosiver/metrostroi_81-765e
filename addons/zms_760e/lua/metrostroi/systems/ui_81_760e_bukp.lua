@@ -127,7 +127,7 @@ local sizeMainH = scrH - sizeFooter - sizeStatus - sizeMainMargin * 3 - sizeTopB
 local sizeThrottleBarH = sizeMainH - sizeThrottleLabelsH * 2
 
 local colorBlack = Color(0, 0, 0)
-local colorMain = Color(190, 190, 190)
+local colorMain = Color(233, 233, 233)
 local colorMainDarker = Color(46, 46, 46)
 local colorMainDisabled = Color(26, 26, 26)
 local colorGreen = Color(159, 245, 20)
@@ -211,6 +211,13 @@ surface.CreateFont("Mfdu765.TopBar", {
     font = "Open Sans",
     extended = true,
     size = 40,
+    weight = 500,
+})
+
+surface.CreateFont("Mfdu765.DepotMode", {
+    font = "Open Sans",
+    extended = true,
+    size = 50,
     weight = 500,
 })
 
@@ -935,25 +942,108 @@ function TRAIN_SYSTEM:DrawIdent()
     end
 end
 
+local depotEntry = {
+    "1. Идентификация машиниста", "2. Число вагонов в составе",
+    "3. Ввод номеров вагонов",    "4. Диаметры бандажа КП",
+    "5. Версия ПО",               "6. Номер маршрута",
+    "7. Пульты",                  "8. Выбор линии",
+}
+local sizeDepotHeader = sizeFooter
+local posDepotBody = scrOffsetY + sizeDepotHeader + sizeMainMargin
+local sizeDepotBody = scrH - sizeDepotHeader * 2 - sizeMainMargin * 2
+local sizeDepotRowW = scrW - sizeButtonBorder * 2
+local sizeDepotRowH = (sizeDepotBody - sizeButtonBorder * 2) / 8
+local sizeDepotCol = sizeDepotRowW * 0.65
+local sizeDepotCol2 = sizeDepotRowW - sizeDepotCol
 function TRAIN_SYSTEM:DrawDepot()
     surface.SetDrawColor(colorBlack)
-    surface.DrawRect(scrOffsetX, scrOffsetY, scrW + scrOffsetX, scrH + scrOffsetY)
-    draw.SimpleText("Скиньте референсы режима депо :)", "Mfdu765.IdleMessage", scrW / 2, scrOffsetY + 400, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    draw.SimpleText("Discord:", "Mfdu765.DoorsSide", scrW / 2 - 8, scrOffsetY + 600, colorBlue, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-    draw.SimpleText("zont_", "Mfdu765.DoorsSide", scrW / 2 + 8, scrOffsetY + 600, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    surface.DrawRect(0, scrOffsetY, scrW, scrH)
+    drawBox(0, scrOffsetY, scrW, sizeDepotHeader, colorMain, colorBlack, sizeButtonBorder)
+    drawBox(0, scrOffsetY + scrH - sizeDepotHeader, scrW, sizeDepotHeader, colorMain, colorBlack, sizeButtonBorder)
+    drawBox(0, posDepotBody, scrW, sizeDepotBody, colorMain, colorBlack, sizeButtonBorder)
 
-    local sel = self.Train:GetNW2Int("Skif:DepotSel", 0)
-    local ent = self.Train:GetNW2String("Skif:Enter", "-")
-    if self.State2 == 0 then
-        draw.SimpleText(sel == 0 and "Кол-во вагонов:" or "Номера вагонов...", "Mfdu765.DoorsSide", scrW / 2 - 4, scrOffsetY + 50, ent == "-" and colorMain or colorBlue, sel == 0 and TEXT_ALIGN_RIGHT or TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        if sel == 0 then
-            draw.SimpleText(ent ~= "-" and ent or self.WagNum, "Mfdu765.DoorsSide", scrW / 2 + 4, scrOffsetY + 50, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    local Wag = self.Train
+    local x = scrW / 2
+    local y = scrOffsetY + sizeDepotHeader / 2
+    draw.SimpleText(self.State2 == 1 and "Ввод номеров вагонов" or "РЕЖИМ ДЕПО", "Mfdu765.DepotMode", x, y, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
+    y = scrOffsetY + scrH - sizeDepotHeader / 2
+    x = sizeButtonBorder + sizeDepotRowW / 4
+    draw.SimpleText(Wag:GetNW2String("Skif:Date", ""), "Mfdu765.DepotMode", x, y, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    x = sizeButtonBorder + 3 * sizeDepotRowW / 4
+    draw.SimpleText(Wag:GetNW2String("Skif:Time", "--:--:--"), "Mfdu765.DepotMode", x, y, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
+    local wagn = Wag:GetNW2Int("Skif:WagNum", 0)
+
+    local tbl = depotEntry
+    if self.State2 == 1 then
+        tbl = {}
+        for idx = 1, wagn do
+            tbl[idx] = "Вагон №" .. idx
         end
-    else
-        local wagnum = ent ~= "-" and ent or tostring(self.Train:GetNW2String("Skif:WagNum" .. sel, "?????"))
-        draw.SimpleText(string.format("Вагон %d:", sel), "Mfdu765.DoorsSide", scrW / 2 - 4, scrOffsetY + 50, ent == "-" and colorMain or colorBlue, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-        draw.SimpleText(wagnum, "Mfdu765.DoorsSide", scrW / 2 + 4, scrOffsetY + 50, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
+
+    x = sizeButtonBorder
+    y = posDepotBody + sizeButtonBorder
+    for idx = 1, 8 do
+        local entry = tbl[idx]
+        if idx % 2 ~= 0 then
+            surface.SetDrawColor(colorMainDarker)
+            surface.DrawRect(x, y, sizeDepotRowW, sizeDepotRowH)
+        end
+
+        if entry then
+            draw.SimpleText(entry, "Mfdu765.DepotMode", x + 50, y + sizeDepotRowH / 2, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+
+            local ent = Wag:GetNW2String("Skif:Enter", "-")
+            local entering = ent ~= "-"
+            local sel = Wag:GetNW2Int("Skif:DepotSel", 0) == idx
+            local text
+            if sel and entering then
+                text = ent
+            elseif self.State2 == 1 then
+                text = Wag:GetNW2String("Skif:WagNum" .. idx, "?????")
+            elseif idx == 2 then
+                text = Wag:GetNW2Int("Skif:WagNum", "---")
+            elseif idx == 6 then
+                text = Wag:GetNW2Int("Skif:RouteNumber", "---")
+                if isnumber(text) then text = string.format("%03d", text) end
+            elseif idx == 5 then
+                text = Wag.Version
+            else
+                text = "выбор"
+            end
+            text = tostring(text)
+
+            surface.SetFont("Mfdu765.DepotMode")
+            local tw, th = surface.GetTextSize(#text > 0 and text or "1")
+            local tx, ty = x + sizeDepotCol + sizeDepotCol2 / 2, y + sizeDepotRowH / 2
+            if entering and sel then
+                surface.SetDrawColor(colorBlue)
+                surface.DrawRect(tx - tw / 2, ty - th / 2, tw, th)
+            end
+            local color = entering and sel and colorBlack or sel and colorBlue or colorMain
+            draw.SimpleText(text, "Mfdu765.DepotMode", tx, ty, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        end
+
+        y = y + sizeDepotRowH
+    end
+
+    surface.SetDrawColor(colorMain)
+    surface.DrawRect(sizeButtonBorder + sizeDepotCol, posDepotBody, sizeButtonBorder * 2, sizeDepotBody)
+
+    -- local sel = self.Train:GetNW2Int("Skif:DepotSel", 0)
+    -- local ent = self.Train:GetNW2String("Skif:Enter", "-")
+    -- if self.State2 == 0 then
+    --     draw.SimpleText(sel == 0 and "Кол-во вагонов:" or "Номера вагонов...", "Mfdu765.DoorsSide", scrW / 2 - 4, scrOffsetY + 50, ent == "-" and colorMain or colorBlue, sel == 0 and TEXT_ALIGN_RIGHT or TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    --     if sel == 0 then
+    --         draw.SimpleText(ent ~= "-" and ent or self.WagNum, "Mfdu765.DoorsSide", scrW / 2 + 4, scrOffsetY + 50, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    --     end
+    -- else
+    --     local wagnum = ent ~= "-" and ent or tostring(self.Train:GetNW2String("Skif:WagNum" .. sel, "?????"))
+    --     draw.SimpleText(string.format("Вагон %d:", sel), "Mfdu765.DoorsSide", scrW / 2 - 4, scrOffsetY + 50, ent == "-" and colorMain or colorBlue, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+    --     draw.SimpleText(wagnum, "Mfdu765.DoorsSide", scrW / 2 + 4, scrOffsetY + 50, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    -- end
 end
 
 function TRAIN_SYSTEM:DrawPage(func, title, ...)
