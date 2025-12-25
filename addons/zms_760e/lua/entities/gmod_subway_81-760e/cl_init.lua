@@ -4325,22 +4325,33 @@ ENT.ButtonMap["MFDU"] = {
 --239.3 расстояние между
 for i = 1, 4 do
     ENT.ButtonMap["BNTL" .. i] = {
-        pos = Vector(321.63 - 229.975 * (i - 1), 47.1, 52.5),
+        pos = Vector(319 - 229.975 * (i - 1), 46.24, 53.21),
         ang = Angle(0, 0, 119.9),
-        width = 640,
-        height = 480,
+        width = 3840,
+        height = 512,
         scale = 0.0134,
         system = "LBnt",
         hide = 1,
     }
-
     ENT.ButtonMap["BNTR" .. i] = {
-        pos = Vector(-321.31 - 229.975 * (i - 4), -47.1, 52.5),
+        pos = Vector(-319 - 229.975 * (i - 4), -46.24, 53.21),
         ang = Angle(180, 0, -60.1),
-        width = 640,
-        height = 480,
+        width = 3840,
+        height = 512,
         scale = 0.0134,
         system = "RBnt",
+        hide = 1,
+    }
+    ENT.ClientProps["BntLcdL" .. i] = {
+        model = "models/metrostroi_train/81-765/bnt_lcd.mdl",
+        pos = Vector(319 - 229.975 * (i - 1), 46.4, 52.5) + Vector(25.72, 2, -2),
+        ang = Angle(119.9, -90, 0),
+        hide = 1,
+    }
+    ENT.ClientProps["BntLcdR" .. i] = {
+        model = "models/metrostroi_train/81-765/bnt_lcd.mdl",
+        pos = Vector(-319 - 229.975 * (i - 4), -46.4, 52.5) - Vector(25.72, 2, 2),
+        ang = Angle(119.9, 90, 0),
         hide = 1,
     }
 end
@@ -4521,8 +4532,8 @@ function ENT:Initialize()
     self.BaseClass.Initialize(self)
     self.MFDU = self:CreateRT("765MFDU", 1024, 1024)
     self.BUIK = self:CreateRT("765BUIK", 2485, 480)
-    self.LBnt = self:CreateRT("765LBnt", 1024, 1024)
-    self.RBnt = self:CreateRT("765RBnt", 1024, 1024)
+    self.LBnt = self:CreateRT("765LBnt", 3840, 512)
+    self.RBnt = self:CreateRT("765RBnt", 3840, 512)
     self.CAMS = self:CreateRT("760CAMS", 1024 * 1.2, 768 * 1.2)
     self.ASNP = self:CreateRT("760ASNP", 512, 128)
     self.IGLA = self:CreateRT("760IGLA", 512, 128)
@@ -5580,16 +5591,16 @@ function ENT:DrawPost(special)
     for i = 1, 4 do
         self:DrawOnPanel("BNTL" .. i, function(...)
             surface.SetMaterial(self.RTMaterial)
-            surface.SetDrawColor(255, 255, 255, 170)
-            surface.DrawTexturedRectRotated(512, 512, 1024, 1024, 0)
+            surface.SetDrawColor(255, 255, 255)
+            surface.DrawTexturedRectRotated(1920, 256, 3840, 512, 0)
         end)
     end
     self.RTMaterial:SetTexture("$basetexture", self.RBnt)
     for i = 1, 4 do
         self:DrawOnPanel("BNTR" .. i, function(...)
             surface.SetMaterial(self.RTMaterial)
-            surface.SetDrawColor(255, 255, 255, 170)
-            surface.DrawTexturedRectRotated(512, 512, 1024, 1024, 0)
+            surface.SetDrawColor(255, 255, 255)
+            surface.DrawTexturedRectRotated(1920, 256, 3840, 512, 0)
         end)
     end
 

@@ -715,6 +715,8 @@ function ENT:TrainSpawnerUpdate()
     if self.InitializeSounds then
         self:InitializeSounds()
     end
+
+    self:SetNW2Int("BNT:ScreenFps", self:GetNW2Int("BntFps", 2) == 2 and 60 or math.random(9, 13))
 end
 
 --------------------------------------------------------------------------------

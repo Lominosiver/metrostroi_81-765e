@@ -1070,10 +1070,10 @@ if SERVER then
                     Train:SetNW2Bool("Skif:Prost", self.Prost)
                     Train:SetNW2Bool("Skif:Kos", self.Kos)
 
-                    if not self.Errors.NoOrient and Train.Electric.DoorsControl > 0 and Train.DoorSelectL.Value > 0 and Train.DoorSelectR.Value == 0 then selectLeft = true end
-                    if not self.Errors.NoOrient and Train.Electric.DoorsControl > 0 and Train.DoorSelectR.Value > 0 and Train.DoorSelectL.Value == 0 then selectRight = true end
-                    if selectLeft and Train.DoorLeft.Value > 0 and (not Train.ProstKos.BlockDoorsL or Train.DoorBlock.Value == 1) then doorLeft = true end
-                    if selectRight and Train.DoorRight.Value > 0 and (not Train.ProstKos.BlockDoorsR or Train.DoorBlock.Value == 1) then doorRight = true end
+                    if not self.Errors.NoOrient and Train.DoorSelectL.Value > 0 and Train.DoorSelectR.Value == 0 then selectLeft = true end
+                    if not self.Errors.NoOrient and Train.DoorSelectR.Value > 0 and Train.DoorSelectL.Value == 0 then selectRight = true end
+                    if selectLeft and Train.Electric.DoorsControl > 0 and Train.DoorLeft.Value > 0 and (not Train.ProstKos.BlockDoorsL or Train.DoorBlock.Value == 1) then doorLeft = true end
+                    if selectRight and Train.Electric.DoorsControl > 0 and Train.DoorRight.Value > 0 and (not Train.ProstKos.BlockDoorsR or Train.DoorBlock.Value == 1) then doorRight = true end
 
                     Train:SetNW2Bool("Skif:Cond", self.CondLeto)
                     Train:SetNW2Bool("Skif:DoorBlockL", self.CurrentSpeed < 1.8 and (not Train.ProstKos.BlockDoorsL or Train.DoorBlock.Value == 1))

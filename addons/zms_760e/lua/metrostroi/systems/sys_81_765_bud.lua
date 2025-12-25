@@ -336,6 +336,7 @@ function TRAIN_SYSTEM:Think(dT)
     if not Wag.DoorsOpened and not stuckEmpty then
         self.StuckPass = {}
     end
+    if self.Depart and not Wag.DoorsOpened then self.Depart = false end
 end
 
 function TRAIN_SYSTEM:GetForeignObject(idx)

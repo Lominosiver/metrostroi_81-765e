@@ -1104,31 +1104,28 @@ ENT.Spawner = {
     },
     {
         "CISConfig",
-        "Spawner.760.CISConfig",
+        "ИК / ЦИС Конфиг карты",
         "List",
         function()
             local CISConfig = {}
+            local ikOnly = false
             for k, v in pairs(Metrostroi.CISConfig or {}) do
-                CISConfig[k] = v.name or k
+                local name = v.name or k
+                if string.StartsWith(name, "[ИК]") then
+                    if not ikOnly then CISConfig = {} end
+                    ikOnly = true
+                    CISConfig[k] = name
+                elseif not ikOnly then
+                    CISConfig[k] = name
+                end
             end
             return CISConfig
-        end
-    },
-    {
-        "Scheme",
-        "Spawner.760.Schemes",
-        "List",
-        function()
-            local Schemes = {}
-            for k, v in pairs(Metrostroi.Skins["760_schemes"] or {}) do
-                Schemes[k] = v.name or k
-            end
-            return Schemes
         end
     },
     { "SarmatBeep", "Звук теста аппаратуры от \"Сармат\"", "Boolean" },
     { "AnnouncerClicks", "Звук клика в оповещениях", "Boolean" },
     { "HornType", "Тифон", "List", { "Стандартный", "Случайный", "Тип 1", "Тип 2", "81-765" }, 5 },
+    { "BntFps", "FPS на БНТ", "List", { "Метроспецтехника (~12 FPS)", "Сармат (60 FPS)" }, 2 },
     { "KvType", "Звук КВ", "List", { "Случайный", "Alfa Union", "81-765" }, 1 },
     {
         "VVVFSound",

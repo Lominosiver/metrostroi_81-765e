@@ -241,6 +241,9 @@ if SERVER then
                 self.RouteNumber = -1
                 self.InformerCfg = nil
                 self.InformerCfgIdx = nil
+                self.IkCfg = nil
+                self.CisCfg = nil
+                self.CisCfgIdx = nil
             end
         end
 
@@ -356,9 +359,11 @@ if SERVER then
     end
 
     function TRAIN_SYSTEM:SetupInformer(Wag)
-        local reset = self.InformerCfgIdx ~= Wag:GetNW2Int("Announcer", 1) or self.RouteNumber < 0
+        local reset = self.InformerCfgIdx ~= Wag:GetNW2Int("Announcer", 1) or self.CisCfgIdx ~= Wag:GetNW2Int("CISConfig", 0) or self.RouteNumber < 0
         local idx = Wag:GetNW2Int("Announcer", 1)
         local cfg = Metrostroi.ASNPSetup[idx]
+        local cisIdx = Wag:GetNW2Int("CISConfig", 1)
+        local cisCfg = (Metrostroi.CISConfig or {})[cisIdx]
         if not cfg[1] then
             self.InformerState = STATE_SETUP
             self.InformerCfg = nil
@@ -368,6 +373,8 @@ if SERVER then
         self.AnnouncerCfg = Metrostroi.AnnouncementsASNP[idx]
         self.InformerCfg = not reset and self.InformerCfg or cfg
         self.InformerCfgIdx = not reset and self.InformerCfgIdx or idx
+        self.CisCfg = not reset and self.CisCfg or cisCfg
+        self.CisCfgIdx = not reset and self.CisCfgIdx or cisIdx
         self.RouteNumber = self.RouteNumber >= 0 and self.RouteNumber or 0
         self.InformerState = not reset and STATE_NORMAL or STATE_SETUP
         self.Page = not reset and PAGE_LAST_ST or PAGE_ROUTES
@@ -380,7 +387,18 @@ if SERVER then
         self:UpdatePage(true)
     end
 
+    function TRAIN_SYSTEM:WriteToIk(str, data, arg, ...)
+        if arg then
+            str = string.format(str, arg, ...)
+        end
+        self.Train:CANWrite("BUIK", self.Train:GetWagonNumber(), "IK", nil, str, data)
+    end
+
     function TRAIN_SYSTEM:InformerWork(Wag)
+        if self.Train.BUKP.State == 5 then
+            self:WriteToIk("Time", self.Train.BUKP.Time)
+        end
+
         if self.InformerCfgIdx ~= -1 and (
             not self.InformerCfg or self.InformerState == STATE_INACTIVE or self.InformerCfgIdx ~= Wag:GetNW2Int("Announcer", 1)
         ) then
@@ -396,7 +414,7 @@ if SERVER then
         end
 
         if self.DoorAlarm and Wag.BUKP.DoorClosed then self.DoorAlarm = false end
-        Wag.CIS.DoorAlarm = self.DoorAlarm
+        Wag.IK.DoorAlarm = self.DoorAlarm
 
         if self.InformerState == STATE_SETUP then
             if self.RnScrollTimer and CurTime() >= self.RnScrollTimer then
@@ -690,6 +708,7 @@ if SERVER then
         end
         self.LastStationDraft = lastStation.name
         self.AnnounceNotLast = not not lastStation.not_last
+        self.Train:CANWrite("BUIK", self.Train:GetWagonNumber(), "BUIK", nil, "RouteChanged", true)
     end
 
     function TRAIN_SYSTEM:UpdateLastStation()
@@ -708,11 +727,12 @@ if SERVER then
         self.Arrived = true
         self:UpdatePlates()
 
-        if self.IsServiceRoute then return end
+        if self.IsServiceRoute then self:ResetIk() return end
         local lastStation = self.LastStations[self.LastStationIdx]
+        self:InitIk(lastStation.tbl_id)
         self.AnnounceNotLast = not not lastStation.not_last
         if self.Station == 1 then self.Station = 2 end
-        self:UpdatePage(true)
+        self:UpdatePage(true, true)
 
         if self.Train:GetNW2Bool("SarmatBeep", true) then
             self:QueueAnnounce("#SarmatInit")
@@ -730,12 +750,100 @@ if SERVER then
         self.Train:SetNW2String("RouteNumber", self.RouteNumber)
     end
 
-    function TRAIN_SYSTEM:UpdateIk()
-        print(self.Train:GetWagonNumber(), "update ik")
+    function TRAIN_SYSTEM:InitIk(lastSt)
+        local BUP = self.Train.BUKP
+        local cfg = self.CisCfg and self.CisCfg[self.Route]
+        if cfg and BUP.State == 5 then
+            self:WriteToIk("Time", BUP.Time)
+            self:WriteToIk("Date", BUP.DateStr)
+
+            self:WriteToIk("RouteId", string.format("%d.%d.%s", self.CisCfgIdx, self.Route, self.Path and "II" or "I"))
+            self:WriteToIk("LastStation", lastSt)
+            self:WriteToIk("Path", self.Path)
+            self:WriteToIk("LineName", self.RouteCfg.Name)
+
+            local lineColor = "#6e6e6e"
+            if cfg.Color then
+                lineColor = string.format("#%08X",
+                    math.floor(cfg.Color.a or 0xff) +
+                    math.floor(cfg.Color.b * 0x100) +
+                    math.floor(cfg.Color.g * 0x10000) +
+                    math.floor(cfg.Color.r * 0x1000000)
+                )
+            end
+            self:WriteToIk("LineColor", lineColor)
+            self:WriteToIk("LineSymbol", tostring(cfg.Line or 1))
+
+            self:WriteToIk("StationCount", #cfg)
+            for idx, st in ipairs(cfg) do
+                self:WriteToIk("StationName" .. idx, st[2])
+                self:WriteToIk("StationNameEng" .. idx, st[3])
+                self:WriteToIk("StationLedCount" .. idx, cfg.LED[idx])
+
+                local count = 0
+                if cfg.changes and cfg.changes[idx] then
+                    count = #cfg.changes[idx]
+                    for cidx, ch in ipairs(cfg.changes[idx]) do
+                        self:WriteToIk("Station%dChange%dName", ch.name, idx, cidx)
+                        self:WriteToIk("Station%dChange%dNameEng", ch.nameEng, idx, cidx)
+                        self:WriteToIk("Station%dChange%dIconCount", #ch.icons, idx, cidx)
+                        for iidx, icon in ipairs(ch.icons) do
+                            self:WriteToIk("Station%dChange%dIconType%d", icon.typ or 1, idx, cidx, iidx)
+                            self:WriteToIk("Station%dChange%dIconSymbol%d", icon.symbol or "1", idx, cidx, iidx)
+                            self:WriteToIk("Station%dChange%dIconColor%d", icon.color or "#6e6e6e", idx, cidx, iidx)
+                            self:WriteToIk("Station%dChange%dIconPath%d", icon.path, idx, cidx, iidx)
+                        end
+                    end
+                end
+                if count == 0 then
+                    local cisIdx = 5
+                    while cfg[idx][cisIdx] do
+                        count = count + 1
+                        if not isstring(cfg[idx][cisIdx]) then cisIdx = cisIdx + 1 end
+                        self:WriteToIk("Station%dChange%dName", cfg[idx][cisIdx], idx, count)
+                        self:WriteToIk("Station%dChange%dNameEng", cfg[idx][cisIdx + 2], idx, count)
+                        self:WriteToIk("Station%dChange%dIconCount", 1, idx, count)
+                        self:WriteToIk("Station%dChange%dIconType%d", 1, idx, count, 1)
+                        self:WriteToIk("Station%dChange%dIconSymbol%d", cfg[idx][cisIdx + 1], idx, count, 1)
+                        local color = "#6e6e6e"
+                        if cfg[idx][cisIdx + 3] then
+                            color = string.format("#%08X",
+                                math.floor(cfg[idx][cisIdx + 3].a or 0xff) +
+                                math.floor(cfg[idx][cisIdx + 3].b * 0x100) +
+                                math.floor(cfg[idx][cisIdx + 3].g * 0x10000) +
+                                math.floor(cfg[idx][cisIdx + 3].r * 0x1000000)
+                            )
+                        end
+                        self:WriteToIk("Station%dChange%dIconColor%d", color, idx, count, 1)
+                        cisIdx = cisIdx + 4
+                    end
+                end
+                self:WriteToIk("Station%dChangeCount", count, idx)
+
+            end
+
+            self:WriteToIk("Init", true)
+        end
+    end
+
+    function TRAIN_SYSTEM:UpdateIk(canBeDepart)
+        local station = self.Stations[self.Station]
+        if not station then return end
+        local lastSt = self.LastStations[self.LastStationIdx]
+        self:WriteToIk("RouteId", string.format("%d.%d.%s", self.CisCfgIdx, self.Route, self.Path and "II" or "I"))
+        self:WriteToIk("Station", station.tbl_id)
+        self:WriteToIk("Depart", station.is_dep and canBeDepart or false)
+        self:WriteToIk("Terminus", station.is_terminus or lastSt and lastSt.idx == station.idx and station.arrlast and true or false)
+        self:WriteToIk("Execute", true)
+    end
+
+    function TRAIN_SYSTEM:ResetIk()
+        self:WriteToIk("Reset", true)
     end
 
     function TRAIN_SYSTEM:CANReceive(source, sourceid, target, targetid, textdata, numdata)
         if sourceid == self.Train:GetWagonNumber() then return end
+        if textdata == "RouteChanged" then self.RouteChanged = numdata end
         if textdata == "RouteNumber" then self.RouteNumber = numdata end
         if textdata == "Route" then self.Route = numdata end
         if textdata == "InformerCfg" then self.InformerCfgIdx = numdata self.InformerCfg = nil end
@@ -755,12 +863,16 @@ if SERVER then
     function TRAIN_SYSTEM:Play()
         if self.IsServiceRoute then return end
 
+        self:UpdateIk(true)
+        self.Train:CANWrite("BUIK", self.Train:GetWagonNumber(), "BUIK", nil, "RouteChanged", true)
+
         local station = self.Stations[self.Station]
         self.Arrived = not station.is_dep
         if self.Station < #self.Stations then
             self.Station = self.Station + 1
             self:Highlight("List")
-            self:UpdatePage(false, true)
+            self:UpdatePage(false)
+            self.UpdateIkTimer = nil
         end
 
         local recordings = not station.is_dep and (station.arr or station.arrlast) or station.is_dep and station.dep or nil

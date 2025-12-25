@@ -4,17 +4,17 @@
       - [x] MFDU UI
       - [x] Import model
       <!-- - [ ] Modify model/material -->
-  - [ ] MFDU
+  - [x] MFDU
       - [x] Change root UI, temporary pages from 760
       - [x] New pages implementation (without 9th)
       - [x] Main message
-      - [ ] Initialization
+      - [x] Initialization
         - [x] Password
-        - [ ] Depot mode
+        - [x] Depot mode
         <!-- - [ ] Buttons check -->
   - [ ] BU-IK
       - [x] Cabin Metrospectekhnika implementation
-      - [ ] Salon BNT
+      - [x] Salon BNT
       - [ ] Salon CIS
       - [x] Skip message
       - [x] Sarmat-like beep
@@ -38,7 +38,7 @@
       - [x] Doors (good)
       - [ ] Inter door LED (remake)
       - [x] Cabin PMV/PPZ
-      - [ ] Salon BNT
+      - [x] Salon BNT
       - [ ] Salon CIS
       - [ ] BMT
   - [x] BUKP => SAU Skif
@@ -62,7 +62,11 @@
     - [x] Rewrite speed limit logics in BUKP
     - [x] BU-IK Return informer reset 'notlast' message
     - [x] BUKP background initialization right after identification
-    - [ ] Fix throttle setting on doors not closed
+    - [ ] ATZ Fixes
+      - [ ] Fix no brake at NOrient and BUV discon
+      - [ ] Fix main controls work on NOrient and BUV discon
+      - [ ] Fix no KM behavior
+      - [ ] Fix throttle setting on doors not closed
     - [ ] Make RVTB recover in some cases
     - [ ] Uhv without GV behaivor
     - [ ] Still brake PN1/PN2 revise
