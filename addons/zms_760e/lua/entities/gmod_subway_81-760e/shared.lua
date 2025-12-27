@@ -1195,6 +1195,7 @@ ENT.Spawner = {
         nil,
         function(ent, val, rot, i, wagnum, rclk)
             if rclk then return end
+            if not _randRoute then _randRoute = math.random(1, 89) end
             if ent._SpawnerStarted ~= val then
                 if val <= 2 then
                     ent.Electric:TriggerInput("Power", true)
@@ -1296,8 +1297,12 @@ ENT.Spawner = {
                         if not IsValid(ent) then return end
                         ent.BUV.PassLight = val == 1
                         if ent.AsyncInverter then ent.BUV.PSNSignal = true end
-                        if ent.ASNP and val <= 2 and isnumber(ent.ASNP.RouteNumber) and ent.ASNP.RouteNumber > 0 then
+                        if ent.ASNP and val <= 2 and isnumber(ent.ASNP.RouteNumber) then
+                            if ent.ASNP.RouteNumber <= 0 then
+                                ent.ASNP.RouteNumber = _randRoute or 11
+                            end
                             ent.BUIK.RouteNumber = ent.ASNP.RouteNumber
+                            ent.BUKP.RouteNumber = ent.ASNP.RouteNumber
                         end
                     end)
 

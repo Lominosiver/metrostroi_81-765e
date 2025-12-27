@@ -353,6 +353,8 @@ if SERVER then
                     if name == BTN_DOWN and value and self.DepotSel < 8 then self.DepotSel = self.DepotSel + 1 end
                     if name == BTN_ENTER and value then
                         self.DepotMode = false
+                        self.Train:CANWrite("BUKP", self.Train:GetWagonNumber(), "BUIK", nil, "RouteNumber", self.RouteNumber)
+                        self.Train:CANWrite("BUKP", self.Train:GetWagonNumber(), "BUIK", nil, "UpdateRn", true)
                     end
 
                     if name == BTN_MODE and value then
@@ -409,7 +411,7 @@ if SERVER then
                 self.AutoChPage = nil
 
                 if self.State2 == 81 then self.MsgPage = 1 self:PrepareMessages() end
-                if self.State2 == 91 then self.State2 = 0 end
+                if self.State2 == 91 then self.State2 = 0 self.DepotMode = true end
             end
 
             local page = math.floor(self.State2 / 10)

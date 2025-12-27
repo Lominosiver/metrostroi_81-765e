@@ -417,10 +417,10 @@ if SERVER then
         Wag.IK.DoorAlarm = self.DoorAlarm
 
         if self.InformerState == STATE_SETUP then
-            if self.RnScrollTimer and CurTime() >= self.RnScrollTimer then
-                self:RouteNumberScroll(self.RnScrollDirection)
-                self.RnScrollTimer = CurTime() + 0.04
-            end
+            self.RouteNumber = Wag.BUKP.RouteNumber or 99
+            self.InformerState = STATE_NORMAL
+            self.RouteChanged = true
+            self:Highlight("List")
 
         elseif self.InformerState == STATE_NORMAL then
             if self.Page ~= PAGE_MAIN then
@@ -515,22 +515,7 @@ if SERVER then
     end
 
     function TRAIN_SYSTEM:Trigger(name, val)
-        if self.InformerState == STATE_SETUP then
-            if name == "Buik_Down" or name == "Buik_Up" then
-                if val then
-                    self.RnScrollDirection = name == "Buik_Down"
-                    self:RouteNumberScroll(self.RnScrollDirection)
-                    self.RnScrollTimer = CurTime() + 0.8
-                else
-                    self.RnScrollTimer = nil
-                end
-
-            elseif name == "Buik_Return" then
-                self.InformerState = STATE_NORMAL
-                self.RouteChanged = true
-                self:Highlight("List")
-            end
-        elseif self.InformerState == STATE_NORMAL then
+        if self.InformerState == STATE_NORMAL then
             if val and name == "Buik_MicBtn" and self:IsCurrentlyPlaying() and self.Train.Buik_MicLine.Value > 0 then
                 self:StopMessage()
                 self.DoorAlarm = false
@@ -748,6 +733,8 @@ if SERVER then
         self.Train:CANWrite("BUIK", self.Train:GetWagonNumber(), "BUIK", nil, "LastStation", lastStation)
         self.Train.RouteNumber:TriggerInput("LastStation", self.LastStation, self.RouteNumber)
         self.Train:SetNW2String("RouteNumber", self.RouteNumber)
+
+        self.Train:CANWrite("BUIK", self.Train:GetWagonNumber(), "BUIK", nil, "UpdateBmt", true)
     end
 
     function TRAIN_SYSTEM:InitIk(lastSt)
@@ -842,7 +829,7 @@ if SERVER then
     end
 
     function TRAIN_SYSTEM:CANReceive(source, sourceid, target, targetid, textdata, numdata)
-        if sourceid == self.Train:GetWagonNumber() then return end
+        if source == "BUIK" and sourceid == self.Train:GetWagonNumber() then return end
         if textdata == "RouteChanged" then self.RouteChanged = numdata end
         if textdata == "RouteNumber" then self.RouteNumber = numdata end
         if textdata == "Route" then self.Route = numdata end
@@ -850,8 +837,16 @@ if SERVER then
         if textdata == "LastStation" then
             self.LastStation = numdata
             self.LastStationDraft = numdata
+        end
+        if textdata == "UpdateRn" or textdata == "UpdateBmt" then
             self.Train.RouteNumber:TriggerInput("LastStation", self.LastStation, self.RouteNumber)
             self.Train:SetNW2String("RouteNumber", self.RouteNumber)
+            if textdata == "UpdateRn" then
+                self.Train.BUKP.RouteNumber = self.RouteNumber
+                self:Highlight("RouteNumber")
+            end
+        end
+        if textdata == "UpdateBmt" then
             self.InformerState = STATE_INACTIVE
         end
     end
@@ -1280,11 +1275,8 @@ else
         draw.RoundedBox(sizeRnMarginY, x, y, sizeRnDigitBoxW, sizeRnDigitBoxH, colorInactive)
         draw.RoundedBox(sizeRnMarginY, x + 2, y + 2, sizeRnDigitBoxW - 4, sizeRnDigitBoxH - 4, colorBackground)
 
-        local active = Wag:GetNW2Int("BUIK:InformerState", STATE_INACTIVE) == STATE_SETUP
-        local color = active and colorActive or colorInactive
-        if not active or CurTime() % 1.0 >= 0.3 then
-            draw.SimpleText(Wag:GetNW2String("BUIK:RouteNumber", "---"), "BUIKRoute", x + sizeRnDigitBoxW / 2, y + sizeRnDigitBoxH / 2 - 10, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        end
+        local color = highlightsState["RouteNumber"] and colorActive or colorInactive
+        draw.SimpleText(Wag:GetNW2String("BUIK:RouteNumber", "---"), "BUIKRoute", x + sizeRnDigitBoxW / 2, y + sizeRnDigitBoxH / 2 - 10, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
         local rnText = "№ Маршрута"
         draw.SimpleText(rnText, getLastStationFont(rnText, 0.8), x + sizeRnDigitBoxW / 2, y + sizeRnDigitBoxH / 2 - 70, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
