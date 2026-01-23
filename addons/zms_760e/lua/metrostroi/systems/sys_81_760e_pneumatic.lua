@@ -170,6 +170,9 @@ function TRAIN_SYSTEM:TriggerInput(name, value)
     elseif name == "Autostop" then
         self.EmergencyValve = self.Train.UAVA.Value == 0
         if self.EmergencyValve and value > 0 then RunConsoleCommand("say", "Autostop braking", self.Train:GetDriverName()) end
+    elseif name == "Spawned" then
+        -- Костыль для облегчения "напряжения" состава после спавна
+        self.Spawned = CurTime()
     end
 end
 
@@ -523,7 +526,7 @@ function TRAIN_SYSTEM:Think(dT)
         --self:equalizePressure(dT,"ParkingBrakePressure", (PBPressure), 0.33, 0.33, nil, 1.3)
     end
 
-    self:equalizePressure(dT, "ParkingBrakePressure", self.ParkingBrake and math.min(0, PBPressure) or PBPressure, 0.33, 0.33, nil, 1.3)
+    self:equalizePressure(dT, "ParkingBrakePressure", self.ParkingBrake and math.min(0, PBPressure) or PBPressure, 0.4, 0.4, nil, 1.3)
     Train:SetPackedRatio("ParkingBrakePressure_dPdT", self.ParkingBrakePressure_dPdT + 0.02)
     trainLineConsumption_dPdT = trainLineConsumption_dPdT + math.max(0, self.BrakeCylinderPressure_dPdT + self.ParkingBrakePressure_dPdT)
     self.Train:SetPackedRatio("BrakeCylinderPressure_dPdT", self.BrakeCylinderPressure_dPdT)
@@ -637,6 +640,14 @@ function TRAIN_SYSTEM:Think(dT)
             self:equalizePressure(dT, "BrakeLinePressure", 0, pr_speed)
         else
             self.V4OffTimer = nil
+        end
+    end
+
+    if self.Spawned and (CurTime() - self.Spawned) >= 4 then
+        if (CurTime() - self.Spawned) >= 6 then
+            self.Spawned = nil
+        else
+            self.BrakeCylinderPressure = 0
         end
     end
 

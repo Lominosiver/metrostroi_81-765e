@@ -733,7 +733,7 @@ if SERVER then
 
         local lastStation = self.IsServiceRoute and self.LastStation or self.Stations[1][2] or self.Stations[1][1]
         self.Train:CANWrite("BUIK", self.Train:GetWagonNumber(), "BUIK", nil, "LastStation", lastStation)
-        self.Train.RouteNumber:TriggerInput("LastStation", self.LastStation, self.RouteNumber)
+        self.Train.FrontIK:TriggerInput("SetRoute", self.LastStation, self.RouteNumber)
         self.Train:SetNW2String("RouteNumber", self.RouteNumber)
 
         self.Train:CANWrite("BUIK", self.Train:GetWagonNumber(), "BUIK", nil, "UpdateBmt", true)
@@ -786,7 +786,7 @@ if SERVER then
             self.LastStationDraft = numdata
         end
         if textdata == "UpdateRn" or textdata == "UpdateBmt" then
-            self.Train.RouteNumber:TriggerInput("LastStation", self.LastStation, self.RouteNumber)
+            self.Train.FrontIK:TriggerInput("SetRoute", self.LastStation, self.RouteNumber)
             self.Train:SetNW2String("RouteNumber", self.RouteNumber)
             if textdata == "UpdateRn" then
                 self.Train.BUKP.RouteNumber = self.RouteNumber
@@ -948,7 +948,7 @@ else
         end
     end)
 
-    local scr_w, scr_h = 2485, 480
+    local scr_w, scr_h = 2486, 496
 
     function TRAIN_SYSTEM:ClientThink(dT)
         if not self.Train.BUIK or not self.Train:ShouldDrawPanel("BUIK") then return end
@@ -963,7 +963,7 @@ else
         render.PopRenderTarget()
     end
 
-    surface.CreateFont("BUIKWagNum", {
+    surface.CreateFont("BUIK64", {
         font = "Arimo",
         extended = true,
         size = 64,
@@ -998,12 +998,6 @@ else
         size = 40,
         weight = 700,
     })
-    surface.CreateFont("BUIKList", {
-        extended = true,
-        font = "Arimo",
-        size = 64,
-        weight = 500,
-    })
     surface.CreateFont("BUIKSpeedometerClock", {
         extended = true,
         font = "Arimo",
@@ -1013,7 +1007,7 @@ else
     surface.CreateFont("BUIKSpeedometer", {
         extended = true,
         font = "Mvm765SegmentedMono",
-        size = 142,
+        size = 156,
     })
     surface.CreateFont("BUIKSpeedometerSmall", {
         extended = true,
@@ -1043,13 +1037,14 @@ else
         size = 140,
     })
 
-    local colorWhite = Color(233, 233, 233)
+    local colorWhite = Color(255, 255, 255)
     local colorDarkerWhite = Color(190, 190, 190)
     local colorDisabled = Color(27, 27, 27)
-    local colorBackground = Color(5, 7, 14)
-    local colorBackgroundSpeedometer = Color(5, 7, 14)
+    local colorBackground = Color(13, 14, 17)
+    local colorBackgroundSpeedometer = Color(13, 14, 17)
+    local colorBackgroundSpeedometerTop = Color(21, 23, 27)
     local colorInactive = Color(22, 41, 99)
-    local colorActive = Color(195, 201, 218)
+    local colorActive = Color(209, 215, 233)
     local colorSelected = Color(83, 164, 201)
     local colorActiveCabin = Color(16, 112, 255)
     local colorRed = Color(255, 75, 75)
@@ -1064,13 +1059,13 @@ else
     local sizeSpeedometrW = 740
     local sizeSpeedometrH = scr_h
     local sizeWagonsW = scr_w - sizeSpeedometrW
-    local sizeWagonsH = 190
-    local sizeLeftPanelW = 270
+    local sizeWagonsH = 200
+    local sizeLeftPanelW = 250
     local sizeFooterW = sizeWagonsW
     local sizeFooterH = 70
     local sizeRnW = sizeLeftPanelW
     local sizeRnH = scr_h - sizeWagonsH - sizeFooterH * 2
-    local sizeStationsW = 760
+    local sizeStationsW = 800
     local sizeStationsH = scr_h - sizeWagonsH - sizeFooterH
     local sizeStatusW = scr_w - sizeSpeedometrW - sizeLeftPanelW - sizeStationsW
     local sizeStatusH = sizeStationsH
@@ -1092,7 +1087,7 @@ else
 
     local lastStationFonts = {}
     local function getLastStationFont(text, scale)
-        surface.SetFont("BUIKWagNum")
+        surface.SetFont("BUIK64")
         local tw = getTextW(text) * 25
         local sz = math.floor(math.Clamp(46 * sizeLeftPanelW / tw, 24, 64) * (scale or 1))
         local font = "BUIKLastStation" .. sz
@@ -1205,7 +1200,7 @@ else
                 dx = dx + sizeWagGap + sizeWagDoorW
             end
 
-            draw.SimpleText(Wag:GetNW2String("BUIK:WagNum" .. idx, "?????"), "BUIKWagNum", wagX + sizeWagW / 2,  wagY + sizeWagH / 2, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(Wag:GetNW2String("BUIK:WagNum" .. idx, "?????"), "BUIK64", wagX + sizeWagW / 2,  wagY + sizeWagH / 2, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
             wagX = wagX + sizeWagGap * 2 + sizeWagW
         end
@@ -1268,8 +1263,8 @@ else
 
         surface.SetDrawColor(colorInactive)
         surface.DrawRect(x, y - sizePgMargin, 2, sizeFooterH)
-        draw.SimpleText("км", "BUIKOdometer", scr_w - sizeSpeedometrW - sizeRightMargin, y + sizePgH / 2, colorActive, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-        draw.SimpleText(string.format("%8d", Wag:GetNW2Int("BUIK:Odometer", 0)), "BUIKClock", scr_w - sizeSpeedometrW - sizeRightMargin - 76, y + sizePgH / 2, colorActive, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+        draw.SimpleText("км", "BUIKOdometer", scr_w - sizeSpeedometrW - sizeRightMargin, y + sizePgH / 2 + 1, colorActive, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(string.format("%07d", Wag:GetNW2Int("BUIK:Odometer", 0)), "BUIKClock", scr_w - sizeSpeedometrW - sizeRightMargin - 60, y + sizePgH / 2, colorActive, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
     end
 
     local sizeStatusGapX = 24
@@ -1339,7 +1334,7 @@ else
                 draw.RoundedBox(10, x, y, sizeListLineW, sizeListLineH, active and colorSelectedLineActive or colorSelectedLineInactive)
             end
             local color = active and colorLineTextActive or idx == 2 and colorLineTextInactive or colorInactive
-            draw.SimpleText(Wag:GetNW2String("BUIK:Line" .. idx, ""), "BUIKList", x + sizeListMargin, y + sizeListLineH / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText(Wag:GetNW2String("BUIK:Line" .. idx, ""), "BUIK64", x + sizeListMargin, y + sizeListLineH / 2, color, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             y = y + sizeListLineH
         end
     end
@@ -1352,7 +1347,7 @@ else
     function drawCircle(x, y, r, color, percent, invert)
         local extend = not not percent
         local a1, a2 = math.pi * (not extend and 1.0 or 1.015), math.pi * (not extend and 0 or -0.015)
-        percent = percent or 1
+        percent = percent and math.Clamp(percent, 0, 1) or 1
 
         local vtx = {}
         table.insert(vtx, { x = x, y = y })
@@ -1364,26 +1359,29 @@ else
             end
         end
 
-        surface.SetDrawColor(color)
-        draw.NoTexture()
-        surface.DrawPoly(vtx)
+        if #vtx > 2 then
+            surface.SetDrawColor(color)
+            draw.NoTexture()
+            surface.DrawPoly(vtx)
+        end
     end
     function drawSpeedometer(Wag)
         local x0, y0 = scr_w - sizeSpeedometrW + sizeSpeedometerPadding + sizeSpeedometerInnerRadius, sizeSpeedometerPadding + sizeSpeedometerInnerRadius
 
-        local r1 = sizeSpeedometerInnerRadius + sizeSpeedometerLineGap
+        local r1 = sizeSpeedometerInnerRadius + sizeSpeedometerLineGap - 4
         local r2 = sizeSpeedometerInnerRadius + sizeSpeedometerPadding - sizeSpeedometerLineGap - 40
         local r3 = sizeSpeedometerInnerRadius + sizeSpeedometerPadding - sizeSpeedometerLineGap - 18
-        local r12 = r1 + (r2 - r1) / 2
+        local r12 = r1 + (r2 - r1) / 2 + 2
 
         local speed = Wag:GetNW2Float("BUIK:ActualSpeed", 0)
         local maxSpeed = Wag:GetNW2Int("BUIK:MaxSpeed", 0)
         local nextSpeed = Wag.BuikAlsArs and Wag:GetNW2Bool("BUIK:ActiveCabin", false) and Wag:GetNW2Int("BUIK:NextSpeed", 0) or nil
 
-        local maxSpeedColor = not Wag:GetNW2Bool("BUIK:NoMaxSpeed", false) and colorRed or colorBackground
+        local maxSpeedColor = not Wag:GetNW2Bool("BUIK:NoMaxSpeed", false) and colorRed or colorBackgroundSpeedometerTop
+        drawCircle(x0, y0, r2, colorBackgroundSpeedometerTop, maxSpeed / 100)
         drawCircle(x0, y0, r2, maxSpeedColor, maxSpeed / 100, true)
         drawCircle(x0, y0, r2, colorGreen, speed / 100)
-        drawCircle(x0, y0, r12, colorBackground, 1)
+        drawCircle(x0, y0, r12, colorBackgroundSpeedometerTop, 1)
         if nextSpeed then
             drawCircle(x0, y0, r12, colorYellow, nextSpeed / 100, true)
         end
@@ -1391,11 +1389,14 @@ else
         for i = 0, 20 do
             local a = Lerp(i / 20, math.pi * 1.015, -math.pi * 0.015)
             local cosa, sina = math.cos(a), math.sin(a)
+            local rt = i < 20 and (r3 - 6) or r3
             local x1, y1 = x0 + cosa * r1, y0 - sina * r1
             local x2, y2 = x0 + cosa * r2, y0 - sina * r2
-            local x3, y3 = x0 + cosa * r3, y0 - sina * r3
+            local xl, yl = (x1 + x2) / 2, (y1 + y2) / 2
+            local x3, y3 = x0 + cosa * rt, y0 - sina * rt
             surface.SetDrawColor(255, 255, 255)
-            surface.DrawLine(x1, y1, x2, y2)
+            draw.NoTexture()
+            surface.DrawTexturedRectRotated(xl, yl, r2 - r1, 2, math.deg(a))
             draw.SimpleText(tostring(i * 5), "BUIKSpeedometerClock", x3, y3, maxSpeed > 0 and i * 5 == math.floor(maxSpeed) and colorRed or colorWhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
 
@@ -1405,7 +1406,7 @@ else
         end
 
         draw.SimpleText("00", "BUIKSpeedometer", x0, y0 - 80, colorInactive, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        draw.SimpleText(tostring(math.floor(speed)), "BUIKSpeedometer", x0 + (speed < 10 and 64 or 0), y0 - 80, colorActive, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(tostring(math.floor(speed)), "BUIKSpeedometer", x0 + (speed < 10 and 70 or 0), y0 - 80, colorActive, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     function TRAIN_SYSTEM:DrawBuik(state)

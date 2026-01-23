@@ -130,7 +130,7 @@ function TRAIN_SYSTEM:Think(dT)
 
     -- ARS system placeholder logic
     self.KB = Train.PB.Value > 0.5 or Train.Attention.Value > 0.5
-    self.KVT = Train.AttentionBrake.Value > 0.5
+    self.KVT = Train.AttentionBrake.Value > 0.5 or self.KB
     if self.KVT then self.KVTTimer = CurTime() + 1 end
     if self.KVTTimer and CurTime() - self.KVTTimer > 0 then self.KVTTimer = false end
     local Active = Power -- and Train.ALS.Value == 0-- and Train.BUKP.Active > 0 and Train.BUV.Reverser ~= 0

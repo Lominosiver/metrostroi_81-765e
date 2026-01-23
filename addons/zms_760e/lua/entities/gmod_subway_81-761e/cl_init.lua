@@ -361,6 +361,7 @@ ENT.ButtonMap["FrontPneumatic"] = {
             model = {
                 var = "FrontBrakeLineIsolation",
                 sndid = "FrontBrake",
+                states = {"Train.Buttons.Opened", "Train.Buttons.Closed"}
             }
         },
         --model = "models/metrostroi_train/81-760/81_760_crane_tm_out.mdl", ang=Angle(0,90,-35), z=-1,y=0,
@@ -376,6 +377,7 @@ ENT.ButtonMap["FrontPneumatic"] = {
             model = {
                 var = "FrontTrainLineIsolation",
                 sndid = "FrontTrain",
+                states = {"Train.Buttons.Opened", "Train.Buttons.Closed"}
             }
         },
     }
@@ -422,6 +424,7 @@ ENT.ButtonMap["RearPneumatic"] = {
             model = {
                 var = "RearBrakeLineIsolation",
                 sndid = "RearBrake",
+                states = {"Train.Buttons.Opened", "Train.Buttons.Closed"}
             }
         },
         --model = "models/metrostroi_train/81-760/81_760_crane_tm_out.mdl", ang=Angle(0,90,-35), z=-1,y=0,
@@ -437,6 +440,7 @@ ENT.ButtonMap["RearPneumatic"] = {
             model = {
                 var = "RearTrainLineIsolation",
                 sndid = "RearTrain",
+                states = {"Train.Buttons.Opened", "Train.Buttons.Closed"}
             }
         },
     }

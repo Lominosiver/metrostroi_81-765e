@@ -1033,7 +1033,7 @@ if SERVER then
                         self.DoorControlTimer = true
                     end
                     if not doorsNotClosed and self.DoorControlTimer and not isnumber(self.DoorControlTimer) then
-                        self.DoorControlTimer = CurTime() + self.DoorControlDelay + math.Rand(-0.2, 0.2)
+                        self.DoorControlTimer = CurTime() + self.DoorControlDelay + math.Rand(-0.2, 0.2) + (Train:GetNW2Bool("KdLongerDelay", false) and 1.2 or 0)
                     end
                     if not doorsNotClosed and isnumber(self.DoorControlTimer) then
                         doorsNotClosed = CurTime() < self.DoorControlTimer
@@ -1435,9 +1435,10 @@ if SERVER then
                 local train = self.Trains[self.Trains[i]]
                 if train and train.Ring then ring = true end
             end
+            self.CallRing = ring
 
             self.Ring = Train.BARS.Ring > 0
-            self.ErrorRinging = ring or (Train.ProstKos.Receiving and Train.Speed > 2 or Train.ProstKos.CommandKos > 0) or self.ErrorRing and CurTime() - self.ErrorRing < 2
+            self.ErrorRinging = (Train.ProstKos.Receiving and Train.Speed > 2 or Train.ProstKos.CommandKos > 0) or self.ErrorRing and CurTime() - self.ErrorRing < 2
             if self.MainMsg < 2 then
                 self.PSN = (Train.PpzUpi.Value > 0) and self.State == 5
                 self.Compressor = (Train.PpzUpi.Value * Train.SF45.Value * Train.Battery.Value > 0) and self.State == 5 and Train.AK.Value > 0
@@ -1517,7 +1518,7 @@ else
     function TRAIN_SYSTEM:ClientThink()
         if not self.Train:ShouldDrawPanel("MFDU") then return end
         if not self.DrawTimer then
-            render.PushRenderTarget(self.Train.MFDU, 0, 0, 1024, 1024)
+            render.PushRenderTarget(self.Train.MFDU, 0, 0, 1024, 768)
             render.Clear(0, 0, 0, 0)
             render.PopRenderTarget()
         end
@@ -1537,7 +1538,7 @@ else
             self.WagNum = self.Train:GetNW2Int("Skif:WagNum", 0)
             self.MainScreen = self.State == 5 and self.State2 == 0
         end
-        render.PushRenderTarget(self.Train.MFDU, 0, 0, 1024, 1024)
+        render.PushRenderTarget(self.Train.MFDU, 0, 0, 1024, 768)
         if not skipOther or poweroff then
             render.Clear(0, 0, 0, 0)
         end

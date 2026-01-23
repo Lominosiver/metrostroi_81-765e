@@ -28,6 +28,7 @@ Common.765.PMV.ATS.UOS                                                         =
 Common.765.PMV.Freq.DAU                                                        = ДАУ АБ 1/5
 Common.765.PMV.Freq.AlsArs                                                     = АЛС-АРС 2/6
 
+Train.765.CameraPMV                                                            = Пульт машиниста вспомогательный (ПМВ)
 Train.765.CameraBuik                                                           = БУ-ИК (Блок упр. Информац. Компл.)
 Train.765.CameraMfdu                                                           = МФДУ (САУ Скиф-М)
 Train.765.CameraCouple                                                         = Автосцепка

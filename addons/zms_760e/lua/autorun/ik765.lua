@@ -46,3 +46,12 @@ IK_TEMPLATE_ACCESS = {
         }
     }
 }
+
+if SERVER then
+    concommand.Add("metrostroi_bmik", function(ply, _, _, str)
+        local train = ply:GetTrain()
+        if IsValid(train) and train.FrontIK then
+            train.FrontIK:TriggerInput("SetRoute", str)
+        end
+    end)
+end

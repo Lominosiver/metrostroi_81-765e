@@ -382,12 +382,6 @@ function ENT:InitializeSounds()
         self.SoundPositions["vent" .. i] = {100, 1e9, Vector(yventpos[i], 0, 30), 0.5}
     end
 
-    self.SoundNames["ring"] = {
-        loop = true, --{"subway_trains/760/ring/ring760_start.mp3","subway_trains/760/new/ring760_loop.mp3","subway_trains/760/ring/ring760_end.mp3"}
-        "subway_trains/760/new/ring_ars.wav"
-    }
-
-    self.SoundPositions["ring"] = {100, 1e9, Vector(409, 25.6, -26.3)}
     self.SoundNames["compressor"] = {
         loop = true, --{loop=true,"subway_trains/722/compressol_loop.wav"}
         "subway_trains/760/new/compressor_loop.wav"
@@ -474,7 +468,7 @@ function ENT:InitializeSounds()
         "subway_trains/common/pneumatic/horn/horn3_end.wav"
     }
 
-    self.SoundPositions["horn"] = {1100, 1e9, Vector(500, 0, -30)}
+    self.SoundPositions["horn"] = {1100, 1e9, Vector(500, -25, -64)}
 
     local kvType = self:GetNW2Int("KvType", 1)
     if kvType == 1 then kvType = math.random(2) else kvType = kvType - 1 end
@@ -722,12 +716,14 @@ function ENT:InitializeSounds()
     self.SoundPositions["door_pvz_close"] = {800, 1e9, Vector(411.6, 21, 42), 0.5}
     self.SoundNames["bkpu"] = {"subway_trains/760/vb_on.wav"}
     self.SoundPositions["bkpu"] = {800, 1e9, Vector(410.2, 59, 1), 0.5}
-    self.SoundNames["ring_ppz"] = {
-        loop = true,
-        "subway_trains/760/new/ring_vityaz.wav"
-    }
 
-    self.SoundPositions["ring_ppz"] = {800, 1e9, Vector(410.2, 57, 1), 0.5}
+    self.SoundNames["ring_call"] = { loop = true, "subway_trains/760/new/ring_vityaz.wav" }
+    self.SoundPositions["ring_call"] = {800, 1e9, Vector(490, 21.6, -9.2), 0.5}
+    self.SoundNames["ring_ppz"] = { loop = true, "subway_trains/760/new/ring_vityaz.wav" }
+    self.SoundPositions["ring_ppz"] = {800, 1e9, Vector(417, 36, 31.3), 0.5}
+    self.SoundNames["ring"] = { loop = true, "subway_trains/760/new/ring_ars.wav" }
+    self.SoundPositions["ring"] = {100, 1e9, Vector(417, 36, 31.3)}
+
     self.SoundNames["powerreserve"] = {"subway_trains/760/vb_on.wav"}
     self.SoundPositions["powerreserve"] = {800, 1e9, Vector(410.2, 55, 1), 0.5}
     self.SoundNames["bv_off"] = {"subway_trains/760/new/bv_off.wav"}
@@ -824,7 +820,7 @@ local function pmvToggle(name, tooltip, x, y, idx, positions, states, default)
         default = default or 0,
         buttons = {
             {
-                ID = name .. "Toggle", x = x + idx * 51.5, y = y + 20, radius = nil, model = {
+                ID = name .. "Toggle", x = x + idx * 68.8, y = y + 30, radius = nil, model = {
                     var = name,
                     model = "models/metrostroi_train/81-760/81_760_switch_bcpu.mdl",
                     z = -1, ang = Angle(0,90,-90), color = Color(0,0,0),
@@ -833,41 +829,41 @@ local function pmvToggle(name, tooltip, x, y, idx, positions, states, default)
                     sndmin = 90, sndmax = 1e3, sndang = Angle(-90,0,0)
                 }
             },
-            {ID = "PakUp" .. name, x = idx * 51.5 + x - 20, y = y,      w = 40, h = 20, tooltip = tooltip .. " ↑", model = {
+            {ID = "PakUp" .. name, x = idx * 68.8 + x - 30, y = y,      w = 60, h = 30, tooltip = tooltip .. " ↑", model = {
                 states = states, var = states and name or nil, varTooltip = states and function(ent) return ent:GetNW2Int(name, 0) / (#states - 1) end or nil
             }},
-            {ID = "PakDn" .. name, x = idx * 51.5 + x - 20, y = y + 21, w = 40, h = 20, tooltip = tooltip .. " ↓", model = {
+            {ID = "PakDn" .. name, x = idx * 68.8 + x - 30, y = y + 31, w = 60, h = 30, tooltip = tooltip .. " ↓", model = {
                 states = states, var = states and name or nil, varTooltip = states and function(ent) return ent:GetNW2Int(name, 0) / (#states - 1) end or nil
             }},
         }
     }
 end
 
-pmvToggle("PmvAddressDoors", "Индивидуальное открытие дверей", 71.7, 48, 0, {0, 3}, {
+pmvToggle("PmvAddressDoors", "Индивидуальное открытие дверей", 34, 84, 0, {0, 3}, {
     "Common.765.Buttons.IOn", "Common.765.Buttons.IOff"
 }, 1)
-pmvToggle("PmvRpdp", "Питание РПДП", 71.7, 48, 1, {0, 3}, {
+pmvToggle("PmvRpdp", "Питание РПДП", 34, 84, 1, {0, 3}, {
     "Common.765.PMV.RPDP.BS", "Common.765.PMV.RPDP.AKB"
 })
-pmvToggle("PmvPant", "Отжатие токоприемников", 71.7, 104, 0, {0, 2, 4, 6}, {
+pmvToggle("PmvPant", "Отжатие токоприемников", 34, 160, 0, {0, 2, 4, 6}, {
     "Common.765.PMV.Pant.All", "Common.765.PMV.Pant.2nd", "Common.765.PMV.Pant.1st", "Common.765.PMV.Pant.Off"
 }, 3)
-pmvToggle("PmvParkingBrake", "Стояночный тормоз", 71.7, 104, 1, {0, 3}, {
+pmvToggle("PmvParkingBrake", "Стояночный тормоз", 34, 160, 1, {0, 3}, {
     "Common.765.Buttons.Off", "Common.765.Buttons.On"
 })
-pmvToggle("PmvAtsBlock", "Блокиратор АТС", 71.7, 104, 2, {0, 1, 2, 3}, {
+pmvToggle("PmvAtsBlock", "Блокиратор АТС", 34, 160, 2, {0, 1, 2, 3}, {
     "Common.765.PMV.ATS.Normal", "Common.765.PMV.ATS.ATS1", "Common.765.PMV.ATS.ATS2", "Common.765.PMV.ATS.UOS"
 })
-pmvToggle("PmvFreq", "Дешифратор", 71.7, 104, 3, {0, 3}, {
+pmvToggle("PmvFreq", "Дешифратор", 34, 160, 3, {0, 3}, {
     "Common.765.PMV.Freq.DAU", "Common.765.PMV.Freq.AlsArs"
 })
-pmvToggle("PmvLights", "Освещение салона", 71.7, 104, 4, {0, 3}, {
+pmvToggle("PmvLights", "Освещение салона", 34, 160, 4, {0, 3}, {
     "Common.765.Buttons.IOn", "Common.765.Buttons.IOff"
 }, 1)
-pmvToggle("PmvEmerPower", "Аварийное питание", 71.7, 104, 5, {0, 3}, {
+pmvToggle("PmvEmerPower", "Аварийное питание", 34, 160, 5, {0, 3}, {
     "Common.765.Buttons.IOff", "Common.765.Buttons.IOn"
 })
-pmvToggle("PmvCond", "Выключатель кондиционера салона", 71.7, 104, 6, {0, 3}, {
+pmvToggle("PmvCond", "Выключатель кондиционера салона", 34, 160, 6, {0, 3}, {
     "Common.765.Buttons.On", "Common.765.Buttons.Off"
 }, 1)
 --[[
@@ -885,12 +881,12 @@ local function ppzToggle(name, tooltip, x, y, idx)
     return {
         relayName = name,
         ID = name .. "Toggle", tooltip = tooltip,
-        x = idx * (16 + 5.25) + x, y = y,
-        w = 16, h = 50,
+        x = idx * 29.8 + x, y = y,
+        w = 29.8, h = 50,
         model = {
             var = name,
-            model = "models/metrostroi_train/81-760/81_760_switch_pmv.mdl",
-            z = -10, ang = Angle(-180, 90, 90),
+            model = "models/metrostroi_train/81-765/switch_av.mdl",
+            z = 0, ang = Angle(-90, -180, 0), scale = 1,
             speed = 9, sndvol = 0.4, vmin = 0, vmax = 1,
             snd = function(val) return val and "sf_on" or "sf_off" end,
             sndmin = 90, sndmax = 1e3,
@@ -899,38 +895,38 @@ local function ppzToggle(name, tooltip, x, y, idx)
 end
 
 ENT.PpzToggles = {
-    ppzToggle("SF42F1", "42F1: РПДП", 60.8, 225, 0),
-    ppzToggle("SF30F1", "30F1: Управление БС", 60.8, 225, 1),
-    ppzToggle("SF23F2", "23F2: Активная кабина", 60.8, 225, 2),
-    ppzToggle("SF23F1", "23F1: Управление резервное", 60.8, 225, 3),
-    ppzToggle("SF23F3", "23F3: Управление основное", 60.8, 225, 4),
-    ppzToggle("SF23F13", "23F13: Ориентация", 60.8, 225, 5),
-    ppzToggle("SF23F7", "23F7: АТС-2", 60.8, 225, 6),
-    ppzToggle("SF23F8", "23F8: АТС-1, УПИ, Монитор", 60.8, 225, 7),
-    ppzToggle("SF22F5", "22F5: РВТБ", 60.8, 225, 8),
-    ppzToggle("SF22F2", "22F2: КМ, БТБУ, СД", 60.8, 225, 9),
-    ppzToggle("SF22F3", "22F3: Управление стояночным тормозом", 60.8, 225, 10),
-    ppzToggle("SF80F5", "80F5: Двери управление", 60.8, 225, 11),
-    ppzToggle("SF80F1", "80F1: Контроль дверей", 60.8, 225, 12),
-    ppzToggle("SF80F3", "80F3: Двери кабины", 60.8, 225, 13),
-    ppzToggle("SF62F1", "62F1: Вентиляция аппаратного отсека", 60.8, 225, 14),
-    ppzToggle("SF42F2", "42F2: Счетчик", 60.8, 225, 15),
-    ppzToggle("SF30F5", "30F5: ППП", 60.8, 330, 0),
-    ppzToggle("SF70F1", "70F1: Радиосвязь", 60.8, 330, 1),
-    ppzToggle("SF45F11", "45F11: ЦИК", 60.8, 330, 2),
-    ppzToggle("SF45F1", "45F1: Видеонаблюдение", 60.8, 330, 3),
-    ppzToggle("SF43F3", "43F3: Штурман (антисон)", 60.8, 330, 4),
-    ppzToggle("SF90F1", "90F1: АСОТП ЦБКИ", 60.8, 330, 5),
-    ppzToggle("PPZUU1", "Не используется", 60.8, 330, 6),
-    ppzToggle("SF51F1", "51F1: Фары, габаритные огни", 60.8, 330, 7),
-    ppzToggle("SF51F2", "51F2: Габаритные огни от АКБ\n(ночной отстой)", 60.8, 330, 8),
-    ppzToggle("SF52F1", "52F1: Освещение кабины", 60.8, 330, 9),
-    ppzToggle("SF62F3", "62F3: Кондиционер кабины", 60.8, 330, 10),
-    ppzToggle("SF62F4", "62F4: Обеззараживающее уст-во кабины", 60.8, 330, 11),
-    ppzToggle("SF61F8", "61F8: Кондиционер салона", 60.8, 330, 12),
-    ppzToggle("SF70F4", "70F4: Обогрев кресла, подножки\nШторка, подстаканник (81-765.4)", 60.8, 330, 13),
-    ppzToggle("SF70F3", "70F3: Стеклоочиститель, омыватель, АГС, сигнал", 60.8, 330, 14),
-    ppzToggle("SF70F2", "70F2: Обогрев стекла", 60.8, 330, 15),
+    ppzToggle("SF42F1", "42F1: РПДП", 3.0, 356, 0),
+    ppzToggle("SF30F1", "30F1: Управление БС", 3.0, 356, 1),
+    ppzToggle("SF23F2", "23F2: Активная кабина", 3.0, 356, 2),
+    ppzToggle("SF23F1", "23F1: Управление резервное", 3.0, 356, 3),
+    ppzToggle("SF23F3", "23F3: Управление основное", 3.0, 356, 4),
+    ppzToggle("SF23F13", "23F13: Ориентация", 3.0, 356, 5),
+    ppzToggle("SF23F7", "23F7: АТС-2", 3.0, 356, 6),
+    ppzToggle("SF23F8", "23F8: АТС-1, УПИ, Монитор", 3.0, 356, 7),
+    ppzToggle("SF22F5", "22F5: РВТБ", 3.0, 356, 8),
+    ppzToggle("SF22F2", "22F2: КМ, БТБУ, СД", 3.0, 356, 9),
+    ppzToggle("SF22F3", "22F3: Управление стояночным тормозом", 3.0, 356, 10),
+    ppzToggle("SF80F5", "80F5: Двери управление", 3.0, 356, 11),
+    ppzToggle("SF80F1", "80F1: Контроль дверей", 3.0, 356, 12),
+    ppzToggle("SF80F3", "80F3: Двери кабины", 3.0, 356, 13),
+    ppzToggle("SF62F1", "62F1: Вентиляция аппаратного отсека", 3.0, 356, 14),
+    ppzToggle("SF42F2", "42F2: Счетчик", 3.0, 356, 15),
+    ppzToggle("SF30F5", "30F5: ППП", 3.0, 536, 0),
+    ppzToggle("SF70F1", "70F1: Радиосвязь", 3.0, 536, 1),
+    ppzToggle("SF45F11", "45F11: ЦИК", 3.0, 536, 2),
+    ppzToggle("SF45F1", "45F1: Видеонаблюдение", 3.0, 536, 3),
+    ppzToggle("SF43F3", "43F3: Штурман (антисон)", 3.0, 536, 4),
+    ppzToggle("SF90F1", "90F1: АСОТП ЦБКИ", 3.0, 536, 5),
+    ppzToggle("PPZUU1", "Не используется", 3.0, 536, 6),
+    ppzToggle("SF51F1", "51F1: Фары, габаритные огни", 3.0, 536, 7),
+    ppzToggle("SF51F2", "51F2: Габаритные огни от АКБ\n(ночной отстой)", 3.0, 536, 8),
+    ppzToggle("SF52F1", "52F1: Освещение кабины", 3.0, 536, 9),
+    ppzToggle("SF62F3", "62F3: Кондиционер кабины", 3.0, 536, 10),
+    ppzToggle("SF62F4", "62F4: Обеззараживающее уст-во кабины", 3.0, 536, 11),
+    ppzToggle("SF61F8", "61F8: Кондиционер салона", 3.0, 536, 12),
+    ppzToggle("SF70F4", "70F4: Обогрев кресла, подножки\nШторка, подстаканник (81-765.4)", 3.0, 536, 13),
+    ppzToggle("SF70F3", "70F3: Стеклоочиститель, омыватель, АГС, сигнал", 3.0, 536, 14),
+    ppzToggle("SF70F2", "70F2: Обогрев стекла", 3.0, 536, 15),
 }
 
 
@@ -949,7 +945,7 @@ function ENT:InitializeSystems()
     self:LoadSystem("Horn", "81_720_Horn")
     self:LoadSystem("Panel", "81_760E_Panel")
 
-    self:LoadSystem("ASNP", "81_760_ASNP")
+    self:LoadSystem("ASNP", "81_765_ASNP")
     self:LoadSystem("ASNP_VV", "81_760_ASNP_VV")
     self:LoadSystem("IGLA_CBKI", "81_760_IGLA_CBKI1")
     self:LoadSystem("IGLA_PCBK", "81_760_IGLA_PCBK")
@@ -958,9 +954,9 @@ function ENT:InitializeSystems()
     self:LoadSystem("RPDP", "81_760_RPDP")
     self:LoadSystem("BNT", "81_765_BNT")
     self:LoadSystem("BUIK", "81_765_BUIK")
-    self:LoadSystem("RouteNumber", "81_760_RouteNumber")
     self:LoadSystem("CAMS", "81_760_CAMS")
     self:LoadSystem("ProstKos", "81_765_ProstKos")
+    self:LoadSystem("FrontIK", "81_765_FrontIK")
 
     if self.InitializeSystemsServer then
         self:InitializeSystemsServer()
@@ -973,22 +969,23 @@ for i = 1, 4 do
     table.insert(ENT.AnnouncerPositions, {
         Vector(323 - (i - 1) * 230, --[[+37.5]]
             47, 44),
-        100,
+        i == 1 and 60 or 100,
         0.1
     })
 
-    table.insert(ENT.AnnouncerPositions, {Vector(323 - (i - 1) * 230, -47, 44), 100, 0.1})
+    table.insert(ENT.AnnouncerPositions, {Vector(323 - (i - 1) * 230, -47, 44), i == 1 and 60 or 100, 0.1})
 end
+table.insert(ENT.AnnouncerPositions, {Vector(490, 34.5, -10), 60, 0.2})
 
 ENT.Cameras = {
     --{Vector(407.5+17,32,22),Angle(0,180-7,0),"Train.760.CameraCond"},
-    {Vector(412 + 17, 49, 1), Angle(0, 180, 0), "Train.760.CameraPPZ"},
-    {Vector(445.5 + 11, 52, -1), Angle(0, 90, 0), "Train.760.CameraASNPIGLA"},
-    {Vector(416.8 + 63, 45, -7), Angle(25, 20, 0), "Train.760.CameraCams"},
-    {Vector(425.8 + 54, 25, -7), Angle(20, 0, 0), "Train.765.CameraBuik"},
-    {Vector(425.8 + 57, 4, -10), Angle(20, 0, 0), "Train.765.CameraMfdu"},
+    {Vector(430, 45, 30), Angle(0, 180, 0), "Train.765.CameraPMV"},
+    {Vector(430, 45, 12), Angle(0, 180, 0), "Train.760.CameraPPZ"},
+    {Vector(479, 43, -4), Angle(14.5, 30, 0), "Train.760.CameraCams"},
+    {Vector(483, 23, -1), Angle(21, 0, 0), "Train.765.CameraBuik"},
+    {Vector(486, -3, -3), Angle(21, 0, 0), "Train.765.CameraMfdu"},
     {Vector(427.5 + 40, -40, -25), Angle(55, -70, 0), "Train.760.CameraKRMH"},
-    {Vector(407, 18, 9), Angle(0, 180, 0), "Train.760.CameraPVZ"},
+    {Vector(415, 18, 9), Angle(0, 180, 0), "Train.760.CameraPVZ"},
     {Vector(520, 0, 15), Angle(60, 0, 0), "Train.765.CameraCouple"},
 }
 
@@ -1015,7 +1012,7 @@ ENT.SubwayTrain = {
     NoFrontEKK = true,
 }
 
-ENT.NumberRanges = {{37095, 37332}}
+ENT.NumberRanges = {{37500, 37699}}
 --[[
 local Texture = {}
 for k,v in pairs(Metrostroi.Skins["train"]) do
@@ -1041,7 +1038,7 @@ end
 
 
 ENT.Spawner = {
-    model = {"models/metrostroi_train/81-760e/81_760e_body.mdl", "models/metrostroi_train/81-760/81_760a_int.mdl", "models/metrostroi_train/81-760/81_760_cockpit.mdl", "models/metrostroi_train/81-760/81_760_headlamps.mdl",},
+    model = {"models/metrostroi_train/81-760e/81_760e_body.mdl", "models/metrostroi_train/81-760/81_760a_int.mdl", "models/metrostroi_train/81-765/cabin.mdl", "models/metrostroi_train/81-765/headlights_main_off.mdl",},
     spawnfunc = function(i, tbls, tblt)
         local WagNum = tbls.WagNum
         if i > 1 and i < WagNum then
@@ -1087,7 +1084,7 @@ ENT.Spawner = {
             ent.ASNP.Path = i ~= 1
         end
     end,
-    Metrostroi.Skins.GetTable("Texture", "Spawner.Texture", Texture, "train"),
+    -- Metrostroi.Skins.GetTable("Texture", "Spawner.Texture", Texture, "train"),
     -- Metrostroi.Skins.GetTable("PassTexture","Spawner.PassTexture",PassTexture,"pass"),
     -- Metrostroi.Skins.GetTable("CabTexture","Spawner.CabTexture",CabTexture,"cab"),
     {
@@ -1166,6 +1163,15 @@ ENT.Spawner = {
     {"HSEngines", "Spawner.720a.HSEngines", "Boolean"},
     {"FirstONIX", "Spawner.720a.FirstONIX", "Boolean"},
     {"AddressDoors", "Индивид. открытие дверей (765.2)", "Boolean"},
+    {"BLIK:Type", "Лого БЛ-ИК", "List", {"Нет", "Пиво"}, 1, nil, function(self, sl)
+        local d = self:GetSelectedID() == 1
+        local a = sl["BLIK:Anim"]
+        if d then a:SetValue(false) end
+        a:SetDisabled(d)
+        a.Disable = d
+    end},
+    {"BLIK:Anim", "Анимация БЛ-ИК", "Boolean"},
+    {"KdLongerDelay", "Задержка контроля дверей", "Boolean"},
     {"NoTrailers", "Без прицепных 763Э", "Boolean", false, nil, function(self, stbl)
         local wagnField = stbl.WagNum
         if self.TrainInjected == wagnField then return end
@@ -1197,6 +1203,7 @@ ENT.Spawner = {
             if rclk then return end
             if not _randRoute then _randRoute = math.random(1, 89) end
             if ent._SpawnerStarted ~= val then
+                ent.Pneumatic:TriggerInput("Spawned", true)
                 if val <= 2 then
                     ent.Electric:TriggerInput("Power", true)
                 end
@@ -1235,11 +1242,14 @@ ENT.Spawner = {
                     ent.DoorClose:TriggerInput("Set", first and val == 1 and 1 or 0)
                     ent.R_ASNPOn:TriggerInput("Set", 1)
                     ent.CabinLight:TriggerInput("Set", 1)
-                    ent.PmvAddressDoors:TriggerInput("Set", ent:GetNW2Bool("AddressDoors", false) and 0 or 1)
 
-                    ent.PmvParkingBrake:TriggerInput("Set", val == 3 and 1 or 0)
-                    ent.PmvLights:TriggerInput("Set", val <= 2 and 0 or 1)
-                    ent.PmvCond:TriggerInput("Set", val <= 2 and 0 or 1)
+                    -- Without that, sometimes they remain turned off in turbostroi, but turning on on main thread
+                    timer.Simple(1, function()
+                        ent.PmvAddressDoors:TriggerInput("Set", ent:GetNW2Bool("AddressDoors", false) and 0 or 1)
+                        ent.PmvParkingBrake:TriggerInput("Set", val == 3 and 1 or 0)
+                        ent.PmvLights:TriggerInput("Set", val <= 2 and 0 or 1)
+                        ent.PmvCond:TriggerInput("Set", val <= 2 and 0 or 1)
+                    end)
 
                     local yd = os.date("!*t").yday
                     ent.BUKP.CondLeto = yd > 115 and yd < 300
@@ -1323,3 +1333,7 @@ ENT.Spawner = {
         end
     },
 }
+
+for idx = 1, 4 do
+    table.insert(ENT.Spawner.model, "models/metrostroi_train/81-765/headlights_" .. idx .. "_off.mdl")
+end

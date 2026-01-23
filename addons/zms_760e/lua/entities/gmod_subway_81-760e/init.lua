@@ -11,7 +11,7 @@ ENT.SyncTable = {
     "SF31", "SF32", "SF33", "SF34", "SF36", "SF37",
     "SF38", "SF39", "SF40", "SF41", "SF42", "SF57", "SF43", "SF44", "SF45", "SF46", "SF47", "SF48", "SF49", "SF50", "SF51", "SF52", "SF53",
     "SF54", "SF55", "SF56", "SF80F9",
-    "Stand", "EmergencyCompressor", "EmergencyControls", "EmergencyControlsK", "Wiper", "DoorLeft", "AccelRate", "HornB", "DoorRight",
+    "Stand", "EmergencyCompressor", "EmergencyCompressor2", "EmergencyControls", "EmergencyControlsK", "Wiper", "DoorLeft", "AccelRate", "HornB", "HornC", "DoorRight",
     "AutoDrive", "Micro", "Vent1", "Vent2", "Vent", "PassLight", "CabLight", "HeadlightsSwitch", "ParkingBrake",
     "BBER", "BBE", "Compressor", "CabLightStrength", "AppLights1", "AppLights2", "Battery", "MfduF1", "MfduF2", "MfduF3",
     "MfduF4", "Mfdu1", "Mfdu4", "Mfdu7", "Mfdu2", "Mfdu5", "Mfdu8", "Mfdu0", "Mfdu3", "Mfdu6", "Mfdu9", "MfduF5",
@@ -62,11 +62,11 @@ function ENT:Initialize()
     self.BaseClass.Initialize(self)
     self:SetPos(self:GetPos() + Vector(0, 0, 140))
     -- Create seat entities
-    self.DriverSeat = self:CreateSeat("driver", Vector(461, 18.1, -33)) --Vector(427,17.5,-35))--  -- +Vector(21,7,-10)) 447.8   455            Vector(455,18.1,-35)
+    self.DriverSeat = self:CreateSeat("driver", Vector(461, 14, -27)) --Vector(427,17.5,-35))--  -- +Vector(21,7,-10)) 447.8   455            Vector(455,18.1,-35)
     self.InstructorsSeat = self:CreateSeat("instructor", Vector(435.8, -12, -40), Angle(0, 90, 0), "models/vehicles/prisoner_pod_inner.mdl")
     self.InstructorsSeat2 = self:CreateSeat("instructor", Vector(435.8, 45, -40), Angle(0, 90, 0), "models/vehicles/prisoner_pod_inner.mdl")
-    self.InstructorsSeat3 = self:CreateSeat("instructor", Vector(417, -43, -36))
-    --self.InstructorsSeat4 = self:CreateSeat("instructor",Vector(465,-35,-40),Angle(0,90,0),"models/vehicles/prisoner_pod_inner.mdl")
+    self.InstructorsSeat3 = self:CreateSeat("instructor", Vector(425, -43, -37))
+    self.InstructorsSeat4 = self:CreateSeat("instructor", Vector(462, -35, -40), Angle(0, 90, 0), "models/vehicles/prisoner_pod_inner.mdl")
     -- Hide seats
     self.DriverSeat:SetRenderMode(RENDERMODE_TRANSALPHA)
     self.DriverSeat:SetColor(Color(0, 0, 0, 0))
@@ -76,8 +76,8 @@ function ENT:Initialize()
     self.InstructorsSeat2:SetColor(Color(0, 0, 0, 0))
     self.InstructorsSeat3:SetRenderMode(RENDERMODE_TRANSALPHA)
     self.InstructorsSeat3:SetColor(Color(0, 0, 0, 0))
-    --self.InstructorsSeat4:SetRenderMode(RENDERMODE_TRANSALPHA)
-    --self.InstructorsSeat4:SetColor(Color(0,0,0,0))
+    self.InstructorsSeat4:SetRenderMode(RENDERMODE_TRANSALPHA)
+    self.InstructorsSeat4:SetColor(Color(0, 0, 0, 0))
     self.LightSensor = self:AddLightSensor(Vector(460, 0, -130), Angle(0, 90, 0)) --"models/metrostroi_train/81-717/dkp_reader.mdl")
     --self.LightSensor = self:AddLightSensor(Vector(0,65,-30),Angle(0,0,0),"models/metrostroi_train/81-717/dkp_reader.mdl")
     -- Create bogeys
@@ -95,7 +95,7 @@ function ENT:Initialize()
     --self.FrontCouple = self:CreateCouple(Vector( 448-6,0,-68.5),Angle(0,0,0),true,"722")
     --self.RearCouple  = self:CreateCouple(Vector(-419.5-7.5+6,0,-68.5),Angle(0,180,0),false,"717")
     --else
-    self.FrontCouple = self:CreateCouple(Vector(442.2 + 20.8, 0, -68), Angle(0, 0, 0), true, "722")
+    self.FrontCouple = self:CreateCouple(Vector(442.2 + 30, 0, -68), Angle(0, 0, 0), true, "722")
     self.RearCouple = self:CreateCouple(Vector(-439 + 20.8, 0, -68), Angle(0, 180, 0), false, "763")
     --end
     --self.FrontBogey.DisableSound = 1
@@ -153,23 +153,17 @@ function ENT:Initialize()
         [KEY_M] = "AttentionSet",
         [KEY_H] = "PrToggle",
         [KEY_LSHIFT] = {
-            -- [KEY_W] = "PanelKVUp_Unlocked",
+            [KEY_S] = "KV765Set7",
             [KEY_SPACE] = "AttentionBrakeSet",
             [KEY_V] = "EmergencyDoorsToggle",
-            --[KEY_7] = "WrenchNone",
-            --[KEY_8] = "WrenchKRR",
-            [KEY_9] = "KRR-", --"WrenchKRO",
-            [KEY_0] = "KRR+", --"WrenchKRO",
+            [KEY_9] = "KRR-",
+            [KEY_0] = "KRR+",
             [KEY_G] = "DisableBVSet",
             [KEY_2] = "RingSet",
             [KEY_L] = "HornBSet",
             [KEY_MINUS] = "Buik_DownSet",
             [KEY_EQUAL] = "Buik_UpSet",
-            -- [KEY_UP] = "BMCISUpSet",
-            -- [KEY_DOWN] = "BMCISDownSet",
         },
-        --[KEY_LEFT] = "BMCISEscSet",
-        --[KEY_RIGHT] = "BMCISEnterSet",		
         [KEY_LALT] = {
             [KEY_V] = "DoorBlockToggle",
             [KEY_PAD_1] = "Mfdu1Set",
@@ -233,25 +227,43 @@ function ENT:Initialize()
         --[3]  = { "light",           Vector(500,   -65, 15), Angle(0,0,0), Color(255,50,50), brightness = 0.2, scale = 4, texture = "sprites/light_glow02.vmt" },
         --[4]  = { "light",           Vector(509,   60, 15), Angle(0,0,0), Color(255,50,50), brightness = 0.2, scale = 4, texture = "sprites/light_glow02.vmt" },
         [1] = {
-            "light", --, texture = "sprites/light_glow02.vmt" },
-            Vector(509.3, -36, -39.5),
-            Angle(0, 0, 0),
+            "light",
+            Vector(515, -56, 0),
+            Angle(0, 0, 90),
             Color(200, 240, 255),
             brightness = 0.5,
             scale = 2.5
         },
         [2] = {
             "light", --, texture = "sprites/light_glow02.vmt" },
-            Vector(509.3, 36.5, -39.5),
-            Angle(0, 0, 0),
+            Vector(515, 56, 0),
+            Angle(0, 0, 90),
             Color(200, 240, 255),
             brightness = 0.5,
             scale = 2.5
         },
+        [3] = {
+            "light",
+            Vector(508, -52, 34),
+            Angle(0, 0, 90),
+            Color(255, 50, 50),
+            brightness = 0.2,
+            scale = 4,
+            texture = "sprites/light_glow02.vmt"
+        },
+        [4] = {
+            "light",
+            Vector(508, 52, 34),
+            Angle(0, 0, 90),
+            Color(255, 50, 50),
+            brightness = 0.2,
+            scale = 4,
+            texture = "sprites/light_glow02.vmt"
+        },
         --[10] = { "dynamiclight",    Vector( 486, 14, 13), Angle(0,0,0), Color(255,255,255), brightness = 0.1, distance = 550 },
         [10] = {
             "dynamiclight",
-            Vector(487, 16, 13),
+            Vector(495, 13, 25),
             Angle(0, 0, 0),
             Color(255, 255, 255),
             brightness = 0.1,
@@ -328,6 +340,8 @@ function ENT:Initialize()
     self.PassengerDoor = false
     self.CabinDoorLeft = false
     self.CabinDoorRight = false
+    self.CabinWindowLeft = false
+    self.CabinWindowRight = false
     self.Chair = false
     self.SpeedTimer = CurTime()
     self.WrenchMode = 0
@@ -783,6 +797,7 @@ function ENT:Think()
 
     self:SetPackedRatio("VentTimer", self.VentTimer or 0)
     self:SetPackedBool("BUKPRing", power and self.BUKP.State == 5 and self.BUKP.ErrorRinging)
+    self:SetPackedBool("CallRing", power and self.BUKP.State == 5 and self.BUKP.CallRing)
     self:SetPackedBool("RingEnabled", power and self.BUKP.Ring)
     self:SetPackedBool("WorkFan", Panel.WorkFan > 0)
     self:SetPackedBool("PanelLighting", Panel.PanelLights > 0)
@@ -794,6 +809,8 @@ function ENT:Think()
     self:SetLightPower(1, HeadlightsPower > 0, HeadlightsPower ^ 0.5)
     self:SetLightPower(2, HeadlightsPower > 0, HeadlightsPower ^ 0.5)
     self:SetPackedBool("BacklightsEnabled", Panel.RedLights > 0)
+    self:SetLightPower(3, Panel.RedLights > 0, 0.8)
+    self:SetLightPower(4, Panel.RedLights > 0, 0.8)
     local cablight = Panel.CabLight == 1 and 0.25 or Panel.CabLight == 2 and 0.8 or 0
     local cabl = cablight > 0
     self:SetLightPower(10, cabl, cablight)
@@ -854,6 +871,9 @@ function ENT:Think()
     self:SetPackedBool("PassengerDoor", self.PassengerDoor)
     self:SetPackedBool("CabinDoorLeft", self.CabinDoorLeft)
     self:SetPackedBool("CabinDoorRight", self.CabinDoorRight)
+    self:SetPackedBool("CabinWindowLeft", self.CabinWindowLeft)
+    self:SetPackedBool("CabinWindowRight", self.CabinWindowRight)
+    self:SetPackedBool("CabinDoorRightLimit", self.door_add_1 or self.Chair or self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) and IsValid(self.InstructorsSeat3:GetDriver()))
     self:SetPackedBool("door_pvz", self.door_pvz)
     self:SetPackedBool("door_add_1", self.door_add_1)
     self:SetPackedBool("door_add_2", self.door_add_2)
@@ -1025,28 +1045,28 @@ function ENT:OnButtonPress(button, ply)
     end
 
     if button == "K31Cap" then self.door_k31 = not self.door_k31 end
-    if button == "Chair" and not (self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) and IsValid(self.InstructorsSeat3:GetDriver()) or self.CabinDoorRight) then self.Chair = not self.Chair end
+    if button == "Chair" and not (self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) and IsValid(self.InstructorsSeat3:GetDriver())) then self.Chair = not self.Chair end
     if button == "PassengerDoor" and not self.door_pvz and not self.door_add_2 then --[[self:PlayOnce("door_cab_m_"..(self.PassengerDoor and "open" or "close"),"")]]
         self.PassengerDoor = not self.PassengerDoor
     end
 
-    if button == "Door_pvz" and not self.CabinDoorLeft then --[[self:PlayOnce("door_cab_m_"..(self.door_pvz and "open" or "close"),"")]]
-        self.door_pvz = not self.door_pvz
-    end
+    -- if button == "Door_pvz" and not self.CabinDoorLeft then --[[self:PlayOnce("door_cab_m_"..(self.door_pvz and "open" or "close"),"")]]
+    --     self.door_pvz = not self.door_pvz
+    -- end
 
-    if button == "Door_add_1" and not self.CabinDoorRight then --[[self:PlayOnce("door_cab_m_"..(self.door_add_1 and "open" or "close"),"")]]
+    if button == "Door_add_1" then --[[self:PlayOnce("door_cab_m_"..(self.door_add_1 and "open" or "close"),"")]]
         self.door_add_1 = not self.door_add_1
     end
 
-    if button == "Door_add_2" and not self.PassengerDoor and not self.door_pvz then --[[self:PlayOnce("door_cab_m_"..(self.door_add_2 and "open" or "close"),"")]]
-        self.door_add_2 = not self.door_add_2
-    end
+    -- if button == "Door_add_2" and not self.PassengerDoor and not self.door_pvz then --[[self:PlayOnce("door_cab_m_"..(self.door_add_2 and "open" or "close"),"")]]
+    --     self.door_add_2 = not self.door_add_2
+    -- end
 
     if button == "CabinDoorLeft" and (self.CabinDoorLeft or self.SF80F3.Value == 0 or self.Speed < 20) then --[[self:PlayOnce("door_cab_l_"..(self.CabinDoorLeft and "open" or "close"),"")]]
         self.CabinDoorLeft = not self.CabinDoorLeft
     end
 
-    if button == "CabinDoorRight" and (self.CabinDoorRight or (self.SF80F3.Value == 0 or self.Speed < 20) and not (self.door_add_1 or self.Chair or self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) and IsValid(self.InstructorsSeat3:GetDriver()))) then
+    if button == "CabinDoorRight" and (self.CabinDoorRight or (self.SF80F3.Value == 0 or self.Speed < 20)) then
         self.CabinDoorRight = not self.CabinDoorRight
         --self:PlayOnce("door_cab_r_"..(self.CabinDoorRight and "open" or "close"),"")
         if self.CabinDoorRight and self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) then
@@ -1056,26 +1076,33 @@ function ENT:OnButtonPress(button, ply)
         end
     end
 
+    if button == "CabinWindowLeft" then
+        self.CabinWindowLeft = not self.CabinWindowLeft
+    end
+    if button == "CabinWindowRight" then
+        self.CabinWindowRight = not self.CabinWindowRight
+    end
+
     if button == "DoorLeft" then
-        self.DoorSelectL:TriggerInput("Set", 1)
-        self.DoorSelectR:TriggerInput("Set", 0)
-        if self.EmergencyDoors.Value == 1 or self.DoorClose.Value == 0 then
+        if self.DoorSelectL.Value == 1 or self.EmergencyDoors.Value == 1 --[[or self.DoorClose.Value == 0]] then
             self.DoorLeft:TriggerInput("Set", 1)
         end
         if self.CAMS5 then
             self.CAMS5:TriggerInput("Set", 1)
         end
+        self.DoorSelectL:TriggerInput("Set", 1)
+        self.DoorSelectR:TriggerInput("Set", 0)
     end
 
     if button == "DoorRight" then
-        self.DoorSelectL:TriggerInput("Set", 0)
-        self.DoorSelectR:TriggerInput("Set", 1)
-        if self.EmergencyDoors.Value == 1 or self.DoorClose.Value == 0 then
+        if self.DoorSelectR.Value == 1 or self.EmergencyDoors.Value == 1 --[[or self.DoorClose.Value == 0]] then
             self.DoorRight:TriggerInput("Set", 1)
         end
         if self.CAMS6 then
             self.CAMS6:TriggerInput("Set", 1)
         end
+        self.DoorSelectL:TriggerInput("Set", 0)
+        self.DoorSelectR:TriggerInput("Set", 1)
     end
 
     if button == "DoorClose" then

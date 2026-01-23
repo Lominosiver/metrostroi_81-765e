@@ -63,16 +63,20 @@
     - [x] BU-IK Return informer reset 'notlast' message
     - [x] BUKP background initialization right after identification
     - [ ] ~~Make RVTB recover in some cases~~
-    - [ ] PB/KB acts as KVT as well
+    - [x] PB/KB acts as KVT as well
     - [ ] Uhv without GV behaivor
     - [ ] Still brake PN1/PN2 revise
     - [ ] Pneumatic weight load PN setting adjustment
+    - [ ] FIX: Some BUKP errors does not log (rear cabin door)
+    - [ ] FIX: Doors close delay reset logic
+    - [ ] FIX: IOD reset logic
+    - [ ] FIX: UKKZ recovery
 - [ ] 81-765/766/767/.2/.4 (modeling 765, maybe getting rest from 760A code, maybe dependencies (systems) too)
   - [ ] Models
-    - [ ] Mask
+    - [x] Mask
     - [ ] Body
-    - [ ] Cabin
-    - [ ] Console (remake)
+    - [x] Cabin
+    - [x] Console (remake)
   - [ ] Improve sounds
     - [ ] KATP-3
     - [ ] Remove RUMBLE dependency

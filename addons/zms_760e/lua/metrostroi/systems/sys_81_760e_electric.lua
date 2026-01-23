@@ -369,7 +369,7 @@ function TRAIN_SYSTEM:Think(dT, iter)
 
         local BTBp = BTB * min(1, 1 - Train.SD2.Value + self.SD)
         self.V2 = BTB
-        self.V1 = UPIPower * Train.SF70F3.Value * Train.HornB.Value
+        self.V1 = UPIPower * Train.SF70F3.Value * min(1, Train.HornB.Value + Train.HornC.Value)
         Train:WriteTrainWire(27, BTB)
         Train:WriteTrainWire(11, BTB * Train.PmvParkingBrake.Value * Train.SF22F3.Value * Train.BUKP.Active)
         Train:WriteTrainWire(31, BTB * (1 - Train.PmvParkingBrake.Value) * Train.SF22F3.Value * Train.BUKP.Active)
@@ -396,7 +396,7 @@ function TRAIN_SYSTEM:Think(dT, iter)
         self.ZeroSpeed = S["RV"] * min(1, Train.BUKP.ZeroSpeed * Train.BUKP.Active + C(Train.PmvAtsBlock.Value == 3) * (1 - Train.SF22F3.Value) * Train.PmvParkingBrake.Value)
         self.DoorsControl = Train.SF80F5.Value * min(1, Train.BUKP.ZeroSpeed * Train.BUKP.Active + Train.EmergencyDoors.Value)
 
-        Train:WriteTrainWire(10, P * Train.Battery.Value * Train.EmergencyCompressor.Value)
+        Train:WriteTrainWire(10, P * Train.Battery.Value * min(1, Train.EmergencyCompressor.Value + Train.EmergencyCompressor2.Value))
         local EmergencyDoors = self.DoorsControl * Train.EmergencyDoors.Value
         Train:WriteTrainWire(40, EmergencyDoors)
         Train:WriteTrainWire(39, EmergencyDoors * Train.EmerCloseDoors.Value)

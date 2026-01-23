@@ -445,7 +445,7 @@ elseif map:find("chapaevskaya") then
             }
         }
     }})
-    elseif map:find("crossline_r199h") then
+elseif map:find("crossline_r199h") then
     Metrostroi.AddCISConfig("[ИК] Кировская линия", {{
         LED = {3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
         Name = "Международная - Молодёжная",
