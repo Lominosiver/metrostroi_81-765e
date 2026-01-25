@@ -4454,7 +4454,7 @@ ENT.ButtonMap["CAMS"] = {
 }
 
 ENT.ButtonMap["BMIK"] = {
-    pos = Vector(494.6, -9.4, 58.8),
+    pos = Vector(494.8, -9.4, 58.8),
     ang = Angle(0, 90, 90),
     width = 1800,
     height = 300,
@@ -5054,10 +5054,12 @@ function ENT:Think()
         self:ShowHideSmooth("OffLights" .. idx, self:Animate("ol" .. idx, not redOn and not whiteOn and 1 or 0, 0, 1, 12, false))
     end
 
+    local dT = self.DeltaTime
+
     if IsValid(self.GlowingLights[1]) then
         self.GlowingLights[1]:SetEnableShadows(true)
-        if headl < 1 and self.GlowingLights[1]:GetFarZ() ~= 2850 then self.GlowingLights[1]:SetFarZ(2850) end
-        if headl == 1 and self.GlowingLights[1]:GetFarZ() ~= 8192 then self.GlowingLights[1]:SetFarZ(8192) end
+        if headl < 1 and self.GlowingLights[1]:GetFarZ() > 2850 then self.GlowingLights[1]:SetFarZ(2850) end
+        if headl == 1 and self.GlowingLights[1]:GetFarZ() < 8192 then self.GlowingLights[1]:SetFarZ(8192) end
     end
 
     hl1 = self:Animate("headlights1", hl1 and 1 or 0, 0, 1, 12, false)
@@ -5230,7 +5232,6 @@ function ENT:Think()
         self:Animate("wiper", 0, 0, 1, 0.32, false)
     end]]
 
-    local dT = self.DeltaTime
     local state = self:GetPackedBool("WorkCabVent", false)
     self.VentTimer = self:GetPackedRatio("VentTimer", 0) > 0 and self:GetPackedRatio("VentTimer")
     if self.VentVolume < 1 and state then

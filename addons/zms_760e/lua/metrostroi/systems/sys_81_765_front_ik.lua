@@ -5,6 +5,8 @@ Metrostroi.DefineSystem("81_765_FrontIK")
 TRAIN_SYSTEM.DontAccelerateSimulation = true
 
 function TRAIN_SYSTEM:Initialize()
+    self.RouteNumber = -1
+    self.Train.RouteNumber = self
 end
 
 function TRAIN_SYSTEM:Outputs()
@@ -21,7 +23,17 @@ if SERVER then
         if name ~= "SetRoute" then return end
         self.Train:SetNW2String("BMIK:Station", val1)
         if val2 then
-            self.Train:SetNW2Int("BMIK:RouteNumber", tonumber(val2))
+            self.RouteNumber = tonumber(val2)
+            self.Train:SetNW2Int("BMIK:RouteNumber", self.RouteNumber)
+        end
+    end
+
+    function TRAIN_SYSTEM:Think()
+        local power = self.Train.Electric.Battery80V > 62 and self.Train.SF45F11.Value > 0.5
+        self.Train:SetNW2Bool("BMIK:Power", power)
+        if not power then
+            self.Train:SetNW2String("BMIK:Station", "")
+            self.Train:SetNW2Int("BMIK:RouteNumber", 0)
         end
     end
 
@@ -33,36 +45,46 @@ else
 
     function TRAIN_SYSTEM:ClientThink()
         local Wag = self.Train
-        self.Working = Wag:GetNW2Bool("IK:Working", false)
-        if not self.NextDrawBm or CurTime() >= self.NextDrawBm then
-            self.NextDrawBm = CurTime() + 2
-            if Wag:ShouldDrawPanel("BMIK") then
-                render.PushRenderTarget(self.Train.BMIK, 0, 0, scw_bm, sch_bm)
-                render.Clear(0, 0, 0, 0)
-                cam.Start2D()
-                    self:DrawBm()
-                cam.End2D()
-                render.PopRenderTarget()
+        local power = Wag:GetNW2Bool("BMIK:Power", power)
+        self.Working = Wag:GetNW2Bool("IK:Working", true)
+        local fail = not self.Working and power
+        if not fail then
+            if not self.NextDrawBm or CurTime() >= self.NextDrawBm then
+                self.NextDrawBm = CurTime() + 2
+                if Wag:ShouldDrawPanel("BMIK") then
+                    render.PushRenderTarget(self.Train.BMIK, 0, 0, scw_bm, sch_bm)
+                    render.Clear(0, 0, 0, 0)
+                    cam.Start2D()
+                        if power then
+                            self:DrawBm()
+                        end
+                    cam.End2D()
+                    render.PopRenderTarget()
+                end
+                if Wag:ShouldDrawPanel("BNMIK") then
+                    render.PushRenderTarget(self.Train.BNMIK, 0, 0, scw_bnm, sch_bnm)
+                    render.Clear(0, 0, 0, 0)
+                    cam.Start2D()
+                        if power then
+                            self:DrawBnm()
+                        end
+                    cam.End2D()
+                    render.PopRenderTarget()
+                end
             end
-            if Wag:ShouldDrawPanel("BNMIK") then
-                render.PushRenderTarget(self.Train.BNMIK, 0, 0, scw_bnm, sch_bnm)
-                render.Clear(0, 0, 0, 0)
-                cam.Start2D()
-                    self:DrawBnm()
-                cam.End2D()
-                render.PopRenderTarget()
-            end
-        end
 
-        if not self.NextDrawBl or CurTime() >= self.NextDrawBl then
-            self.NextDrawBl = CurTime() + blFt
-            if Wag:ShouldDrawPanel("BLIK") then
-                render.PushRenderTarget(self.Train.BLIK, 0, 0, scw_bl, sch_bl)
-                render.Clear(0, 0, 0, 0)
-                cam.Start2D()
-                    self:DrawBl()
-                cam.End2D()
-                render.PopRenderTarget()
+            if not self.NextDrawBl or CurTime() >= self.NextDrawBl then
+                self.NextDrawBl = CurTime() + blFt
+                if Wag:ShouldDrawPanel("BLIK") then
+                    render.PushRenderTarget(self.Train.BLIK, 0, 0, scw_bl, sch_bl)
+                    render.Clear(0, 0, 0, 0)
+                    cam.Start2D()
+                        if power then
+                            self:DrawBl()
+                        end
+                    cam.End2D()
+                    render.PopRenderTarget()
+                end
             end
         end
     end
@@ -81,6 +103,20 @@ else
     surface.CreateFont("BMIK:Size2", {
         font = "Moscow2017_EMU",
         extended = true,
+        size = 200,
+        weight = 500,
+        antialias = true,
+    })
+    surface.CreateFont("BMIK:Size3", {
+        font = "Moscow2017_EMU",
+        extended = true,
+        size = 160,
+        weight = 500,
+        antialias = true,
+    })
+    surface.CreateFont("BNMIK", {
+        font = "Moscow2017_EMU",
+        extended = true,
         size = 180,
         weight = 500,
         antialias = true,
@@ -93,10 +129,17 @@ else
             surface.SetFont("BMIK:Size1")
             local len = surface.GetTextSize(curText)
             self.BmFont = len >= 1290 and "BMIK:Size2" or "BMIK:Size1"
-            surface.SetFont(self.BmFont)
-            len = surface.GetTextSize(curText)
             if len >= 1290 then
-                curText = utf8.sub(curText, 1, 15) .. "."
+                surface.SetFont("BMIK:Size2")
+                len = surface.GetTextSize(curText)
+                self.BmFont = len >= 1290 and "BMIK:Size3" or "BMIK:Size2"
+            end
+            if len >= 1290 then
+                surface.SetFont(self.BmFont)
+                len = surface.GetTextSize(curText)
+                if len >= 1290 then
+                    curText = utf8.sub(curText, 1, 16) .. "."
+                end
             end
             self.BmDisplText = curText
         end
@@ -109,7 +152,7 @@ else
             self.BnmText = curText
             self.BnmDisplText = Format("%03d", curText)
         end
-        draw.SimpleText(self.BnmDisplText, "BMIK:Size2", scw_bnm / 2, sch_bnm / 2 + 18, self.Color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(self.BnmDisplText, "BNMIK", scw_bnm / 2, sch_bnm / 2 + 18, self.Color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     local pivo = Material("zxc765/PIVO_logo_lt.png", "smooth ignorez")
