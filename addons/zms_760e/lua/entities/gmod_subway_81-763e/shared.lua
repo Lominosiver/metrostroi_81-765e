@@ -1,3 +1,7 @@
+--------------------------------------------------------------------------------
+-- 81-763Э «Чурá» by ZONT_ a.k.a. enabled person
+-- Based on code by Cricket, Hell et al. (as legacy, to be re-implemented)
+--------------------------------------------------------------------------------
 ENT.Type = "anim"
 ENT.Base = "gmod_subway_base"
 ENT.PrintName = "81-763E PvVZ"
@@ -23,14 +27,12 @@ end
 ENT.LeftDoorPositions = {}
 ENT.RightDoorPositions = {}
 for i = 0, 3 do
-    for k = 0, 1 do
-        if k == 1 then
-            table.insert(ENT.LeftDoorPositions, GetDoorPosition(i, k))
-        else
-            table.insert(ENT.RightDoorPositions, GetDoorPosition(i, k))
-        end
-    end
+    table.insert(ENT.LeftDoorPositions, GetDoorPosition(i, 1))
+    table.insert(ENT.RightDoorPositions, GetDoorPosition(i, 0))
 end
+-- Workshop version backport
+ENT.LeftDoorPositionsBAK = ENT.LeftDoorPositions
+ENT.RightDoorPositionsBAK = ENT.RightDoorPositions
 
 function ENT:PassengerCapacity()
     return 300
@@ -117,7 +119,7 @@ function ENT:InitializeSounds()
 
     self.SoundNames["release"] = {
         loop = true,
-        "subway_trains/760/new/pneumo_release2.wav"
+        "subway_trains/765/rumble/pneumo_release2.wav"
     }
 
     self.SoundPositions["release"] = {
@@ -165,18 +167,18 @@ function ENT:InitializeSounds()
     self.SoundNames["battery_pneumo"]   = "subway_trains/722/battery/battery_pneumo.mp3"
     self.SoundPositions["battery_pneumo"] = {200,1e9,Vector(182,50,-75),0.1}
 
-    self.SoundNames["rolling_10"] = {loop=true,"subway_trains/760/rolling/rolling_10.wav"}
-    self.SoundNames["rolling_45"] = {loop=true,"subway_trains/760/rolling/rolling_45.wav"}
-    self.SoundNames["rolling_60"] = {loop=true,"subway_trains/760/rolling/rolling_60.wav"}
-    self.SoundNames["rolling_70"] = {loop=true,"subway_trains/760/rolling/rolling_70.wav"}
+    self.SoundNames["rolling_10"] = {loop=true,"subway_trains/765/rumble/rolling/rolling_10.wav"}
+    self.SoundNames["rolling_45"] = {loop=true,"subway_trains/765/rumble/rolling/rolling_45.wav"}
+    self.SoundNames["rolling_60"] = {loop=true,"subway_trains/765/rumble/rolling/rolling_60.wav"}
+    self.SoundNames["rolling_70"] = {loop=true,"subway_trains/765/rumble/rolling/rolling_70.wav"}
     self.SoundPositions["rolling_10"] = {485,1e9,Vector(0,0,0),0.20}
     self.SoundPositions["rolling_45"] = {485,1e9,Vector(0,0,0),0.50}
     self.SoundPositions["rolling_60"] = {485,1e9,Vector(0,0,0),0.55}
     self.SoundPositions["rolling_70"] = {485,1e9,Vector(0,0,0),0.60}
-    self.SoundNames["rolling_low"] = {loop=true,"subway_trains/760/rolling/rolling_outside_low.wav"}
-    self.SoundNames["rolling_medium1"] = {loop=true,"subway_trains/760/rolling/rolling_outside_medium1.wav"}
-    self.SoundNames["rolling_medium2"] = {loop=true,"subway_trains/760/rolling/rolling_outside_medium2.wav"}
-    self.SoundNames["rolling_high2"] = {loop=true,"subway_trains/760/rolling/rolling_outside_high2.wav"}
+    self.SoundNames["rolling_low"] = {loop=true,"subway_trains/765/rumble/rolling/rolling_outside_low.wav"}
+    self.SoundNames["rolling_medium1"] = {loop=true,"subway_trains/765/rumble/rolling/rolling_outside_medium1.wav"}
+    self.SoundNames["rolling_medium2"] = {loop=true,"subway_trains/765/rumble/rolling/rolling_outside_medium2.wav"}
+    self.SoundNames["rolling_high2"] = {loop=true,"subway_trains/765/rumble/rolling/rolling_outside_high2.wav"}
     self.SoundPositions["rolling_low"] = {480,1e12,Vector(0,0,0),0.6*0.4}
     self.SoundPositions["rolling_medium1"] = {480,1e12,Vector(0,0,0),0.90*0.4}
     self.SoundPositions["rolling_medium2"] = {480,1e12,Vector(0,0,0),0.90*0.4}
@@ -218,7 +220,7 @@ function ENT:InitializeSounds()
 
     self.SoundNames["sf_on"] = "subway_trains/722/switches/sf_on.mp3"
     self.SoundNames["sf_off"] = "subway_trains/722/switches/sf_off.mp3"
-    self.SoundNames["door_alarm"] = {"subway_trains/760/new/door_alarm_fast.mp3"}
+    self.SoundNames["door_alarm"] = {"subway_trains/765/rumble/door_alarm_fast.mp3"}
     self.SoundPositions["door_alarm"] = {800, 1e9, Vector(0, 0, 0), 0.5}
     self.SoundNames["batt_on"] = "subway_trains/720/batt_on.mp3"
     self.SoundPositions["batt_on"] = {400, 1e9, Vector(126.4, 50, -60 - 23.5), 0.3}
@@ -235,10 +237,10 @@ function ENT:InitializeSounds()
     for i = 1, 10 do
         local id1 = Format("b1tunnel_%d", i)
         local id2 = Format("b2tunnel_%d", i)
-        self.SoundNames[id1.."a"] = {"subway_trains/760/rolling/wheels/tunnel/st"..i.."a.wav"}
-        self.SoundNames[id1.."b"] = {"subway_trains/760/rolling/wheels/tunnel/st"..i.."b.wav"}
-        self.SoundNames[id2.."a"] = {"subway_trains/760/rolling/wheels/tunnel/st"..i.."a.wav"}
-        self.SoundNames[id2.."b"] = {"subway_trains/760/rolling/wheels/tunnel/st"..i.."b.wav"}
+        self.SoundNames[id1.."a"] = {"subway_trains/765/rumble/rolling/wheels/tunnel/st"..i.."a.wav"}
+        self.SoundNames[id1.."b"] = {"subway_trains/765/rumble/rolling/wheels/tunnel/st"..i.."b.wav"}
+        self.SoundNames[id2.."a"] = {"subway_trains/765/rumble/rolling/wheels/tunnel/st"..i.."a.wav"}
+        self.SoundNames[id2.."b"] = {"subway_trains/765/rumble/rolling/wheels/tunnel/st"..i.."b.wav"}
         self.SoundPositions[id1 .. "a"] = {700 * 0.75, 1e9, Vector(317 - 5, 0, -84), 1 * 0.5}
         self.SoundPositions[id1 .. "b"] = self.SoundPositions[id1 .. "a"]
         self.SoundPositions[id2 .. "a"] = {700 * 0.75, 1e9, Vector(-317 + 0, 0, -84), 1 * 0.5}
@@ -248,10 +250,10 @@ function ENT:InitializeSounds()
     for i = 1, 14 do
         local id1 = Format("b1street_%d", i)
         local id2 = Format("b2street_%d", i)
-        self.SoundNames[id1.."a"] = {"subway_trains/760/rolling/wheels/street/street_"..i.."a.mp3"}
-        self.SoundNames[id1.."b"] = {"subway_trains/760/rolling/wheels/street/street_"..i.."b.mp3"}
-        self.SoundNames[id2.."a"] = {"subway_trains/760/rolling/wheels/street/street_"..i.."a.mp3"}
-        self.SoundNames[id2.."b"] = {"subway_trains/760/rolling/wheels/street/street_"..i.."b.mp3"}
+        self.SoundNames[id1.."a"] = {"subway_trains/765/rumble/rolling/wheels/street/street_"..i.."a.mp3"}
+        self.SoundNames[id1.."b"] = {"subway_trains/765/rumble/rolling/wheels/street/street_"..i.."b.mp3"}
+        self.SoundNames[id2.."a"] = {"subway_trains/765/rumble/rolling/wheels/street/street_"..i.."a.mp3"}
+        self.SoundNames[id2.."b"] = {"subway_trains/765/rumble/rolling/wheels/street/street_"..i.."b.mp3"}
         self.SoundPositions[id1 .. "a"] = {700, 1e9, Vector(317 - 5, 0, -84), 1.5 * 0.5}
         self.SoundPositions[id1 .. "b"] = self.SoundPositions[id1 .. "a"]
         self.SoundPositions[id2 .. "a"] = {700, 1e9, Vector(-317 + 0, 0, -84), 1.5 * 0.5}
@@ -303,7 +305,7 @@ end
 ENT.AnnouncerPositions = {}
 for i = 1, 4 do
     table.insert(ENT.AnnouncerPositions, {
-        Vector(323 - (i - 1) * 230, --[[+37.5]]
+        Vector(323 - (i - 1) * 230,
             47, 44),
         100,
         0.1

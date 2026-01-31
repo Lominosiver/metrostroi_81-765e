@@ -1,5 +1,6 @@
 --------------------------------------------------------------------------------
 -- Блок Управления Дверьми
+-- Автор - ZONT_ a.k.a. enabled person
 --------------------------------------------------------------------------------
 
 Metrostroi.DefineSystem("81_765_BUD")
@@ -19,7 +20,10 @@ function TRAIN_SYSTEM:Initialize()
     self.DoorClosed = {}
     self.DoorOpen = {}
     self.DoorCommand = {}
+    self.DoorCommandPrev = {}
+    self.DoorCommandDelay = {}
     self.CloseDelay = {}
+    self.DoorsDelayMax = 0.5
     for idx = 1, 8 do self.DoorCommand[idx] = false end
 
     if not TURBOSTROI then
@@ -35,10 +39,10 @@ function TRAIN_SYSTEM:Initialize()
         self.WasManual = {}
         self.OpenButton = {}
         self.MobsOpening = {}
-        self.DoorSpeedMain = math.Rand(1.15, math.Rand(1.25, 1.35))
+        self.DoorSpeedMain = math.Rand(1.17, 1.185)
         for i = 1, 4 do
-            self.LeftDoorSpeed[i] = math.Rand(self.DoorSpeedMain + 0.1, self.DoorSpeedMain + 0.2)
-            self.RightDoorSpeed[i] = math.Rand(self.DoorSpeedMain + 0.1, self.DoorSpeedMain + 0.2)
+            self.LeftDoorSpeed[i] = math.Rand(self.DoorSpeedMain + 0.15, self.DoorSpeedMain + 0.185)
+            self.RightDoorSpeed[i] = math.Rand(self.DoorSpeedMain + 0.15, self.DoorSpeedMain + 0.185)
         end
     end
 
@@ -148,7 +152,7 @@ function TRAIN_SYSTEM:Think(dT)
         local left = idx < 5
         local i = left and idx or (9 - idx)
 
-        local speed = (left and self.LeftDoorSpeed[i] or self.RightDoorSpeed[i]) - 0.35 * (i % 2 == 0 and BUV.WagIdx - 1 or BUV.TrainLen - BUV.WagIdx) / BUV.TrainLen
+        local speed = left and self.LeftDoorSpeed[i] or self.RightDoorSpeed[i]
         local dir = left and self.LeftDoorDir or self.RightDoorDir
         local state = left and self.LeftDoorState or self.RightDoorState
         local wagCommandOpen = left and self.DoorLeft or not left and self.DoorRight
@@ -247,6 +251,22 @@ function TRAIN_SYSTEM:Think(dT)
 
         elseif poweron then
             local commandOpen = self.DoorCommand[idx]
+            if commandOpen ~= self.DoorCommandPrev[idx] then
+                if self.DoorCommandPrev[idx] == nil or not commandOpen then
+                    self.DoorCommandPrev[idx] = commandOpen
+                else
+                    if not self.DoorCommandDelay[idx] then
+                        self.DoorCommandDelay[idx] = CurTime() + self.DoorsDelayMax * (i % 2 == 0 and BUV.WagIdx - 1 or BUV.TrainLen - BUV.WagIdx - 1) / BUV.TrainLen
+                        commandOpen = self.DoorCommandPrev[idx]
+                    elseif CurTime() >= self.DoorCommandDelay[idx] then
+                        self.DoorCommandPrev[idx] = commandOpen
+                    else
+                        commandOpen = self.DoorCommandPrev[idx]
+                    end
+                end
+            elseif self.DoorCommandDelay[idx] then
+                self.DoorCommandDelay[idx] = nil
+            end
 
             announceState = (
                 not working and "Closing" or
@@ -294,7 +314,7 @@ function TRAIN_SYSTEM:Think(dT)
             if commandOpen or not self.DoorClosed[idx] and self.CloseDelay[idx] and CurTime() >= self.CloseDelay[idx] then
                 dir[i] = math.Clamp(dir[i] + dT * (not stuck and 0.5 or -1.5) * (commandOpen and 1 or -1), -1 / speed, 1 / (not stuck and speed or 10))
             elseif not commandOpen and not self.DoorClosed[idx] and not self.CloseDelay[idx] then
-                self.CloseDelay[idx] = self.DoorOpen[idx] and CurTime() + 1.8 or 0
+                self.CloseDelay[idx] = self.DoorOpen[idx] and (CurTime() + 1.8 + self.DoorsDelayMax * (i % 2 == 0 and BUV.WagIdx - 1 or BUV.TrainLen - BUV.WagIdx - 1) / BUV.TrainLen) or 0
             elseif self.DoorClosed[idx] and self.CloseDelay[idx] then
                 self.CloseDelay[idx] = nil
             end

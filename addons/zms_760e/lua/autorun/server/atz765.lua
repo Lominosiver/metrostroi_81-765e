@@ -1,4 +1,5 @@
 timer.Simple(1, function()
+    if not ZMS or not ZMS.ATZ then return end
     ZMS.ATZ.Register("aod", {
         desc = "Включить АОД на вагоне. Арг.: [<сразу выключить, 0/1> [<вернуть пломбу после очистки, 0/1>]]",
         restrict_types = {"76[013]e"},

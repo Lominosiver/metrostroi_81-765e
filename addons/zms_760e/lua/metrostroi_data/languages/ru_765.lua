@@ -37,4 +37,5 @@ Train.765.CameraPMV                                                            =
 Train.765.CameraBuik                                                           = БУ-ИК (Блок упр. Информац. Компл.)
 Train.765.CameraMfdu                                                           = МФДУ (САУ Скиф-М)
 Train.765.CameraCouple                                                         = Автосцепка
+Train.765.CameraSalon                                                          = Салон
 ]]

@@ -1,5 +1,8 @@
 --------------------------------------------------------------------------------
--- БАРС для 81-722
+-- БАРС для 81-765
+-- Оригинальный код - Cricket & Hell (для 760), Metrostroi team (для 722)
+-- Переработка - ZONT_ a.k.a. enabled person
+-- Реализована логика двух полукомплектов, переработана логика разрешения движения, питания РВТБ, тормоза удержания
 --------------------------------------------------------------------------------
 Metrostroi.DefineSystem("81_760E_BARS")
 TRAIN_SYSTEM.DontAccelerateSimulation = true
@@ -175,7 +178,7 @@ function TRAIN_SYSTEM:Think(dT)
         if self.BadFq and (self.F4 or self.F3 or self.F2 or self.F1) then self.SpeedLimit = self.LN and 40 or (self.KB and 20 or 0) end
         if self.SpeedLimit < 20 and self.KB and not ALS.AO then self.SpeedLimit = 20 end
         if self.NextLimit > self.SpeedLimit then self.NextLimit = self.SpeedLimit end
-        if DAU or Train.BKL and not TwoToSix then self.NextLimit = nil end
+        if DAU then self.NextLimit = nil end
     else
         self.SpeedLimit = 0
         self.NextLimit = 0
@@ -283,7 +286,7 @@ function TRAIN_SYSTEM:Think(dT)
 
         if ALS.AO then
             self.NoFreq = not DAU and (ALS.F5 == 0)
-            if Train.BKL and self.KVT and self.RingingAO then self.RingingAO = false end
+            if self.KVT and self.RingingAO then self.RingingAO = false end
             self.Ringing = self.RingingAO
         elseif not self.RingingAO then
             self.RingingAO = true
@@ -394,7 +397,6 @@ function TRAIN_SYSTEM:Think(dT)
 
         self.RVTB = (ALSVal > 0.5) and 1 or 0
         if ALSVal > 0 and Train.BUKP.State == 5 and not UOS then
-            --[[  Устройства БАРС, или при следовании с отключёнными устройствами БАРС, устройство ограничения скорости (УОС) передают информацию о допустимой скорости и фактической скорости движения поезда в БУП. В зависимости от информации БУП разрешает движение, отключает тяговый режим, выдаёт команду на торможение.]]
             self.PN1 = 0
             self.PN2 = 0
             self.Ring = 0
@@ -406,27 +408,17 @@ function TRAIN_SYSTEM:Think(dT)
         elseif UOS then
             self.UOS = true
             self.BTB = 1
-            local Speed = self.Speed --math.Round(Train.Speed*10)/10
+            local Speed = self.Speed
             if Train.RV["KRO9-10"] * Train.PpzPrimaryControls.Value > 0.5 then
                 self.BTB = self.KB and 1 or 0
                 if self.KB then
                     self.UOSActive = true
                     self.SpeedLimit = 35.5
                     self.NoFreq = false
-                    --[[
-                    if TwoToSix then
-                        self.SpeedLimit = 35.5
-                        self.NoFreq = false
-                        --self.NextLimit = 0
-                    else
-                        self.SpeedLimit = 35.5
-                        self.NoFreq = false
-                    end]]
                 end
 
                 if ALSVal == 0 then
                     if Speed > 35.5 and not self.UOSBraking then
-                        --if Speed > self.SpeedLimit and not self.UOSBraking then
                         self.UOSBraking = true
                     elseif Speed == 0 and self.UOSBraking then
                         self.UOSBraking = false
@@ -453,7 +445,7 @@ function TRAIN_SYSTEM:Think(dT)
                 if not self.KB then self.BTB = 0 end
                 self.UOSActive = self.KB
                 self.RVTB = self.KB and 1 or 0
-                self.Drive = 1 --(self.KB and 1 or 0)
+                self.Drive = 1
             else
                 self.Drive = 0
                 self.BTB = 0

@@ -1,3 +1,7 @@
+--------------------------------------------------------------------------------
+-- UI МФДУ САУ Скиф-М 81-765
+-- Автор - ZONT_ a.k.a. enabled person
+--------------------------------------------------------------------------------
 if SERVER then
     AddCSLuaFile()
     return
@@ -415,8 +419,8 @@ function TRAIN_SYSTEM:DrawIdle(msg, passwd, rear)
         draw.SimpleText("в", "Mfdu765.24", x, ybot, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 
         x = scrW / 2
-        y = y - 180
-        ybot = y + 20 + scrOffsetY
+        y = y - 150
+        ybot = y + 40 + scrOffsetY
         local speed = Wag:GetNW2Int("Skif:Speed", "---")
         draw.SimpleText(speed, "Mfdu765.Speed", x, y, colorGreen, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         draw.SimpleText("км/ч", "Mfdu765.24", x, ybot, colorMain, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
@@ -679,7 +683,7 @@ function TRAIN_SYSTEM:DrawStatus(Wag)
         val = isnumber(val) and val / 10 or val
         draw.SimpleText("P", "Mfdu765.40", x - (idx > 2 and 24 or 16), y + 4, colorBrightText, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
         draw.SimpleText(text, "Mfdu765.24", x + (idx > 2 and 14 or 8), y, colorBrightText, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
-        draw.SimpleText(not isnumber(val) and val or isnumber(val) and val > 0 and string.format("%.1f", val) or "0", "Mfdu765.StatusValue", x, y - 4, colorBlue, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+        draw.SimpleText(not isnumber(val) and val or string.format("%.1f", val), "Mfdu765.StatusValue", x, y - 4, colorBlue, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
         if idx > 2 then
             draw.SimpleText("Атм", "Mfdu765.24", x, y + 58, colorBrightText, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
         end
@@ -947,19 +951,6 @@ function TRAIN_SYSTEM:DrawDepot()
 
     surface.SetDrawColor(colorMain)
     surface.DrawRect(sizeButtonBorder + sizeDepotCol, posDepotBody, sizeButtonBorder * 2, sizeDepotBody)
-
-    -- local sel = self.Train:GetNW2Int("Skif:DepotSel", 0)
-    -- local ent = self.Train:GetNW2String("Skif:Enter", "-")
-    -- if self.State2 == 0 then
-    --     draw.SimpleText(sel == 0 and "Кол-во вагонов:" or "Номера вагонов...", "Mfdu765.DoorsSide", scrW / 2 - 4, scrOffsetY + 50, ent == "-" and colorMain or colorBlue, sel == 0 and TEXT_ALIGN_RIGHT or TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    --     if sel == 0 then
-    --         draw.SimpleText(ent ~= "-" and ent or self.WagNum, "Mfdu765.DoorsSide", scrW / 2 + 4, scrOffsetY + 50, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-    --     end
-    -- else
-    --     local wagnum = ent ~= "-" and ent or tostring(self.Train:GetNW2String("Skif:WagNum" .. sel, "?????"))
-    --     draw.SimpleText(string.format("Вагон %d:", sel), "Mfdu765.DoorsSide", scrW / 2 - 4, scrOffsetY + 50, ent == "-" and colorMain or colorBlue, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-    --     draw.SimpleText(wagnum, "Mfdu765.DoorsSide", scrW / 2 + 4, scrOffsetY + 50, colorMain, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-    -- end
 end
 
 function TRAIN_SYSTEM:DrawPage(func, title, ...)

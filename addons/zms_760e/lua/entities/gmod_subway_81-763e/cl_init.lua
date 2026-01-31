@@ -1,13 +1,15 @@
-include("shared.lua")
 --------------------------------------------------------------------------------
+-- 81-763Э «Чурá» by ZONT_ a.k.a. enabled person
+-- Based on code by Cricket, Hell et al. (as legacy, to be re-implemented)
+--------------------------------------------------------------------------------
+include("shared.lua")
 ENT.ClientProps = {}
 ENT.ButtonMap = {}
 ENT.AutoAnims = {}
 ENT.ClientSounds = {}
---------------------------------------------------------------------------------
 ENT.ClientPropsInitialized = false
 ENT.ButtonMap["PVZ"] = {
-    pos = Vector(450.75, 53.77, 16.95), --446 -- 14 -- -0,5
+    pos = Vector(450.75, 53.77, 16.95),
     ang = Angle(0, -90, 90),
     width = 170,
     height = 473,
@@ -200,7 +202,7 @@ for k, buttbl in ipairs(ENT.ButtonMap["PVZ"].buttons) do
 end
 
 ENT.ButtonMap["Power"] = {
-    pos = Vector(448.7, 50.4, -12.1), --446 -- 14 -- -0,5
+    pos = Vector(448.7, 50.4, -12.1),
     ang = Angle(0, -90, 90),
     width = 50,
     height = 50,
@@ -216,7 +218,6 @@ ENT.ButtonMap["Power"] = {
             model = {
                 model = "models/metrostroi_train/81-760/81_760_button_red.mdl",
                 z = -0.5,
-                --lamp = {model = "models/metrostroi_train/81-760/81_760_lamp_red.mdl",var="PowerOnLamp",z=0.2,anim=true},
                 var = "PowerOn",
                 speed = 12,
                 vmin = 0,
@@ -232,7 +233,7 @@ ENT.ButtonMap["Power"] = {
 }
 
 ENT.ButtonMap["Battery"] = {
-    pos = Vector(452.46, 22, 50), --446 -- 14 -- -0,5
+    pos = Vector(452.46, 22, 50),
     ang = Angle(0, -90, 180),
     width = 80,
     height = 80,
@@ -247,7 +248,7 @@ ENT.ButtonMap["Battery"] = {
             h = 80,
             tooltip = "Батарея (неисп.)",
             model = {
-                var = "Battery", --sndid = "batt_on",
+                var = "Battery",
                 speed = 9,
                 vmin = 1,
                 vmax = 0,
@@ -272,7 +273,6 @@ ENT.ButtonMap["FrontPneumatic"] = {
     scale = 0.1,
     hideseat = 0.2,
     hide = true,
-    --screenHide = true,
     buttons = {
         {
             ID = "FrontBrakeLineIsolationToggle",
@@ -286,10 +286,6 @@ ENT.ButtonMap["FrontPneumatic"] = {
                 states = {"Train.Buttons.Opened", "Train.Buttons.Closed"}
             }
         },
-        --model = "models/metrostroi_train/81-760/81_760_crane_tm_out.mdl", ang=Angle(0,90,-35), z=-1,y=0,
-        --speed=4,vmin=1,vmax=0,
-        --sndvol = 1, snd = function(val) return "disconnectvalve" end,
-        --sndmin = 50, sndmax = 1e3, sndang = Angle(-90,0,0),
         {
             ID = "FrontTrainLineIsolationToggle",
             x = 192,
@@ -305,10 +301,6 @@ ENT.ButtonMap["FrontPneumatic"] = {
     }
 }
 
---model = "models/metrostroi_train/81-760/81_760_crane_nm_out.mdl", ang=Angle(180,90,35), z=-1,y=0,
---speed=4,vmin=1,vmax=0,
---sndvol = 1, snd = function(val) return "disconnectvalve" end,
---sndmin = 50, sndmax = 1e3, sndang = Angle(-90,0,0),
 ENT.ClientProps["FrontBrake"] = {
     --
     model = "models/metrostroi_train/81-760/81_760_crane_k23.mdl",
@@ -335,7 +327,6 @@ ENT.ButtonMap["RearPneumatic"] = {
     scale = 0.1,
     hideseat = 0.2,
     hide = true,
-    --screenHide = true,
     buttons = {
         {
             ID = "RearBrakeLineIsolationToggle",
@@ -349,10 +340,6 @@ ENT.ButtonMap["RearPneumatic"] = {
                 states = {"Train.Buttons.Opened", "Train.Buttons.Closed"}
             }
         },
-        --model = "models/metrostroi_train/81-760/81_760_crane_tm_out.mdl", ang=Angle(0,90,-35), z=-1,y=0,
-        --speed=4,vmin=1,vmax=0,
-        --sndvol = 1, snd = function(val) return "disconnectvalve" end,
-        --sndmin = 50, sndmax = 1e3, sndang = Angle(-90,0,0),
         {
             ID = "RearTrainLineIsolationToggle",
             x = 192,
@@ -368,12 +355,7 @@ ENT.ButtonMap["RearPneumatic"] = {
     }
 }
 
---model = "models/metrostroi_train/81-760/81_760_crane_nm_out.mdl", ang=Angle(180,90,35), z=-1,y=0,
---speed=4,vmin=1,vmax=0,
---sndvol = 1, snd = function(val) return "disconnectvalve" end,
---sndmin = 50, sndmax = 1e3, sndang = Angle(-90,0,0),
 ENT.ClientProps["RearBrake"] = {
-    --
     model = "models/metrostroi_train/81-760/81_760_crane_k23.mdl",
     pos = Vector(-449.1, -63.2, -64.1),
     ang = Angle(0, 90, 0),
@@ -381,7 +363,6 @@ ENT.ClientProps["RearBrake"] = {
 }
 
 ENT.ClientProps["RearTrain"] = {
-    --
     model = "models/metrostroi_train/81-760/81_760_crane_k23.mdl",
     pos = Vector(-439.2, -60.35, -66.1),
     ang = Angle(0, 90, 0),
@@ -410,7 +391,7 @@ ENT.ButtonMap["couch_capL"] = {
 }
 
 ENT.ButtonMap["couch_capL_o"] = {
-    pos = Vector(264.6, 45.6, 20), --362
+    pos = Vector(264.6, 45.6, 20),
     ang = Angle(0, 0, 81),
     width = 600,
     height = 1200,
@@ -448,7 +429,7 @@ ENT.ButtonMap["couch_capR"] = {
 }
 
 ENT.ButtonMap["couch_capR_o"] = {
-    pos = Vector(264.6, -36, -54), --372
+    pos = Vector(264.6, -36, -54),
     ang = Angle(0, 0, -81),
     width = 720,
     height = 950,
@@ -482,15 +463,12 @@ ENT.ButtonMap["boxR"] = {
             h = 100,
             tooltip = "EmergencyBrakeValve",
             model = {
-                var = "EmergencyBrakeValve", --sndid="emergency",
+                var = "EmergencyBrakeValve",
             }
         },
     }
 }
 
---model = "models/metrostroi_train/81-760/81_761_trihedral.mdl",z=1, ang=Angle(0,-90,0),
---sndvol = 1, snd = function(val) return "disconnect_valve" end,
---sndmin = 50, sndmax = 1e3, sndang = Angle(-90,0,0),		
 ENT.ClientProps["stopkran"] = {
     model = "models/metrostroi_train/81-760/81_760_crane_handle_red.mdl",
     pos = Vector(451.8, -35.4, -32.9),
@@ -559,7 +537,7 @@ table.insert(ENT.ClientProps, {
 
 ENT.ClientProps["Salon"] = {
     model = "models/metrostroi_train/81-760/81_761a_int.mdl",
-    pos = Vector(0, 0, 0), --Vector(55.5,0,-54.25),
+    pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 2,
 }
@@ -724,10 +702,7 @@ ENT.ButtonMap["K23"] = {
     }
 }
 
---sndvol = 0.8,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
---snd = function(val) return val and "gv_f" or "gv_b" end,
 ENT.ClientProps["K23Valve"] = {
-    --
     model = "models/metrostroi_train/81-760/81_760_crane_k23.mdl",
     pos = Vector(131.42, -64.14, -64.6),
     ang = Angle(0, 0, 0),
@@ -736,7 +711,7 @@ ENT.ClientProps["K23Valve"] = {
 
 ENT.ClientSounds["K23ValveIsolation"] = {{"K23Valve", function() return "disconnectvalve" end, 1, 1, 50, 1e3, Angle(-90, 0, 0)}}
 ENT.ButtonMap["K31Cap"] = {
-    pos = Vector(76.9, 57, -13.4), --28
+    pos = Vector(76.9, 57, -13.4),
     ang = Angle(0, 0, 90),
     width = 50,
     height = 50,
@@ -758,7 +733,7 @@ ENT.ButtonMap["K31Cap"] = {
 }
 
 ENT.ButtonMap["K31"] = {
-    pos = Vector(74.6, 60, -13), --28
+    pos = Vector(74.6, 60, -13),
     ang = Angle(0, 0, 90),
     width = 150,
     height = 250,
@@ -807,9 +782,6 @@ ENT.ClientProps["fence1"] = {
     hide = 2,
 }
 
---------------------------------------------------------------------------------
--- Add doors
---------------------------------------------------------------------------------
 for i = 0, 3 do
     for k = 0, 1 do
         ENT.ClientProps["door" .. i .. "x" .. k] = {
@@ -830,13 +802,6 @@ for i = 0, 3 do
         }
     end
 end
-
-ENT.ClientProps["zoomer_lamps"] = {
-    model = "models/metrostroi_train/81-760/81_760_zoomer_lamps.mdl",
-    pos = Vector(0, 0, 0),
-    ang = Angle(0, 0, 0),
-    hide = 2,
-}
 
 for k, tbl in ipairs({ENT.LeftDoorPositions or {}, ENT.RightDoorPositions or {}}) do
     for i, pos in ipairs(tbl) do
@@ -1063,7 +1028,7 @@ function ENT:ShouldRenderClientEnts()
     local val = not self:IsDormant() and math.abs(LocalPlayer():GetPos().z - self:GetPos().z) < 500 and (system.HasFocus() or C_MinimizedShow:GetBool()) and (not Metrostroi or not Metrostroi.ReloadClientside)
     if not C_ScreenshotMode:GetBool() then
         if C_Optimization:GetBool() then
-            if not PlyInTrain(ply, self) then --and not self:CPPIGetOwner() == ply then
+            if not PlyInTrain(ply, self) then
                 val = false
             end
         elseif C_Optimization2:GetBool() then
@@ -1073,12 +1038,55 @@ function ENT:ShouldRenderClientEnts()
     return val
 end
 
+
+function ENT:ReInitBogeySounds(bogey)
+    if not IsValid(bogey) then return end
+    bogey.SoundNames = bogey.SoundNames or {}
+    bogey.SoundNames["flangea"] = "subway_trains/765/rumble/bogey/skrip1.wav"
+    bogey.SoundNames["flangeb"] = "subway_trains/765/rumble/bogey/skrip2.wav"
+    bogey.SoundNames["flange1"] = "subway_trains/765/rumble/bogey/flange_9.wav"
+    bogey.SoundNames["flange2"] = "subway_trains/765/rumble/bogey/flange_10.wav"
+    bogey.SoundNames["brakea_loop1"] = "subway_trains/765/rumble/bogey/braking_async1.wav"
+    bogey.SoundNames["brakea_loop2"] = "subway_trains/765/rumble/bogey/braking_async2.wav"
+    bogey.SoundNames["brake_loop1"] = "subway_trains/bogey/brake_rattle3.wav"
+    bogey.SoundNames["brake_loop2"] = "subway_trains/bogey/brake_rattle4.wav"
+    bogey.SoundNames["brake_loop3"] = "subway_trains/bogey/brake_rattle5.wav"
+    bogey.SoundNames["brake_loop4"] = "subway_trains/bogey/brake_rattle6.wav"
+    bogey.SoundNames["brake_loopb"] = "subway_trains/common/junk/junk_background_braking1.wav"
+    bogey.SoundNames["brake2_loop1"] = "subway_trains/bogey/brake_rattle2.wav"
+    bogey.SoundNames["brake2_loop2"] = "subway_trains/bogey/brake_rattle_h.wav"
+    bogey.SoundNames["brake_squeal1"] = "subway_trains/bogey/brake_squeal1.wav"
+    bogey.SoundNames["brake_squeal2"] = "subway_trains/bogey/brake_squeal2.wav"
+
+    if bogey.Sounds then
+        for k, v in pairs(bogey.Sounds) do
+            v:Stop()
+        end
+    end
+
+    bogey.Sounds = {}
+    bogey.Playing = {}
+    for k, v in pairs(bogey.SoundNames) do
+        util.PrecacheSound(v)
+        local e = bogey
+        if (k == "brake3a") and IsValid(bogey:GetNW2Entity("TrainWheels")) then e = bogey:GetNW2Entity("TrainWheels") end
+        bogey.Sounds[k] = CreateSound(e, Sound(v))
+    end
+
+    bogey.Async = nil
+end
+
 function ENT:Think()
     self.BaseClass.Think(self)
     if not self.RenderClientEnts or self.CreatingCSEnts then
         self.Number = 0
         return
     end
+
+    if not IsValid(self.RearBogey) then self.RearBogey = self:GetNW2Entity("RearBogey") end
+    if not IsValid(self.FrontBogey) then self.FrontBogey = self:GetNW2Entity("FrontBogey") end
+    if IsValid(self.FrontBogey) and (self.FrontBogey.SoundNames and self.FrontBogey.SoundNames["flangea"] ~= "subway_trains/765/rumble/bogey/skrip1.wav" or not self.FrontBogey.SoundNames) or refresh then self:ReInitBogeySounds(self.FrontBogey) end
+    if IsValid(self.RearBogey) and (self.RearBogey.SoundNames and self.RearBogey.SoundNames["flangea"] ~= "subway_trains/765/rumble/bogey/skrip1.wav" or not self.RearBogey.SoundNames) or refresh then self:ReInitBogeySounds(self.RearBogey) end
 
     if self.Number ~= self:GetWagonNumber() then self:UpdateTextures() end
     if self.Texture ~= self:GetNW2String("texture") then self:UpdateTextures() end
@@ -1094,7 +1102,6 @@ function ENT:Think()
     if IsValid(fence) and IsValid(RearTrain) then
         local a = 1
         if RearTrain:GetNW2Entity("RearTrain") == self then a = -1 end
-        --local ang1 = RearTrain:GetAngles()
         local ang1 = fence:WorldToLocalAngles(RearTrain:LocalToWorldAngles(Angle(0, 90 * a, 0)))
         local vec = fence:WorldToLocal(RearTrain:LocalToWorld(Vector(480.1 * a, a * ang1.p * 1.585, 0.6)))
         fence:ManipulateBoneAngles(0, Angle(-ang1.r / 2, ang1.y / 2, ang1.p / 3) + Angle(0, 90, 0))
@@ -1104,7 +1111,6 @@ function ENT:Think()
     if IsValid(fence1) and IsValid(FrontTrain) then
         local a = 1
         if FrontTrain:GetNW2Entity("RearTrain") == self then a = -1 end
-        --local ang1 = RearTrain:GetAngles()
         local ang1 = fence1:WorldToLocalAngles(FrontTrain:LocalToWorldAngles(Angle(0, 90 * a, 0)))
         local vec = fence1:WorldToLocal(FrontTrain:LocalToWorld(Vector(480.1 * a, a * ang1.p * 1.585, 0.6)))
         fence1:ManipulateBoneAngles(0, Angle(-ang1.r / 2, ang1.y / 2, ang1.p / 3) + Angle(0, 90, 0))
@@ -1122,13 +1128,13 @@ function ENT:Think()
     end
 
     local speed = self:GetPackedRatio("Speed", 0)
-    self:Animate("volt_lv", self:GetPackedRatio("LV"), 0, 1, 16, 1) --0.035,0.965,16,1)
-    self:Animate("volt_hv", self:GetPackedRatio("HV"), 0, 1, 16, 6) --0.035,0.965,16,1)	
-    --self:Animate("ampermetr",self:GetPackedRatio("IVO"),0,1,16,1)--0.035,0.965,16,1)	
+    self:Animate("volt_lv", self:GetPackedRatio("LV"), 0, 1, 16, 1)
+    self:Animate("volt_hv", self:GetPackedRatio("HV"), 0, 1, 16, 6)
+
     self:Animate("brake_line", self:GetPackedRatio("BL"), 0, 0.78, 256, 2)
     self:Animate("train_line", self:GetPackedRatio("TL"), 0, 0.78, 256, 2)
     self:Animate("brake_cylinder", self:GetPackedRatio("BC"), 0, 0.78, 256, 2)
-    --self:Animate("trihedral", (self:GetPackedBool("WorkBeep") and 1 or 0), 0,1,64,2)
+
     local box_door_l = self:Animate("box_door_l", self:GetPackedBool("CouchCapL") and 1 or 0, 0, 1, 2, 2)
     local box_door_r = self:Animate("box_door_r", self:GetPackedBool("CouchCapR") and 1 or 0, 0, 1, 2, 2)
     self:HidePanel("couch_capL", box_door_l > 0)
@@ -1145,7 +1151,6 @@ function ENT:Think()
     self:ShowHide("train_line", box_door_r > 0)
     self:ShowHide("brake_line", box_door_r > 0)
     self:ShowHide("volt_lv", box_door_l > 0)
-    --self:ShowHide("ampermetr",box_door_l>0)
     self:ShowHide("stopkran", box_door_r > 0)
     self:HidePanel("Power", box_door_l == 0)
     self:Animate("FrontBrake", self:GetNW2Bool("FbI") and 0 or 1, 0, 1, 3, false)
@@ -1154,6 +1159,7 @@ function ENT:Think()
     self:Animate("RearTrain", self:GetNW2Bool("RtI") and 0 or 1, 0, 1, 3, false)
     self:Animate("K23Valve", self:GetNW2Bool("K23") and 0 or 1, 0, 1, 3, false)
     self:Animate("stopkran", self:GetPackedBool("EmergencyBrakeValve") and 1 or 0.5, 0, 1, 3, false)
+
     local dT = self.DeltaTime
     local dPdT = self:GetPackedRatio("BrakeCylinderPressure_dPdT")
     self.ReleasedPdT = math.Clamp(self.ReleasedPdT + 10 * (-self:GetPackedRatio("BrakeCylinderPressure_dPdT", 0) - self.ReleasedPdT) * dT * 1.5, 0, 1)
@@ -1161,12 +1167,13 @@ function ENT:Think()
     self:SetSoundState("release", release1, 1)
     self:ShowHideSmooth("lamp1", self:Animate("LampsEmer", self:GetPackedBool("SalonLighting1") and 1 or 0, 0, 1, 5, false))
     self:ShowHideSmooth("lamp2", self:Animate("LampsFull", self:GetPackedBool("SalonLighting2") and 1 or 0, 0, 1, 5, false))
-    self:ShowHideSmooth("zoomer_lamps", self:Animate("zoomerl", self:GetNW2Bool("DoorAlarmState") and 1 or 0, 0, 1, 16, false))
+
     local K31_cap = self:Animate("K31_cap", self:GetPackedBool("door_k31") and 1 or 0, 0, 1, 4, 0.5)
     self:ShowHide("K31", K31_cap > 0)
     self:HidePanel("K31", K31_cap < 1)
     self:Animate("K31", self:GetPackedBool("K31") and 0 or 1, 0, 1, 16, 0.5)
 
+    -- LEGACY, to be removed
     if not self.DoorStates then self.DoorStates = {} end
     if not self.DoorLoopStates then self.DoorLoopStates = {} end
     for i = 0, 3 do
@@ -1179,17 +1186,16 @@ function ENT:Think()
             local randvalKey = "Door" .. (k == 1 and "L" or "R") .. "BR" .. (i + 1)
             if not self[randvalKey] then self[randvalKey] = math.random(0, 1) end
             local randval = self[randvalKey]
-            --print(state,self.DoorStates[state])
             if (state ~= 1 and state ~= 0) ~= self.DoorStates[id] then
                 if doorstate and state < 1 or not doorstate and state > 0 then
-                    if doorstate then --math.Rand(0.9,1.3))
+                    if doorstate then
                         self:PlayOnce(sid .. "op" .. randval, "", 1, 1)
                     end
                 else
                     if state > 0 then
-                        self:PlayOnce(sid .. "o" .. randval, "", 1, 1) --math.Rand(0.9,1.3))
+                        self:PlayOnce(sid .. "o" .. randval, "", 1, 1)
                     else
-                        self:PlayOnce(sid .. "c" .. randval, "", 1, 1) --math.Rand(0.9,1.3))
+                        self:PlayOnce(sid .. "c" .. randval, "", 1, 1)
                     end
                     self[randvalKey] = math.random(0, 1)
                 end
@@ -1204,10 +1210,10 @@ function ENT:Think()
                 self.DoorLoopStates[id] = math.Clamp((self.DoorLoopStates[id] or 0) - 6 * self.DeltaTime, 0, 1)
             end
 
-            self:SetSoundState(sid .. "r" .. randval, self.DoorLoopStates[id], 1) --0.9+self.DoorLoopStates[id]*0.1)
+            self:SetSoundState(sid .. "r" .. randval, self.DoorLoopStates[id], 1)
             self:SetSoundState(sid .. "r" .. math.abs(1 - randval), 0, 0)
             local n_l = "door" .. i .. "x" .. k
-            self:Animate(n_l, 1 - state, 0, 1, 15, 1) --0.8 + (-0.2+0.4*math.random()),0)
+            self:Animate(n_l, 1 - state, 0, 1, 15, 1)
 
             local idx = k * 4 + i + 1
             local btnKey = "DoorArrdessButton" .. idx
@@ -1262,25 +1268,12 @@ function ENT:Think()
     local rol10p = Lerp((speed - 15) / 14, 0.6, 0.78)
     local rol40 = math.Clamp((speed - 18) / 35, 0, 1) * (1 - math.Clamp((speed - 55) / 40, 0, 1))
     local rol40p = Lerp((speed - 15) / 66, 0.6, 1.3)
-    local rol70 = math.Clamp((speed - 55) / 20, 0, 1) --*(1-math.Clamp((speed-72)/5,0,1))
+    local rol70 = math.Clamp((speed - 55) / 20, 0, 1)
     local rol70p = Lerp((speed - 55) / 27, 0.78, 1.15)
-    --local rol80 = math.Clamp((speed-70)/5,0,1)
-    --local rol80p = Lerp(0.8+(speed-72)/15*0.2,0.8,1.2)
-    self:SetSoundState("rolling_low", rol10 * rollings, rol10p) --15
-    self:SetSoundState("rolling_medium2", rol40 * rollings, rol40p) --57
-    --self:SetSoundState("rolling_medium1",0 or rol40*rollings,rol40p) --57
-    self:SetSoundState("rolling_high2", rol70 * rollings, rol70p) --70
-    --local state = (RealTime()%4/3)^1.5
-    --local strength = 1--self:GetPackedRatio("asyncstate")*(1-math.Clamp((speed-15)/15,0,1))
-    --self:SetSoundState("chopper", tunstreet*self:GetPackedRatio("chopper"), 1)
-    --[[
-    local state = 1-self:GetPackedRatio("RNState")
-    self.TISUVol = math.Clamp(self.TISUVol+(state-self.TISUVol)*dT*8,0,1)
-    self:SetSoundState("tisu", self.TISUVol, 1)
-    self:SetSoundState("tisu2", 0 or self.TISUVol, 1)
-    self:SetSoundState("tisu3", 0 or self.TISUVol, 1)
-	]]
-    --self:SetSoundState("bbe", self:GetPackedBool("BBEWork") and 1 or 0, 1)
+    self:SetSoundState("rolling_low", rol10 * rollings, rol10p)
+    self:SetSoundState("rolling_medium2", rol40 * rollings, rol40p)
+    self:SetSoundState("rolling_high2", rol70 * rollings, rol70p)
+
     local work = self:GetPackedBool("AnnPlay")
     for k, v in ipairs(self.AnnouncerPositions) do
         if self.Sounds["announcer" .. k] and IsValid(self.Sounds["announcer" .. k]) then self.Sounds["announcer" .. k]:SetVolume(work and (v[3] or 1) or 0) end
@@ -1319,11 +1312,11 @@ for id, panel in pairs(ENT.ButtonMap) do
     if not panel.buttons then continue end
     for k, v in pairs(panel.buttons) do
         if v.model then
-            local dist = dist[id] or 150
+            local cdist = dist[id] or 150
             if v.model.model then
-                v.model.hideseat = dist
+                v.model.hideseat = cdist
             elseif v.model.lamp then
-                v.model.lamp.hideseat = dist
+                v.model.lamp.hideseat = cdist
             end
         end
     end

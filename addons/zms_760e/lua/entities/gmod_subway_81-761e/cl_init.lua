@@ -1,13 +1,15 @@
-include("shared.lua")
 --------------------------------------------------------------------------------
+-- 81-761Э «Чурá» by ZONT_ a.k.a. enabled person
+-- Based on code by Cricket, Hell et al. (as legacy, to be re-implemented)
+--------------------------------------------------------------------------------
+include("shared.lua")
 ENT.ClientProps = {}
 ENT.ButtonMap = {}
 ENT.AutoAnims = {}
 ENT.ClientSounds = {}
---------------------------------------------------------------------------------
 ENT.ClientPropsInitialized = false
 ENT.ButtonMap["PVZ"] = {
-    pos = Vector(450.75, 53.75, 17.8), --446 -- 14 -- -0,5
+    pos = Vector(450.75, 53.75, 17.8),
     ang = Angle(0, -90, 90),
     width = 170,
     height = 425,
@@ -278,7 +280,7 @@ for k, buttbl in ipairs(ENT.ButtonMap["PVZ"].buttons) do
 end
 
 ENT.ButtonMap["Power"] = {
-    pos = Vector(448.7, 43.2, -6.3), --446 -- 14 -- -0,5
+    pos = Vector(448.7, 43.2, -6.3),
     ang = Angle(0, -90, 90),
     width = 50,
     height = 50,
@@ -294,7 +296,6 @@ ENT.ButtonMap["Power"] = {
             model = {
                 model = "models/metrostroi_train/81-760/81_760_button_red.mdl",
                 z = -0.5,
-                --lamp = {model = "models/metrostroi_train/81-760/81_760_lamp_red.mdl",var="PowerOnLamp",z=0.2,anim=true},
                 var = "PowerOn",
                 speed = 12,
                 vmin = 0,
@@ -310,7 +311,7 @@ ENT.ButtonMap["Power"] = {
 }
 
 ENT.ButtonMap["Battery"] = {
-    pos = Vector(452.46, 22, 50), --446 -- 14 -- -0,5
+    pos = Vector(452.46, 22, 50),
     ang = Angle(0, -90, 180),
     width = 80,
     height = 80,
@@ -325,7 +326,7 @@ ENT.ButtonMap["Battery"] = {
             h = 80,
             tooltip = "Батарея (неисп.)",
             model = {
-                var = "Battery", --sndid = "batt_on",
+                var = "Battery",
                 speed = 9,
                 vmin = 1,
                 vmax = 0,
@@ -350,7 +351,6 @@ ENT.ButtonMap["FrontPneumatic"] = {
     scale = 0.1,
     hideseat = 0.2,
     hide = true,
-    --screenHide = true,
     buttons = {
         {
             ID = "FrontBrakeLineIsolationToggle",
@@ -364,10 +364,6 @@ ENT.ButtonMap["FrontPneumatic"] = {
                 states = {"Train.Buttons.Opened", "Train.Buttons.Closed"}
             }
         },
-        --model = "models/metrostroi_train/81-760/81_760_crane_tm_out.mdl", ang=Angle(0,90,-35), z=-1,y=0,
-        --speed=4,vmin=1,vmax=0,
-        --sndvol = 1, snd = function(val) return "disconnectvalve" end,
-        --sndmin = 50, sndmax = 1e3, sndang = Angle(-90,0,0),
         {
             ID = "FrontTrainLineIsolationToggle",
             x = 192,
@@ -383,12 +379,7 @@ ENT.ButtonMap["FrontPneumatic"] = {
     }
 }
 
---model = "models/metrostroi_train/81-760/81_760_crane_nm_out.mdl", ang=Angle(180,90,35), z=-1,y=0,
---speed=4,vmin=1,vmax=0,
---sndvol = 1, snd = function(val) return "disconnectvalve" end,
---sndmin = 50, sndmax = 1e3, sndang = Angle(-90,0,0),
 ENT.ClientProps["FrontBrake"] = {
-    --
     model = "models/metrostroi_train/81-760/81_760_crane_k23.mdl",
     pos = Vector(434.9, -63.2, -64.1),
     ang = Angle(0, 90, 0),
@@ -396,7 +387,6 @@ ENT.ClientProps["FrontBrake"] = {
 }
 
 ENT.ClientProps["FrontTrain"] = {
-    --
     model = "models/metrostroi_train/81-760/81_760_crane_k23.mdl",
     pos = Vector(444.9, -60.35, -66.1),
     ang = Angle(0, 90, 0),
@@ -413,7 +403,6 @@ ENT.ButtonMap["RearPneumatic"] = {
     scale = 0.1,
     hideseat = 0.2,
     hide = true,
-    --screenHide = true,
     buttons = {
         {
             ID = "RearBrakeLineIsolationToggle",
@@ -427,10 +416,6 @@ ENT.ButtonMap["RearPneumatic"] = {
                 states = {"Train.Buttons.Opened", "Train.Buttons.Closed"}
             }
         },
-        --model = "models/metrostroi_train/81-760/81_760_crane_tm_out.mdl", ang=Angle(0,90,-35), z=-1,y=0,
-        --speed=4,vmin=1,vmax=0,
-        --sndvol = 1, snd = function(val) return "disconnectvalve" end,
-        --sndmin = 50, sndmax = 1e3, sndang = Angle(-90,0,0),
         {
             ID = "RearTrainLineIsolationToggle",
             x = 192,
@@ -446,12 +431,7 @@ ENT.ButtonMap["RearPneumatic"] = {
     }
 }
 
---model = "models/metrostroi_train/81-760/81_760_crane_nm_out.mdl", ang=Angle(180,90,35), z=-1,y=0,
---speed=4,vmin=1,vmax=0,
---sndvol = 1, snd = function(val) return "disconnectvalve" end,
---sndmin = 50, sndmax = 1e3, sndang = Angle(-90,0,0),
 ENT.ClientProps["RearBrake"] = {
-    --
     model = "models/metrostroi_train/81-760/81_760_crane_k23.mdl",
     pos = Vector(-449.1, -63.2, -64.1),
     ang = Angle(0, 90, 0),
@@ -459,7 +439,6 @@ ENT.ClientProps["RearBrake"] = {
 }
 
 ENT.ClientProps["RearTrain"] = {
-    --
     model = "models/metrostroi_train/81-760/81_760_crane_k23.mdl",
     pos = Vector(-439.2, -60.35, -66.1),
     ang = Angle(0, 90, 0),
@@ -488,7 +467,7 @@ ENT.ButtonMap["couch_capL"] = {
 }
 
 ENT.ButtonMap["couch_capL_o"] = {
-    pos = Vector(264.6, 45.6, 20), --362
+    pos = Vector(264.6, 45.6, 20),
     ang = Angle(0, 0, 81),
     width = 600,
     height = 1200,
@@ -541,15 +520,12 @@ ENT.ButtonMap["boxR"] = {
             h = 100,
             tooltip = "EmergencyBrakeValve",
             model = {
-                var = "EmergencyBrakeValve", --sndid="emergency",
+                var = "EmergencyBrakeValve",
             }
         },
     }
 }
 
---model = "models/metrostroi_train/81-760/81_761_trihedral.mdl",z=1, ang=Angle(0,-90,0),
---sndvol = 1, snd = function(val) return "disconnect_valve" end,
---sndmin = 50, sndmax = 1e3, sndang = Angle(-90,0,0),		
 ENT.ClientProps["stopkran"] = {
     model = "models/metrostroi_train/81-760/81_760_crane_handle_red.mdl",
     pos = Vector(451.8, -35.4, -32.9),
@@ -559,7 +535,7 @@ ENT.ClientProps["stopkran"] = {
 
 ENT.ClientSounds["EmergencyBrakeValve"] = {{"stopkran", function() return "disconnectvalve" end, 1, 1, 50, 1e3, Angle(-90, 0, 0)}}
 ENT.ButtonMap["couch_capR_o"] = {
-    pos = Vector(264.6, -36, -54), --372
+    pos = Vector(264.6, -36, -54),
     ang = Angle(0, 0, -81),
     width = 720,
     height = 950,
@@ -637,31 +613,25 @@ table.insert(ENT.ClientProps, {
 
 ENT.ClientProps["Salon"] = {
     model = "models/metrostroi_train/81-760/81_761a_int.mdl",
-    pos = Vector(0, 0, 0), --Vector(55.5,0,-54.25),
+    pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 2,
 }
 
 ENT.ClientProps["fan_kti"] = {
     model = "models/metrostroi_train/81-760/81_760_fan_kti.mdl",
-    pos = Vector(0, 0, 0), --Vector(53,-12,-56.5),
+    pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 1,
 }
 
 ENT.ClientProps["fan_r"] = {
     model = "models/metrostroi_train/81-760/81_760_fan_r.mdl",
-    pos = Vector(0, 0, 0), --Vector(-193.5,-39,-75.2),
+    pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 1,
 }
 
---[[
-ENT.ClientProps["trihedral"] = {
-	model = "models/metrostroi_train/81-760/81_761_trihedral.mdl",
-	pos = Vector(411.5,56.95,-20.2),
-	ang = Angle(0,0,0)
-}]]
 ENT.ClientProps["box_int_l"] = {
     model = "models/metrostroi_train/81-760/81_761a_box_int_l.mdl",
     pos = Vector(0, 0, 0),
@@ -676,13 +646,6 @@ ENT.ClientProps["box_int_r"] = {
     hide = 2,
 }
 
---[[
-ENT.ClientProps["box_add"] = {
-	model = "models/metrostroi_train/81-760/81_761a_box_add.mdl",
-	pos = Vector(0,0,0),
-	ang = Angle(0,0,0),
-	hide=2,
-}]]
 ENT.ClientProps["box_door_l"] = {
     model = "models/metrostroi_train/81-760/81_761a_box_door_l.mdl",
     pos = Vector(0, 0, 0),
@@ -754,15 +717,15 @@ ENT.ClientProps["brake_line"] = {
 }
 
 ENT.ClientProps["fence"] = {
-    model = "models/metrostroi_train/81-760/81_760_fence_corrugated_platform.mdl", --"models/metrostroi/mezhvag.mdl",
-    pos = Vector(-480.15, 0, 0), -- -474.7 1.27 -467
+    model = "models/metrostroi_train/81-760/81_760_fence_corrugated_platform.mdl",
+    pos = Vector(-480.15, 0, 0),
     ang = Angle(0, 90, 0),
     hide = 2,
 }
 
 ENT.ClientProps["fence1"] = {
-    model = "models/metrostroi_train/81-760/81_760_fence_corrugated_platform.mdl", --"models/metrostroi/mezhvag.mdl",
-    pos = Vector(480.15, 0, 0), -- -474.7 1.27 -467
+    model = "models/metrostroi_train/81-760/81_760_fence_corrugated_platform.mdl",
+    pos = Vector(480.15, 0, 0),
     ang = Angle(0, -90, 0),
     hide = 2,
 }
@@ -884,10 +847,7 @@ ENT.ButtonMap["K23"] = {
     }
 }
 
---sndvol = 0.8,sndmin = 80, sndmax = 1e3/3, sndang = Angle(-90,0,0),
---snd = function(val) return val and "gv_f" or "gv_b" end,
 ENT.ClientProps["K23Valve"] = {
-    --
     model = "models/metrostroi_train/81-760/81_760_crane_k23.mdl",
     pos = Vector(131.42, -64.14, -64.6),
     ang = Angle(0, 0, 0),
@@ -896,7 +856,7 @@ ENT.ClientProps["K23Valve"] = {
 
 ENT.ClientSounds["K23ValveIsolation"] = {{"K23Valve", function() return "disconnectvalve" end, 1, 1, 50, 1e3, Angle(-90, 0, 0)}}
 ENT.ButtonMap["K31Cap"] = {
-    pos = Vector(76.9, 57, -13.4), --28
+    pos = Vector(76.9, 57, -13.4),
     ang = Angle(0, 0, 90),
     width = 50,
     height = 50,
@@ -918,7 +878,7 @@ ENT.ButtonMap["K31Cap"] = {
 }
 
 ENT.ButtonMap["K31"] = {
-    pos = Vector(74.6, 60, -13), --28
+    pos = Vector(74.6, 60, -13),
     ang = Angle(0, 0, 90),
     width = 150,
     height = 250,
@@ -953,9 +913,6 @@ ENT.ClientProps["K31_cap"] = {
     hide = 0.5,
 }
 
---------------------------------------------------------------------------------
--- Add doors
---------------------------------------------------------------------------------
 for i = 0, 3 do
     for k = 0, 1 do
         ENT.ClientProps["door" .. i .. "x" .. k] = {
@@ -976,13 +933,6 @@ for i = 0, 3 do
         }
     end
 end
-
-ENT.ClientProps["zoomer_lamps"] = {
-    model = "models/metrostroi_train/81-760/81_760_zoomer_lamps.mdl",
-    pos = Vector(0, 0, 0),
-    ang = Angle(0, 0, 0),
-    hide = 2,
-}
 
 for k, tbl in ipairs({ENT.LeftDoorPositions or {}, ENT.RightDoorPositions or {}}) do
     for i, pos in ipairs(tbl) do
@@ -1110,27 +1060,9 @@ for k, tbl in ipairs({ENT.LeftDoorPositions or {}, ENT.RightDoorPositions or {}}
     end
 end
 
---[[
-local yventpos = {
-    -414.5+0*117,
-    -414.5+1*117+6.2,
-    -414.5+2*117+5,
-    -414.5+3*117+2,
-    -414.5+4*117+0.5,
-    -414.5+5*117-2.3,
-    -414.5+6*117-2.3,
-    -414.5+7*117+4,
-}
-for i=1,8 do
-    ENT.ClientProps["vent"..i] = {
-        model = "models/metrostroi_train/81-720/vent.mdl",
-        pos = Vector(yventpos[i],0,57.2),
-        ang = Angle(0,0,0)
-    }
-end]]
+
 ENT.Lights = {}
--- Headlight glow
---[2] = { "dynamiclight",   Vector( 300, 0, 40), Angle(0,0,0), Color(255,255,255), brightness = 4, distance = 550 },
+
 function ENT:Initialize()
     self.BaseClass.Initialize(self)
     self.LBnt = self:CreateRT("765LBnt", 3840, 512)
@@ -1230,7 +1162,7 @@ function ENT:ShouldRenderClientEnts()
     local val = not self:IsDormant() and math.abs(LocalPlayer():GetPos().z - self:GetPos().z) < 500 and (system.HasFocus() or C_MinimizedShow:GetBool()) and (not Metrostroi or not Metrostroi.ReloadClientside)
     if not C_ScreenshotMode:GetBool() then
         if C_Optimization:GetBool() then
-            if not PlyInTrain(ply, self) then --and not self:CPPIGetOwner() == ply then
+            if not PlyInTrain(ply, self) then
                 val = false
             end
         elseif C_Optimization2:GetBool() then
@@ -1330,7 +1262,6 @@ function ENT:ReInitBogeySounds(bogey)
         0.02
     })
 
-    --table.insert(bogey.EngineSNDConfig,{"ted11_720",88,80-4   ,0.01})--02
     bogey.SoundNames = {}
     bogey.SoundNames["ted1_703"] = "subway_trains/bogey/engines/703/speed_8.wav"
     bogey.SoundNames["ted2_703"] = "subway_trains/bogey/engines/703/speed_16.wav"
@@ -1343,7 +1274,7 @@ function ENT:ReInitBogeySounds(bogey)
     bogey.SoundNames["ted9_703"] = "subway_trains/bogey/engines/703/speed_72.wav"
     bogey.SoundNames["ted10_703"] = "subway_trains/bogey/engines/703/speed_80.wav"
     bogey.SoundNames["ted11_703"] = "subway_trains/bogey/engines/703/speed_88.wav"
-    --bogey.SoundNames["tedm_703"]  = "subway_trains/bogey/engines/703/engines_medium.wav"
+
     bogey.SoundNames["ted1_717"] = "subway_trains/bogey/engines/717/engines_8.wav"
     bogey.SoundNames["ted2_717"] = "subway_trains/bogey/engines/717/engines_16.wav"
     bogey.SoundNames["ted3_717"] = "subway_trains/bogey/engines/717/engines_24.wav"
@@ -1354,25 +1285,24 @@ function ENT:ReInitBogeySounds(bogey)
     bogey.SoundNames["ted8_717"] = "subway_trains/bogey/engines/717/engines_64.wav"
     bogey.SoundNames["ted9_717"] = "subway_trains/bogey/engines/717/engines_72.wav"
     bogey.SoundNames["ted10_717"] = "subway_trains/bogey/engines/717/engines_80.wav"
-    --bogey.SoundNames["ted11_720"] = "subway_trains/760/engines/engine_80.wav"
-    bogey.SoundNames["ted1_720"] = "subway_trains/760/engines/engine_8.wav"
-    bogey.SoundNames["ted2_720"] = "subway_trains/760/engines/engine_16.wav"
-    bogey.SoundNames["ted3_720"] = "subway_trains/760/engines/engine_24.wav"
-    bogey.SoundNames["ted4_720"] = "subway_trains/760/engines/engine_32.wav"
-    bogey.SoundNames["ted5_720"] = "subway_trains/760/engines/engine_40.wav"
-    bogey.SoundNames["ted6_720"] = "subway_trains/760/engines/engine_48.wav"
-    bogey.SoundNames["ted7_720"] = "subway_trains/760/engines/engine_56.wav"
-    bogey.SoundNames["ted8_720"] = "subway_trains/760/engines/engine_64.wav"
-    bogey.SoundNames["ted9_720"] = "subway_trains/760/engines/engine_72.wav"
-    bogey.SoundNames["ted10_720"] = "subway_trains/760/engines/engine_80.wav"
-    --*0.975
-    --*1.025
-    bogey.SoundNames["flangea"] = "subway_trains/bogey/skrip1.wav"
-    bogey.SoundNames["flangeb"] = "subway_trains/bogey/skrip2.wav"
-    bogey.SoundNames["flange1"] = "subway_trains/bogey/flange_9.wav"
-    bogey.SoundNames["flange2"] = "subway_trains/bogey/flange_10.wav"
-    bogey.SoundNames["brakea_loop1"] = "subway_trains/bogey/braking_async1.wav"
-    bogey.SoundNames["brakea_loop2"] = "subway_trains/bogey/braking_async2.wav"
+
+    bogey.SoundNames["ted1_720"] = "subway_trains/765/rumble/engines/engine_8.wav"
+    bogey.SoundNames["ted2_720"] = "subway_trains/765/rumble/engines/engine_16.wav"
+    bogey.SoundNames["ted3_720"] = "subway_trains/765/rumble/engines/engine_24.wav"
+    bogey.SoundNames["ted4_720"] = "subway_trains/765/rumble/engines/engine_32.wav"
+    bogey.SoundNames["ted5_720"] = "subway_trains/765/rumble/engines/engine_40.wav"
+    bogey.SoundNames["ted6_720"] = "subway_trains/765/rumble/engines/engine_48.wav"
+    bogey.SoundNames["ted7_720"] = "subway_trains/765/rumble/engines/engine_56.wav"
+    bogey.SoundNames["ted8_720"] = "subway_trains/765/rumble/engines/engine_64.wav"
+    bogey.SoundNames["ted9_720"] = "subway_trains/765/rumble/engines/engine_72.wav"
+    bogey.SoundNames["ted10_720"] = "subway_trains/765/rumble/engines/engine_80.wav"
+
+    bogey.SoundNames["flangea"] = "subway_trains/765/rumble/bogey/skrip1.wav"
+    bogey.SoundNames["flangeb"] = "subway_trains/765/rumble/bogey/skrip2.wav"
+    bogey.SoundNames["flange1"] = "subway_trains/765/rumble/bogey/flange_9.wav"
+    bogey.SoundNames["flange2"] = "subway_trains/765/rumble/bogey/flange_10.wav"
+    bogey.SoundNames["brakea_loop1"] = "subway_trains/765/rumble/bogey/braking_async1.wav"
+    bogey.SoundNames["brakea_loop2"] = "subway_trains/765/rumble/bogey/braking_async2.wav"
     bogey.SoundNames["brake_loop1"] = "subway_trains/bogey/brake_rattle3.wav"
     bogey.SoundNames["brake_loop2"] = "subway_trains/bogey/brake_rattle4.wav"
     bogey.SoundNames["brake_loop3"] = "subway_trains/bogey/brake_rattle5.wav"
@@ -1382,20 +1312,16 @@ function ENT:ReInitBogeySounds(bogey)
     bogey.SoundNames["brake2_loop2"] = "subway_trains/bogey/brake_rattle_h.wav"
     bogey.SoundNames["brake_squeal1"] = "subway_trains/bogey/brake_squeal1.wav"
     bogey.SoundNames["brake_squeal2"] = "subway_trains/bogey/brake_squeal2.wav"
-    -- Remove old sounds
+
     if bogey.Sounds then
         for k, v in pairs(bogey.Sounds) do
             v:Stop()
         end
     end
 
-    -- Create sounds
     bogey.Sounds = {}
     bogey.Playing = {}
     for k, v in pairs(bogey.SoundNames) do
-        --if not file.Exists(v, "MOD") then
-        --          bogey.SoundNames[k] = nil
-        --end
         util.PrecacheSound(v)
         local e = bogey
         if (k == "brake3a") and IsValid(bogey:GetNW2Entity("TrainWheels")) then e = bogey:GetNW2Entity("TrainWheels") end
@@ -1403,7 +1329,6 @@ function ENT:ReInitBogeySounds(bogey)
     end
 
     bogey.Async = nil
-    --bogey.MotorSoundType = nil
 end
 
 function ENT:Think()
@@ -1413,8 +1338,8 @@ function ENT:Think()
         return
     end
 
-    if IsValid(self.FrontBogey) and self.FrontBogey.SoundNames and (self.FrontBogey.SoundNames["ted1_720"] ~= "subway_trains/760/engines/engine_8.wav" or self.FrontBogey.EngineSNDConfig and self.FrontBogey.EngineSNDConfig[1] and self.FrontBogey.EngineSNDConfig[1][5] ~= 0.14) or refresh then self:ReInitBogeySounds(self.FrontBogey) end
-    if IsValid(self.RearBogey) and self.RearBogey.SoundNames and (self.RearBogey.SoundNames["ted1_720"] ~= "subway_trains/760/engines/engine_8.wav" or self.RearBogey.EngineSNDConfig and self.RearBogey.EngineSNDConfig[1] and self.RearBogey.EngineSNDConfig[1][5] ~= 0.14) or refresh then self:ReInitBogeySounds(self.RearBogey) end
+    if IsValid(self.FrontBogey) and self.FrontBogey.SoundNames and (self.FrontBogey.SoundNames["ted1_720"] ~= "subway_trains/765/rumble/engines/engine_8.wav" or self.FrontBogey.EngineSNDConfig and self.FrontBogey.EngineSNDConfig[1] and self.FrontBogey.EngineSNDConfig[1][5] ~= 0.14) or refresh then self:ReInitBogeySounds(self.FrontBogey) end
+    if IsValid(self.RearBogey) and self.RearBogey.SoundNames and (self.RearBogey.SoundNames["ted1_720"] ~= "subway_trains/765/rumble/engines/engine_8.wav" or self.RearBogey.EngineSNDConfig and self.RearBogey.EngineSNDConfig[1] and self.RearBogey.EngineSNDConfig[1][5] ~= 0.14) or refresh then self:ReInitBogeySounds(self.RearBogey) end
     if self.Number ~= self:GetWagonNumber() then self:UpdateTextures() end
     if self.Texture ~= self:GetNW2String("texture") then self:UpdateTextures() end
     if self.PassTexture ~= self:GetNW2String("passtexture") then self:UpdateTextures() end
@@ -1438,7 +1363,6 @@ function ENT:Think()
     if IsValid(fence) and IsValid(RearTrain) then
         local a = 1
         if RearTrain:GetNW2Entity("RearTrain") == self then a = -1 end
-        --local ang1 = RearTrain:GetAngles()
         local ang1 = fence:WorldToLocalAngles(RearTrain:LocalToWorldAngles(Angle(0, 90 * a, 0)))
         local vec = fence:WorldToLocal(RearTrain:LocalToWorld(Vector(480.1 * a, a * ang1.p * 1.585, 0.6)))
         fence:ManipulateBoneAngles(0, Angle(-ang1.r / 2, ang1.y / 2, ang1.p / 3) + Angle(0, 90, 0))
@@ -1448,7 +1372,6 @@ function ENT:Think()
     if IsValid(fence1) and IsValid(FrontTrain) then
         local a = 1
         if FrontTrain:GetNW2Entity("RearTrain") == self then a = -1 end
-        --local ang1 = RearTrain:GetAngles()
         local ang1 = fence1:WorldToLocalAngles(FrontTrain:LocalToWorldAngles(Angle(0, 90 * a, 0)))
         local vec = fence1:WorldToLocal(FrontTrain:LocalToWorld(Vector(480.1 * a, a * ang1.p * 1.585, 0.6)))
         fence1:ManipulateBoneAngles(0, Angle(-ang1.r / 2, ang1.y / 2, ang1.p / 3) + Angle(0, 90, 0))
@@ -1471,9 +1394,9 @@ function ENT:Think()
 
     self:Animate("gv_wrench", self:GetPackedBool("GV") and 0 or 1, 0, 0.51, 128, 1, false)
     self:ShowHideSmooth("gv_wrench", CurTime() < self.ResetTime and 1 or 0.1)
-    self:Animate("volt_lv", self:GetPackedRatio("LV"), 0, 0.95, 16, 1) --0.035,0.965,16,1)
-    self:Animate("volt_hv", self:GetPackedRatio("HV"), 0, 1, 16, 6) --0.035,0.965,16,1)	
-    self:Animate("ampermetr", self:GetPackedRatio("IVO"), 0, 1, 16, 1) --0.035,0.965,16,1)	
+    self:Animate("volt_lv", self:GetPackedRatio("LV"), 0, 0.95, 16, 1)
+    self:Animate("volt_hv", self:GetPackedRatio("HV"), 0, 1, 16, 6)
+    self:Animate("ampermetr", self:GetPackedRatio("IVO"), 0, 1, 16, 1)
     self:Animate("brake_line", self:GetPackedRatio("BL"), 0, 0.78, 256, 2)
     self:Animate("train_line", self:GetPackedRatio("TL"), 0, 0.78, 256, 2)
     self:Animate("brake_cylinder", self:GetPackedRatio("BC"), 0, 0.78, 256, 2)
@@ -1503,12 +1426,12 @@ function ENT:Think()
     self:SetSoundState("release", release1, 1)
     self:ShowHideSmooth("lamp1", self:Animate("LampsEmer", self:GetPackedBool("SalonLighting1") and 1 or 0, 0, 1, 5, false))
     self:ShowHideSmooth("lamp2", self:Animate("LampsFull", self:GetPackedBool("SalonLighting2") and 1 or 0, 0, 1, 5, false))
-    self:ShowHideSmooth("zoomer_lamps", self:Animate("zoomerl", self:GetNW2Bool("DoorAlarmState") and 1 or 0, 0, 1, 16, false))
     local K31_cap = self:Animate("K31_cap", self:GetPackedBool("door_k31") and 1 or 0, 0, 1, 4, 0.5)
     self:ShowHide("K31", K31_cap > 0)
     self:HidePanel("K31", K31_cap < 1)
     self:Animate("K31", self:GetPackedBool("K31") and 0 or 1, 0, 1, 16, 0.5)
 
+    -- LEGACY, to be removed
     if not self.DoorStates then self.DoorStates = {} end
     if not self.DoorLoopStates then self.DoorLoopStates = {} end
     for i = 0, 3 do
@@ -1521,17 +1444,16 @@ function ENT:Think()
             local randvalKey = "Door" .. (k == 1 and "L" or "R") .. "BR" .. (i + 1)
             if not self[randvalKey] then self[randvalKey] = math.random(0, 1) end
             local randval = self[randvalKey]
-            --print(state,self.DoorStates[state])
             if (state ~= 1 and state ~= 0) ~= self.DoorStates[id] then
                 if doorstate and state < 1 or not doorstate and state > 0 then
-                    if doorstate then --math.Rand(0.9,1.3))
+                    if doorstate then
                         self:PlayOnce(sid .. "op" .. randval, "", 1, 1)
                     end
                 else
                     if state > 0 then
-                        self:PlayOnce(sid .. "o" .. randval, "", 1, 1) --math.Rand(0.9,1.3))
+                        self:PlayOnce(sid .. "o" .. randval, "", 1, 1)
                     else
-                        self:PlayOnce(sid .. "c" .. randval, "", 1, 1) --math.Rand(0.9,1.3))
+                        self:PlayOnce(sid .. "c" .. randval, "", 1, 1)
                     end
                     self[randvalKey] = math.random(0, 1)
                 end
@@ -1586,42 +1508,14 @@ function ENT:Think()
     self:SetSoundState("release", release1, 1)
     local state = self:GetPackedBool("CompressorWork")
     if self.CompressorVol < 1 and state then
-        self.CompressorVol = math.min(1, self.CompressorVol + (self.CompressorVol < 0.2 and 0.1 or 0.2) * dT) --5*dT
+        self.CompressorVol = math.min(1, self.CompressorVol + (self.CompressorVol < 0.2 and 0.1 or 0.2) * dT)
     elseif self.CompressorVol > 0 and not state then
-        self.CompressorVol = math.max(0, self.CompressorVol - dT) --3*dT
+        self.CompressorVol = math.max(0, self.CompressorVol - dT)
     end
 
-    --if state then
     self:SetSoundState("compressor", self.CompressorVol / 6, 0.8 + 0.2 * self.CompressorVol)
-    --else
-    --self:SetSoundState("compressor",0,0)
-    --end
     self.PreviousCompressorState = state
     local speed = self:GetPackedRatio("Speed", 0)
-    --[[
-    local ventSpeedAdd = math.Clamp(speed/30,0,1)
-
-    local v1state = self:GetPackedBool("Vent1Work")
-    local v2state = self:GetPackedBool("Vent2Work")
-    for i=1,8 do
-        local rand = self.VentRand[i]
-        local vol = self.VentVol[i]
-        local even = i%2 == 0
-        local work = (even and v1state or not even and v2state)
-        local target = math.min(1,(work and 1 or 0)+ventSpeedAdd*rand*0.4)*2
-        if self.VentVol[i] < target then
-            self.VentVol[i] = math.min(target,vol + dT/1.5*rand)
-        elseif self.VentVol[i] > target then
-            self.VentVol[i] = math.max(0,vol - dT/8*rand*(vol*0.3))
-        end
-        self.VentState[i] = (self.VentState[i] + 10*((self.VentVol[i]/2)^3)*dT)%1
-        local vol1 = math.max(0,self.VentVol[i]-1)
-        local vol2 = math.max(0,(self.VentVol[i-1] or self.VentVol[i+1])-1)
-        self:SetSoundState("vent"..i,vol1*(0.7+vol2*0.3),0.5+0.5*vol1+math.Rand(-0.01,0.01))
-        if IsValid(self.ClientEnts["vent"..i]) then
-            self.ClientEnts["vent"..i]:SetPoseParameter("position",self.VentState[i])
-        end
-    end]]
     local rollingi = math.min(1, self.TunnelCoeff + math.Clamp((self.StreetCoeff - 0.82) / 0.5, 0, 1))
     local rollings = math.max(self.TunnelCoeff * 0.6, self.StreetCoeff)
     local tunstreet = rollingi + rollings * 0.2
@@ -1637,35 +1531,26 @@ function ENT:Think()
     self:SetSoundState("rolling_45", rollingi * rol45, 1)
     self:SetSoundState("rolling_60", rollingi * rol60, 1)
     self:SetSoundState("rolling_70", rollingi * rol70, 1)
+
     local rol10 = math.Clamp(speed / 15, 0, 1) * (1 - math.Clamp((speed - 18) / 35, 0, 1))
     local rol10p = Lerp((speed - 15) / 14, 0.6, 0.78)
     local rol40 = math.Clamp((speed - 18) / 35, 0, 1) * (1 - math.Clamp((speed - 55) / 40, 0, 1))
     local rol40p = Lerp((speed - 15) / 66, 0.6, 1.3)
-    local rol70 = math.Clamp((speed - 55) / 20, 0, 1) --*(1-math.Clamp((speed-72)/5,0,1))
+    local rol70 = math.Clamp((speed - 55) / 20, 0, 1)
     local rol70p = Lerp((speed - 55) / 27, 0.78, 1.15)
-    --local rol80 = math.Clamp((speed-70)/5,0,1)
-    --local rol80p = Lerp(0.8+(speed-72)/15*0.2,0.8,1.2)
-    self:SetSoundState("rolling_low", rol10 * rollings, rol10p) --15
-    self:SetSoundState("rolling_medium2", rol40 * rollings, rol40p) --57
-    --self:SetSoundState("rolling_medium1",0 or rol40*rollings,rol40p) --57
-    self:SetSoundState("rolling_high2", rol70 * rollings, rol70p) --70
-    local state = self:GetPackedRatio("asynccurrent") --^1.5--RealTime()%2.5/2	
+    self:SetSoundState("rolling_low", rol10 * rollings, rol10p)
+    self:SetSoundState("rolling_medium2", rol40 * rollings, rol40p)
+    self:SetSoundState("rolling_high2", rol70 * rollings, rol70p)
+    local state = self:GetPackedRatio("asynccurrent")
     local strength = self:GetPackedRatio("asyncstate") * (1 - math.Clamp((speed - 23) / 23, 0, 1)) * 0.5
-    --print(state/0.3+0.2)
+
     local asyncType = self:GetNW2Int("VVVFSound", 1)
     if asyncType == 1 then
-        self:SetSoundState("async1", tunstreet * math.Clamp(state / 0.26 + 0.2, 0, 1) * strength, 1) --+math.Clamp(state,0,1)*0.1)
+        self:SetSoundState("async1", tunstreet * math.Clamp(state / 0.26 + 0.2, 0, 1) * strength, 1)
     else
         self:ExperimentalAsync(asyncType, tunstreet, speed)
     end
-    --[[
-    local state = 1-self:GetPackedRatio("RNState")
-    self.TISUVol = math.Clamp(self.TISUVol+(state-self.TISUVol)*dT*8,0,1)
-    self:SetSoundState("tisu", self.TISUVol, 1)
-    self:SetSoundState("tisu2", self.TISUVol, 1)
-    self:SetSoundState("tisu3", 0 or self.TISUVol, 1)
-    ]]
-    --self:SetSoundState("bbe", self:GetPackedBool("BBEWork") and 1 or 0, 1)
+
     local work = self:GetPackedBool("AnnPlay")
     for k, v in ipairs(self.AnnouncerPositions) do
         if self.Sounds["announcer" .. k] and IsValid(self.Sounds["announcer" .. k]) then self.Sounds["announcer" .. k]:SetVolume(work and (v[3] or 1) or 0) end
@@ -1963,11 +1848,11 @@ for id, panel in pairs(ENT.ButtonMap) do
     if not panel.buttons then continue end
     for k, v in pairs(panel.buttons) do
         if v.model then
-            local dist = dist[id] or 150
+            local cdist = dist[id] or 150
             if v.model.model then
-                v.model.hideseat = dist
+                v.model.hideseat = cdist
             elseif v.model.lamp then
-                v.model.lamp.hideseat = dist
+                v.model.lamp.hideseat = cdist
             end
         end
     end

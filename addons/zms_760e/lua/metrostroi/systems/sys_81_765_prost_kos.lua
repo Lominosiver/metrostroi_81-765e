@@ -1,4 +1,8 @@
-﻿Metrostroi.DefineSystem("81_765_ProstKos")
+﻿--------------------------------------------------------------------------------
+-- ПрОст, КОС
+-- Автор - ZONT_ a.k.a. enabled person
+--------------------------------------------------------------------------------
+Metrostroi.DefineSystem("81_765_ProstKos")
 
 TRAIN_SYSTEM.DontAccelerateSimulation = true
 

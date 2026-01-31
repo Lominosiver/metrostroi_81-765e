@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- Блок Управления Информационным Комплексом (и Спидометр) 81-765
 -- Имплементация варианта "Метроспецтехника"
--- Author: ZONT_ https://github.com/ZONT3 https://steamcommunity.com/id/ZONT3/
+-- Автор - ZONT_ a.k.a. enabled person
 --------------------------------------------------------------------------------
 Metrostroi.DefineSystem("81_765_BUIK")
 TRAIN_SYSTEM.DontAccelerateSimulation = true
@@ -30,7 +30,7 @@ function TRAIN_SYSTEM:Initialize()
     self.Triggers = {}
     self.StatusStates = {}
 
-    self.MsgDelay = 0.4 + math.random() * 0.4
+    self.MsgDelay = 0.9 + math.random() * 0.4
 
     -- Конфиг
     -- БУ-ИК активен только в активной кабине
@@ -175,9 +175,12 @@ if SERVER then
         self:CheckTriggers()
 
         if CurTime() < self.NextThink then return end
-        self.NextThink = CurTime() + 0.2
+        self.NextThink = CurTime() + 0.26
 
         self:AnnouncerWork()
+
+        local activate = self.Activate
+        if activate then self.Activate = false end
 
         local Wag = self.Train
 
@@ -226,6 +229,7 @@ if SERVER then
 
         else
             self.Active = self.State == STATE_INACTIVE_CABIN and Wag:GetNW2Int("Skif:MainMsg", 1) == 0 or false
+            if activate and Wag:GetNW2Int("Skif:MainMsg", 1) < 2 then self.Active = true Wag:CANWrite("BUIK", self.Train:GetWagonNumber(), "BUIK", nil, "Deactivate", true) end
             if self.State == STATE_INACTIVE and Wag.BUKP and Wag.BUKP.State == 5 and Wag.PpzUpi.Value > 0.5 and isnumber(self.WagNum) and self.WagNum >= 1 then
                 self.State = STATE_INACTIVE_CABIN
             end
@@ -589,6 +593,10 @@ if SERVER then
                 end
             end
         end
+
+        if self.State == STATE_INACTIVE_CABIN and name == "Buik_Return" and val then
+            self.Activate = true
+        end
     end
 
     function TRAIN_SYSTEM:InitRoutes()
@@ -778,6 +786,7 @@ if SERVER then
 
     function TRAIN_SYSTEM:CANReceive(source, sourceid, target, targetid, textdata, numdata)
         if source == "BUIK" and sourceid == self.Train:GetWagonNumber() then return end
+        if textdata == "Deactivate" then self.Active = false self.State = STATE_INACTIVE_CABIN end
         if textdata == "RouteChanged" then self.RouteChanged = numdata end
         if textdata == "RouteNumber" then self.RouteNumber = numdata end
         if textdata == "Route" then self.Route = numdata end

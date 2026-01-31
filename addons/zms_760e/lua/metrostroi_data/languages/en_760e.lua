@@ -96,11 +96,7 @@ Entities.gmod_subway_81-760e.Buttons.IGLAButtons.IGLA4Set          = @[Common.IG
 
 Entities.gmod_subway_81-760e.Buttons.RV.EmerX1Set                = @[Common.720.EmerX1]
 Entities.gmod_subway_81-760e.Buttons.RV.EmerX2Set                = @[Common.720.EmerX2]
-Entities.gmod_subway_81-760e.Buttons.RV.EmerCloseDoorsSet        = @[Common.720.EmerCloseDoors]
-Entities.gmod_subway_81-760e.Buttons.RV.EmergencyDoorsToggle     = @[Common.720.EmergencyDoors]
 Entities.gmod_subway_81-760e.Buttons.RV.EmergencyCompressorSet   = @[Common.720.EmergencyCompressor]
-Entities.gmod_subway_81-760e.Buttons.RV.EmergencyControlsToggle  = @[Common.720.EmergencyControls]
-Entities.gmod_subway_81-760e.Buttons.RV.EmergencyControlsKToggle = @[Common.760.Cover] @[Common.720.EmergencyControls]
 
 Entities.gmod_subway_81-760e.Buttons.PUR.DoorSelectLToggle           = @[Common.720.DoorSelectL]
 Entities.gmod_subway_81-760e.Buttons.PUR.DoorSelectRToggle           = @[Common.720.DoorSelectR]
@@ -125,7 +121,7 @@ Entities.gmod_subway_81-760e.Buttons.PUR2.SDkToggle                   = @[Common
 Entities.gmod_subway_81-760e.Buttons.PUR2.SDToggle                    = @[Common.760.SD]
 Entities.gmod_subway_81-760e.Buttons.PUR2.BTBkToggle                  = @[Common.760.Cover] @[Common.760.BTB]
 Entities.gmod_subway_81-760e.Buttons.PUR2.BTBToggle                   = @[Common.760.BTB]
-Entities.gmod_subway_81-760e.Buttons.PUR2.MicroToggle                 = @[Common.760.R_Micro]
+Entities.gmod_subway_81-760e.Buttons.PUR2.HornCSet                    = @[Common.ALL.Horn]
 
 Entities.gmod_subway_81-760e.Buttons.PUU.DoorBlockToggle             = @[Common.720.DoorBlock]
 Entities.gmod_subway_81-760e.Buttons.PUU.!HVoltage                   = @[Common.760.HVoltage]
@@ -172,10 +168,6 @@ Entities.gmod_subway_81-760e.Buttons.VoltHelper1.!HV                 = @[Common.
 
 Entities.gmod_subway_81-760e.Buttons.Door_add_1.Door_add_1           = @[Common.760.Cabinet]
 Entities.gmod_subway_81-760e.Buttons.Door_add_1o.Door_add_1          = @[Common.760.Cabinet]
-Entities.gmod_subway_81-760e.Buttons.Door_add_2.Door_add_2           = @[Common.760.Cabinet]
-Entities.gmod_subway_81-760e.Buttons.Door_add_2o.Door_add_2          = @[Common.760.Cabinet]
-Entities.gmod_subway_81-760e.Buttons.Door_pvz.Door_pvz               = @[Common.760.Cabinet]
-Entities.gmod_subway_81-760e.Buttons.Door_pvzo.Door_pvz              = @[Common.760.Cabinet]
 Entities.gmod_subway_81-760e.Buttons.K31Cap.K31Cap                   = @[Common.760.Cap] K31
 
 Entities.gmod_subway_81-760e.Buttons.StopKran.EmergencyBrakeValveToggle          = @[Common.ALL.EmergencyBrakeValve]

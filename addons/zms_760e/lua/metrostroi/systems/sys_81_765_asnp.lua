@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 -- Автоматический считыватель номера поезда
--- Оригинальный код принадлежит Cricket & Hell
+-- Код принадлежит Cricket & Hell
 -- Минимально модифицировано ZONT_ для 81-765
 --------------------------------------------------------------------------------
 Metrostroi.DefineSystem("81_765_ASNP")
@@ -294,7 +294,7 @@ if CLIENT then
 			local station = Train:GetNW2Int("ASNP:Station", 1)
 			local ltbl = stbl[Line]
 			local last = Train:GetNW2Int("ASNP:LastStation", 1)
-			if Train:GetNW2Bool("STL", false) then self:PrintText(0, 0, "Приб.") end
+
 			self:PrintText(0, 1, path and "II" or "I")
 			if Train:GetNW2Bool("ASNP:IKPORT", false) then
 				self:PrintText(5, 0, "$")

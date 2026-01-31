@@ -1,3 +1,34 @@
+# 81-760Э «Чурá»
+
+Выдуманная переходная модель от 81-760 к 81-765. В будущем может стать самой 81-765.
+Почитать о том, какие особенности есть у этого состава по сравнению с другими в метрострое в общем, и в сравнении с Окой в частности, можно в обсуждении «FAQ» под описанием.
+
+Оригинальные скрипты, модели и звуки (кроме тех, что от Оки или указаны ниже) — ZONT_ a.k.a. enabled person.
+
+Добровольно поддержать разработку состава *и, возможно, приблизить выход в свет 81-765 «Москва»* — [Boosty](https://boosty.to/zxcpivo/donate)
+
+## Дисклеймер
+Часть данного состава содержит контент (в большей степени) и скрипты (в меньшей степени) состава [81-760 «Ока» от CrIcKeT & Hell](https://steamcommunity.com/workshop/filedetails/?id=1919516717), а так же звуки проекта [Rumble](https://rumblemetrostroi.ru/).
+Если вы считаете, что данный продукт в мастерской нарушает ваши авторские права – просьба [связаться со мной в стиме](https://steamcommunity.com/id/ZONT3/) прежде чем кидать страйки. Заранее спасибо. Публикация в общий доступ планируется после урегулирования всех вопросов с используемым неоригинальным контентом и/или избавления от него.
+
+## Fair-use
+Разрешается ставить этот состав на сервера, однако запрещается закрывать его за платными рангами/привилегиями. Модификация на серверах разрешается, однако просьба оставить ссылку на оригинал.
+Повторная публикация без разрешения не приветствуется. Если есть желание улучшения состава, используйте Pull Request-ы на GitHub, либо пишите мне и скидывайте свои модификации.
+Модификация состава с последующей продажей - запрещена, обращайтесь к предыдущему утверждению.
+
+## Благодарности
+### Поддержка на бусти
+- [undodespotta](https://steamcommunity.com/id/PERSONA_dest/)
+### Поиск информации, альфа тест
+- [Sonic](https://steamcommunity.com/profiles/76561199809228380/)
+- [Union](https://steamcommunity.com/profiles/76561198045712662/)
+### Контент
+- Шрифт БМТ, скриншоты [GrosBoy](https://steamcommunity.com/profiles/76561198945353398)
+- Звук контроллера **PROFNIK**
+- Тифон [Kononov](https://steamcommunity.com/id/ytvilageyt)
+
+## Roadmap
+
 - [ ] 81-760E/761E/763E (modding 760A)
   - [x] GRKV
       - [x] Logic
@@ -12,13 +43,12 @@
         - [x] Password
         - [x] Depot mode
         <!-- - [ ] Buttons check -->
-  - [ ] BU-IK
+  - [x] BU-IK
       - [x] Cabin Metrospectekhnika implementation
       - [x] Salon BNT
-      - [ ] Salon CIS
       - [x] Skip message
       - [x] Sarmat-like beep
-  - [ ] Doors
+  - [x] Doors
       - [x] Blink and sound logic
       - [x] Doors delay logic
       - [x] Fasten move time
@@ -36,11 +66,11 @@
   - [ ] Models
       - [x] Console (cringe)
       - [x] Doors (good)
-      - [ ] Inter door LED (remake)
       - [x] Cabin PMV/PPZ
       - [x] Salon BNT
+      - [x] BMT
+      - [ ] Inter door LED (remake)
       - [ ] Salon CIS
-      - [ ] BMT
   - [x] BUKP => SAU Skif
       - [x] ARS1/2, ATS1/2
       - [x] Xod => ARS work logic
@@ -62,15 +92,13 @@
     - [x] Rewrite speed limit logics in BUKP
     - [x] BU-IK Return informer reset 'notlast' message
     - [x] BUKP background initialization right after identification
-    - [ ] ~~Make RVTB recover in some cases~~
+    - [x] Make RVTB recover in some cases
     - [x] PB/KB acts as KVT as well
+    - [ ] New CAMS
     - [ ] Uhv without GV behaivor
     - [ ] Still brake PN1/PN2 revise
     - [ ] Pneumatic weight load PN setting adjustment
-    - [ ] FIX: Some BUKP errors does not log (rear cabin door)
     - [ ] FIX: Doors close delay reset logic
-    - [ ] FIX: IOD reset logic
-    - [ ] FIX: UKKZ recovery
 - [ ] 81-765/766/767/.2/.4 (modeling 765, maybe getting rest from 760A code, maybe dependencies (systems) too)
   - [ ] Models
     - [x] Mask
@@ -79,14 +107,14 @@
     - [x] Console (remake)
   - [ ] Improve sounds
     - [ ] KATP-3
-    - [ ] Remove RUMBLE dependency
+    - [ ] Remove or resolve RUMBLE dependency
     - [x] Door Alarm
     - [ ] Door drive
       - [x] Early variant
       - [ ] Improved variant
   - [ ] Variations
     - [ ] Base entity class `81-765 base`
-    - [ ] Derived entities 81-765, 766, 767, .2, .4
+    - [ ] Derived entities 81-765, ~~766, 767~~, .2, .4
     - [ ] TKL/FL/Normal ARS options
       - [ ] TKL/FL option only for admins, ulx permission and/or per-map
     - [ ] Entity "Custom" for spawner that spawns base entity

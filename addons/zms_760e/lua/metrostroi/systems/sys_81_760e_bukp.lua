@@ -1,5 +1,9 @@
 --------------------------------------------------------------------------------
--- Блок Управления и Контроля Поезда (Витязь)
+-- Блок Управления и Контроля Поезда (САУ Скиф-М)
+-- Автор - ZONT_ a.k.a. enabled person
+-- Может содержать код Cricket & Hell (81-760) и Metrostroi team (81-720, 722 и др.)
+-- Реализованы категории сообщений, повагонные сообщения, фоновая инициализация в режиме депо,
+-- репозиторй ошибок по их именам, лог ошибок, контроллер от 765, общение с БУ-ИК и т.д...
 --------------------------------------------------------------------------------
 Metrostroi.DefineSystem("81_760E_BUKP")
 TRAIN_SYSTEM.DontAccelerateSimulation = true
@@ -667,7 +671,7 @@ if SERVER then
         end
 
         if CurTime() < self.NextThink then return end
-        self.NextThink = CurTime() + 0.1
+        self.NextThink = CurTime() + 0.075
 
         if self.State > 0 and self.Reset and self.Reset ~= 1 then self.Reset = false end
         if self.WagList ~= #self.Train.WagonList and self.Train.BUV.OrientateBUP == self.Train:GetWagonNumber() then
@@ -1144,7 +1148,7 @@ if SERVER then
                             overrideKv = false
                         end
 
-                        if Train.ProstKos.Command < -10 and Train.ProstKos.ProstActive == 1 and Train.KV765.Position >= 0 then kvSetting = Train.ProstKos.Command end
+                        if Train.ProstKos.ProstActive == 1 and Train.KV765.Position >= 0 then kvSetting = Train.ProstKos.Command end
                         if Train.ProstKos.CommandKos > 0 then kvSetting = -100 overrideKv = true end
                         if BARS.Brake > 0 then kvSetting = -100 overrideKv = true end
                         if self.Errors.EmergencyBrake and (Train.Speed > 1.6) then kvSetting = -100 overrideKv = true end
