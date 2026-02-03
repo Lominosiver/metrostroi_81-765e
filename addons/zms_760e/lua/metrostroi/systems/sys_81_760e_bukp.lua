@@ -168,6 +168,7 @@ function TRAIN_SYSTEM:Initialize()
     self.ControllerState = 0
     self.EmergencyBrake = 0
     self.BTB = 0
+    self.ESD = 0
     self.CurrentSpeed = 0
     self.ZeroSpeed = 0
     self.Speed = 0
@@ -738,6 +739,8 @@ if SERVER then
             self.Ovr = false
         end
 
+        self.ESD = 0
+
         local BARS = Train.BARS
         if Power then
             self.DeltaTime = CurTime() - self.CurTime
@@ -889,21 +892,22 @@ if SERVER then
                     end
 
                     if self.Reset == nil then self.Reset = true end
-                    local min, max
+                    local pbcMin, pbcMax
                     local uLvmin, uLvmax
                     local uHvmin, uHvmax
-                    local countBL = 0
+                    local countBL, countEsd = 0, 0
                     for i = 1, self.WagNum do
                         local trainid = self.Trains[i]
                         local train = self.Trains[trainid]
                         if train and train.BCPressure and train.BLPressure then
-                            if not min or train.BCPressure < min then min = train.BCPressure end
-                            if not max or train.BCPressure > max then max = train.BCPressure end
+                            if not pbcMin or train.BCPressure < pbcMin then pbcMin = train.BCPressure end
+                            if not pbcMax or train.BCPressure > pbcMax then pbcMax = train.BCPressure end
                             if not uLvmin or train.LV < uLvmin then uLvmin = train.LV end
                             if not uLvmax or train.LV > uLvmax then uLvmax = train.LV end
                             if not uHvmin or train.HVVoltage < uHvmin then uHvmin = train.HVVoltage end
                             if not uHvmax or train.HVVoltage > uHvmax then uHvmax = train.HVVoltage end
                             if train.BLPressure and train.BLPressure < 2.1 then countBL = countBL + 1 end
+                            if train.BLPressure and train.BLPressure < 2.6 then countEsd = countEsd + 1 end
                         end
                     end
 
@@ -1195,13 +1199,15 @@ if SERVER then
                         Train:SetNW2Int("Skif:PNM", buv.TLPressure * 10)
                         Train:SetNW2Int("Skif:PTM", buv.BLPressure * 10)
                         Train:SetNW2Int("Skif:Ubs", buv.LV)
-                        if min then Train:SetNW2Int("Skif:PMin", min * 10) end
-                        if max then Train:SetNW2Int("Skif:PMax", max * 10) end
+                        if pbcMin then Train:SetNW2Int("Skif:PMin", pbcMin * 10) end
+                        if pbcMax then Train:SetNW2Int("Skif:PMax", pbcMax * 10) end
                         if uLvmin then Train:SetNW2Int("Skif:LvMin", uLvmin) end
                         if uLvmax then Train:SetNW2Int("Skif:LvMax", uLvmax) end
                         if uHvmin then Train:SetNW2Int("Skif:HvMin", uHvmin) end
                         if uHvmax then Train:SetNW2Int("Skif:HvMax", uHvmax) end
                     end
+
+                    self.ESD = not self.InitTimer and countEsd > 1 and 1 or 0
 
                     local speed = 99
                     self.Speed = math.Round(Train.ALSCoil.Speed * 10) / 10

@@ -33,8 +33,8 @@ local PpzToggles = {
 
 function TRAIN_SYSTEM:Initialize()
     self.Train:LoadSystem("Stand", "Relay", "Switch", { bass = true })
-    self.Train:LoadSystem("BTB", "Relay", "Switch", { bass = true })
-    self.Train:LoadSystem("BTBk", "Relay", "Switch", { bass = true, normally_closed = true })
+    self.Train:LoadSystem("ABESD", "Relay", "Switch", { bass = true, normally_closed = true })
+    self.Train:LoadSystem("ABESDk", "Relay", "Switch", { bass = true, normally_closed = true })
     self.Train:LoadSystem("SD", "Relay", "Switch", { bass = true })
     self.Train:LoadSystem("SDk", "Relay", "Switch", { bass = true, normally_closed = true })
     self.Train:LoadSystem("Ticker", "Relay", "Switch", { bass = true })
@@ -163,7 +163,6 @@ function TRAIN_SYSTEM:Initialize()
     self.Controller = 0
 
     self.AnnouncerPlaying = 0
-    self.AppLights = 0
     self.CabLight = 0
     self.PanelLights = 0
     self.HeadlightsHalf = 0
@@ -204,7 +203,7 @@ end
 function TRAIN_SYSTEM:Outputs()
     return {
         "Controller",
-        "AnnouncerPlaying", "TargetController", "AppLights", "CabLight", "PanelLights", "HeadlightsHalf", "HeadlightsFull", "RedLights", "CabVent", "WorkFan", "LV",
+        "AnnouncerPlaying", "TargetController", "CabLight", "PanelLights", "HeadlightsHalf", "HeadlightsFull", "RedLights", "CabVent", "WorkFan", "LV",
         "DoorLeftL", "DoorRightL", "DoorCloseL", "DoorBlockL", "EmerBrakeL", "EmerXodL", "KAHl", "ALSl", "PRl", "OtklRl", "R_Linel", "R_ChangeRoutel", "Washerl", "Wiperl",
         "EmergencyControlsl", "EmergencyDoorsl", "GlassHeatingl", "PowerOffl", "PowerOnl", "SalonLighting1", "SalonLighting2", "BatteryChargel", "WiperPower"
     }

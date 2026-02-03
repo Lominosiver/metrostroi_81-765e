@@ -1,6 +1,9 @@
 --------------------------------------------------------------------------------
 -- 81-760Э «Чурá» by ZONT_ a.k.a. enabled person
--- Based on code by Cricket, Hell et al. (as legacy, to be re-implemented)
+-- Based on code by Cricket, Hell et al.
+-- Logic of 81-720A Experimental engines sounds by fixinit75
+-- located between "BEGIN EXPERIMENTAL ENGINES" and "END EXPERIMENTAL ENGINES",
+-- permission granted for this addon
 --------------------------------------------------------------------------------
 ENT.Type = "anim"
 ENT.Base = "gmod_subway_base"
@@ -50,168 +53,168 @@ local yventpos = {-414.5 + 0 * 117, -414.5 + 1 * 117 + 6.2, -414.5 + 2 * 117 + 5
 function ENT:InitializeSounds()
     self.BaseClass.InitializeSounds(self)
     -- [[                            BEGIN EXPERIMENTAL ENGINES                            ]]
-    self.SoundNames["vvvf1"] = {
+    self.SoundNames["gto1"] = {
         "subway_trains/720a/VVVF/motor1.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf1"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf2"] = {
+    self.SoundPositions["gto1"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto2"] = {
         "subway_trains/720a/VVVF/motor2.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf2"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf3"] = {
+    self.SoundPositions["gto2"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto3"] = {
         "subway_trains/720a/VVVF/motor3.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf3"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf4"] = {
+    self.SoundPositions["gto3"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto4"] = {
         "subway_trains/720a/VVVF/motor4.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf4"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf5"] = {
+    self.SoundPositions["gto4"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto5"] = {
         "subway_trains/720a/VVVF/motor5.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf5"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf6"] = {
+    self.SoundPositions["gto5"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto6"] = {
         "subway_trains/720a/VVVF/motor6.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf6"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf7"] = {
+    self.SoundPositions["gto6"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto7"] = {
         "subway_trains/720a/VVVF/motor7.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf7"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf8"] = {
+    self.SoundPositions["gto7"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto8"] = {
         "subway_trains/720a/VVVF/motor8.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf8"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf9"] = {
+    self.SoundPositions["gto8"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto9"] = {
         "subway_trains/720a/VVVF/motor9.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf9"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf10"] = {
+    self.SoundPositions["gto9"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto10"] = {
         "subway_trains/720a/VVVF/motor10.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf10"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf11"] = {
+    self.SoundPositions["gto10"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto11"] = {
         "subway_trains/720a/VVVF/motor11.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf11"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf12"] = {
+    self.SoundPositions["gto11"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto12"] = {
         "subway_trains/720a/VVVF/motor12.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf12"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf13"] = {
+    self.SoundPositions["gto12"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto13"] = {
         "subway_trains/720a/VVVF/motor13.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf13"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf14"] = {
+    self.SoundPositions["gto13"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto14"] = {
         "subway_trains/720a/VVVF/motor14.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf14"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf15"] = {
+    self.SoundPositions["gto14"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto15"] = {
         "subway_trains/720a/VVVF/motor15.mp3",
         loop = false
     }
 
-    self.SoundPositions["vvvf15"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf16"] = {
+    self.SoundPositions["gto15"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto16"] = {
         "subway_trains/720a/VVVF/motor16.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf16"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf17"] = {
+    self.SoundPositions["gto16"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto17"] = {
         "subway_trains/720a/VVVF/motor17.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf17"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf18"] = {
+    self.SoundPositions["gto17"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto18"] = {
         "subway_trains/720a/VVVF/motor18.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf18"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf19"] = {
+    self.SoundPositions["gto18"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto19"] = {
         "subway_trains/720a/VVVF/motor19.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf19"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf21"] = {
+    self.SoundPositions["gto19"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto21"] = {
         "subway_trains/720a/VVVF/motor21.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf21"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf22"] = {
+    self.SoundPositions["gto21"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto22"] = {
         "subway_trains/720a/VVVF/motor22.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf22"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf23"] = {
+    self.SoundPositions["gto22"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto23"] = {
         "subway_trains/720a/VVVF/motor23.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf23"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf24"] = {
+    self.SoundPositions["gto23"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto24"] = {
         "subway_trains/720a/VVVF/motor24.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf24"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf25"] = {
+    self.SoundPositions["gto24"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto25"] = {
         "subway_trains/720a/VVVF/motor25.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf25"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf26"] = {
+    self.SoundPositions["gto25"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto26"] = {
         "subway_trains/720a/VVVF/motor26.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf26"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf27"] = {
+    self.SoundPositions["gto26"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto27"] = {
         "subway_trains/720a/VVVF/motor27.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf27"] = {400, 1e9, Vector(0, 0, -448), 1}
-    self.SoundNames["vvvf28"] = {
+    self.SoundPositions["gto27"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundNames["gto28"] = {
         "subway_trains/720a/VVVF/motor28.mp3",
         loop = true
     }
 
-    self.SoundPositions["vvvf28"] = {400, 1e9, Vector(0, 0, -448), 1}
+    self.SoundPositions["gto28"] = {400, 1e9, Vector(0, 0, -448), 1}
     self.SoundNames["ONIX"] = {
         "subway_trains/760/engines/inverter.wav",
         loop = true
@@ -254,96 +257,96 @@ function ENT:InitializeSounds()
     }
 
     self.SoundPositions["Hitachi2_1"] = {400, 1e9, Vector(0, 0, -448), 1.5}
-    self.SoundNames["async_p2"] = {
+    self.SoundNames["hs35533_p2"] = {
         "subway_trains/722/engines/inverter_1000.wav",
         loop = true
     }
 
-    self.SoundPositions["async_p2"] = {400, 1e9, Vector(0, 0, 0), 1.2}
-    self.SoundNames["async_p2_1"] = {
+    self.SoundPositions["hs35533_p2"] = {400, 1e9, Vector(0, 0, 0), 1.2}
+    self.SoundNames["hs35533_p2_1"] = {
         "subway_trains/722/engines/inverter_1000.wav",
         loop = true
     }
 
-    self.SoundPositions["async_p2_1"] = {400, 1e9, Vector(0, 0, 0), 1}
-    self.SoundNames["async_p3"] = {
+    self.SoundPositions["hs35533_p2_1"] = {400, 1e9, Vector(0, 0, 0), 1}
+    self.SoundNames["hs35533_p3"] = {
         "subway_trains/722/engines/inverter_1000.wav",
         loop = true
     }
 
-    self.SoundPositions["async_p3"] = {400, 1e9, Vector(0, 0, 0), 1.4}
-    self.SoundNames["async_p3_1"] = {
+    self.SoundPositions["hs35533_p3"] = {400, 1e9, Vector(0, 0, 0), 1.4}
+    self.SoundNames["hs35533_p3_1"] = {
         "subway_trains/722/engines/inverter_1000.wav",
         loop = true
     }
 
-    self.SoundPositions["async_p3_1"] = {400, 1e9, Vector(0, 0, 0), 1.4}
-    self.SoundNames["test_async_start"] = {
+    self.SoundPositions["hs35533_p3_1"] = {400, 1e9, Vector(0, 0, 0), 1.4}
+    self.SoundNames["vfi_start"] = {
         "subway_trains/722/engines/inverter_start2.wav",
         loop = true
     }
 
-    self.SoundNames["test_async1_n"] = {
+    self.SoundNames["vfi1_n"] = {
         "subway_trains/722/engines/inverter_1000.wav",
         loop = true
     }
 
-    self.SoundNames["test_async1_2_n"] = {
+    self.SoundNames["vfi1_2_n"] = {
         "subway_trains/722/engines/inverter_1000.wav",
         loop = true
     }
 
-    self.SoundNames["test_async1_3_n"] = {
+    self.SoundNames["vfi1_3_n"] = {
         "subway_trains/722/engines/inverter_1000.wav",
         loop = true
     }
 
-    self.SoundNames["test_async2_n"] = {
+    self.SoundNames["vfi2_n"] = {
         "subway_trains/722/engines/inverter_2000.wav",
         loop = true
     }
 
-    self.SoundNames["test_async3_n"] = {
+    self.SoundNames["vfi3_n"] = {
         "subway_trains/722/engines/inverter_2800.wav",
         loop = true
     }
 
-    self.SoundNames["test_async3_2_n"] = {
+    self.SoundNames["vfi3_2_n"] = {
         "subway_trains/722/engines/inverter_2800.wav",
         loop = true
     }
 
-    self.SoundPositions["test_async_start"] = {400, 1e9, Vector(0, 0, 0), 0.5}
-    self.SoundPositions["test_async1_n"] = {400, 1e9, Vector(0, 0, 0), 0.5}
-    self.SoundPositions["test_async1_2_n"] = {400, 1e9, Vector(0, 0, 0), 0.1}
-    self.SoundPositions["test_async1_3_n"] = {400, 1e9, Vector(0, 0, 0), 0.1}
-    self.SoundPositions["test_async2_n"] = {400, 1e9, Vector(0, 0, 0), 0.1}
-    self.SoundPositions["test_async3_n"] = {400, 1e9, Vector(0, 0, 0), 0.1}
-    self.SoundPositions["test_async3_2_n"] = self.SoundPositions["test_async3_n"]
-    self.SoundNames["async_p2_n"] = {
+    self.SoundPositions["vfi_start"] = {400, 1e9, Vector(0, 0, 0), 0.5}
+    self.SoundPositions["vfi1_n"] = {400, 1e9, Vector(0, 0, 0), 0.5}
+    self.SoundPositions["vfi1_2_n"] = {400, 1e9, Vector(0, 0, 0), 0.1}
+    self.SoundPositions["vfi1_3_n"] = {400, 1e9, Vector(0, 0, 0), 0.1}
+    self.SoundPositions["vfi2_n"] = {400, 1e9, Vector(0, 0, 0), 0.1}
+    self.SoundPositions["vfi3_n"] = {400, 1e9, Vector(0, 0, 0), 0.1}
+    self.SoundPositions["vfi3_2_n"] = self.SoundPositions["vfi3_n"]
+    self.SoundNames["hs35533_p2_n"] = {
         "subway_trains/722/engines/inverter_1000.wav",
         loop = true
     }
 
-    self.SoundPositions["async_p2_n"] = {400, 1e9, Vector(0, 0, 0), 1}
-    self.SoundNames["async_p2_1_n"] = {
+    self.SoundPositions["hs35533_p2_n"] = {400, 1e9, Vector(0, 0, 0), 1}
+    self.SoundNames["hs35533_p2_1_n"] = {
         "subway_trains/722/engines/inverter_1000.wav",
         loop = true
     }
 
-    self.SoundPositions["async_p2_1_n"] = {400, 1e9, Vector(0, 0, 0), 1.9}
-    self.SoundNames["async_p3_n"] = {
+    self.SoundPositions["hs35533_p2_1_n"] = {400, 1e9, Vector(0, 0, 0), 1.9}
+    self.SoundNames["hs35533_p3_n"] = {
         "subway_trains/722/engines/inverter_1000.wav",
         loop = true
     }
 
-    self.SoundPositions["async_p3_n"] = {400, 1e9, Vector(0, 0, 0), 1.5}
-    self.SoundNames["async_p3_1_n"] = {
+    self.SoundPositions["hs35533_p3_n"] = {400, 1e9, Vector(0, 0, 0), 1.5}
+    self.SoundNames["hs35533_p3_1_n"] = {
         "subway_trains/722/engines/inverter_1000.wav",
         loop = true
     }
 
-    self.SoundPositions["async_p3_1_n"] = {400, 1e9, Vector(0, 0, 0), 1.5}
+    self.SoundPositions["hs35533_p3_1_n"] = {400, 1e9, Vector(0, 0, 0), 1.5}
     self.SoundNames["engine_loud"] = {
         "subway_trains/722/engines/engine_loud.wav",
         loop = true
@@ -376,6 +379,7 @@ function ENT:InitializeSounds()
     }
 
     self.SoundPositions["async1"] = {400, 1e9, Vector(0, 0, 0), 0.5}
+
     for i = 1, 7 do
         self.SoundNames["vent" .. i] = {
             loop = true,
@@ -939,13 +943,12 @@ function ENT:InitializeSystems()
     self:LoadSystem("Horn", "81_720_Horn")
     self:LoadSystem("Panel", "81_760E_Panel")
 
-    self:LoadSystem("ASNP", "81_765_ASNP")
+    self:LoadSystem("ASNP", "81_760_ASNP")
     self:LoadSystem("ASNP_VV", "81_760_ASNP_VV")
     self:LoadSystem("IGLA_CBKI", "81_760_IGLA_CBKI1")
     self:LoadSystem("IGLA_PCBK", "81_760_IGLA_PCBK")
     self:LoadSystem("IK", "81_765_IK")
     self:LoadSystem("RVS", "81_760A_RVS_1")
-    self:LoadSystem("RPDP", "81_760_RPDP")
     self:LoadSystem("BNT", "81_765_BNT")
     self:LoadSystem("BUIK", "81_765_BUIK")
     self:LoadSystem("CAMS", "81_760_CAMS")
@@ -1023,7 +1026,6 @@ ENT.Spawner = {
         end
     end,
     postfunc = function(trains, WagNum)
-        local LastRot = false
         local wag1 = trains[1]:GetWagonNumber()
         for i = 1, #trains do
             local ent = trains[i]

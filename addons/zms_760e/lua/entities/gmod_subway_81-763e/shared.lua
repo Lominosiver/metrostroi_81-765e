@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 -- 81-763Э «Чурá» by ZONT_ a.k.a. enabled person
--- Based on code by Cricket, Hell et al. (as legacy, to be re-implemented)
+-- Based on code by Cricket, Hell et al.
 --------------------------------------------------------------------------------
 ENT.Type = "anim"
 ENT.Base = "gmod_subway_base"
@@ -48,66 +48,7 @@ end
 
 function ENT:InitializeSounds()
     self.BaseClass.InitializeSounds(self)
-    self.SoundNames["test_async1"] = {
-        "subway_trains/722/engines/inverter_1000.wav",
-        loop = true
-    }
 
-    self.SoundNames["test_async1_2"] = {
-        "subway_trains/722/engines/inverter_1000.wav",
-        loop = true
-    }
-
-    self.SoundNames["test_async1_3"] = {
-        "subway_trains/722/engines/inverter_1000.wav",
-        loop = true
-    }
-
-    self.SoundNames["test_async2"] = {
-        "subway_trains/722/engines/inverter_2000.wav",
-        loop = true
-    }
-
-    self.SoundNames["test_async3"] = {
-        "subway_trains/722/engines/inverter_2800.wav",
-        loop = true
-    }
-
-    self.SoundNames["test_async3_2"] = {
-        "subway_trains/722/engines/inverter_2800.wav",
-        loop = true
-    }
-
-    self.SoundPositions["test_async1"] = {400, 1e9, Vector(0, 0, 0), 0.5}
-    self.SoundPositions["test_async1_2"] = {400, 1e9, Vector(0, 0, 0), 0.1}
-    self.SoundPositions["test_async1_3"] = {400, 1e9, Vector(0, 0, 0), 0.1}
-    self.SoundPositions["test_async2"] = {400, 1e9, Vector(0, 0, 0), 0.1}
-    self.SoundPositions["test_async3"] = {400, 1e9, Vector(0, 0, 0), 0.1}
-    self.SoundPositions["test_async3_2"] = self.SoundPositions["test_async3"]
-    self.SoundNames["async_p2"] = {
-        "subway_trains/722/engines/inverter_1000.wav",
-        loop = true
-    }
-
-    self.SoundPositions["async_p2"] = {400, 1e9, Vector(0, 0, 0), 1}
-    self.SoundNames["async_p3"] = {
-        "subway_trains/722/engines/inverter_1000.wav",
-        loop = true
-    }
-
-    self.SoundPositions["async_p3"] = {400, 1e9, Vector(0, 0, 0), 1}
-    self.SoundNames["engine_loud"] = {
-        "subway_trains/722/engines/engine_loud.wav",
-        loop = true
-    }
-
-    self.SoundPositions["engine_loud"] = {400, 1e9, Vector(0, 0, 0), 0.2}
-    self.SoundNames["chopper"] = {
-        "subway_trains/722/chopper.wav",
-        loop = true
-    }
-
-    self.SoundPositions["chopper"] = {400, 1e9, Vector(0, 0, 0), 0.03}
     for i = 1, 8 do
         self.SoundNames["vent" .. i] = {
             loop = true,

@@ -56,7 +56,6 @@ function TRAIN_SYSTEM:Initialize()
     self.Drive = 0
     self.BUTP = 0
     self.BUFT = 0
-    self.BTBr = 0
     self.Recurperation = 0
     self.Iexit = 0
     self.Chopper = 0
@@ -86,7 +85,7 @@ end
 
 function TRAIN_SYSTEM:Outputs()
     return {
-        "Brake", "Drive", "V2", "V1", "Main750V", "Power750V", "Aux750V", "Aux80V", "Lights80V", "Battery80V", "BTB", "BTBr", "MK", "Power",
+        "Brake", "Drive", "V2", "V1", "Main750V", "Power750V", "Aux750V", "Aux80V", "Lights80V", "Battery80V", "BTB", "ABESDr", "MK", "Power",
         "SD", "KM2", "EmerXod", "BSPowered", "UPIPower", "PowerReserve", "Recurperation", "Iexit", "Itotal", "Chopper", "ElectricEnergyUsed",
         "ElectricEnergyDissipated", "EnergyChange", "BUFT", "ZeroSpeed", "DoorsControl"
     }
@@ -381,14 +380,8 @@ function TRAIN_SYSTEM:Think(dT, iter)
         Train:WriteTrainWire(30, BTB * Train.EmerBrake.Value * Train.EmerBrakeRelease.Value)
         Train:WriteTrainWire(24, BTBp * (1 - Train:ReadTrainWire(41)))
         Train:WriteTrainWire(25, BTBp == 0 and Train:ReadTrainWire(26) > 0 and Train:ReadTrainWire(24) * self.BTB or 0)
-        Train:WriteTrainWire(26, BTBp * Train.BARS.BTB * (1 - self.BTBr) * (1 - Train.BUKP.EmergencyBrake))
+        Train:WriteTrainWire(26, BTBp * Train.BARS.BTB * (1 - Train.BUKP.ESD * (1 - Train.ABESD.Value)) * (1 - Train.BUKP.EmergencyBrake))
         Train:WriteTrainWire(41, Train.EmergencyBrake.Value)
-        Train:WriteTrainWire(32, Train.BTB.Value)
-        if Train:ReadTrainWire(32) > 0 then
-            self.BTBr = 1
-        elseif Train:ReadTrainWire(27) == 0 then
-            self.BTBr = 0
-        end
 
         if Train:ReadTrainWire(26) > 0 and Train:ReadTrainWire(24) == 0 then
             self.BTB = 0
@@ -411,7 +404,6 @@ function TRAIN_SYSTEM:Think(dT, iter)
         local EmerBattPower = Train.PmvEmerPower.Value * PBatt
         local ASNP_VV = Train.ASNP_VV
         ASNP_VV.Power = P * Train.SF42F1.Value * Train.R_ASNPOn.Value
-        Panel.AppLights = --[[P * Train.SF15.Value * Train.SA8.Value]] 0
         Panel.CabLight = min(1, P + EmerBattPower) * Train.SF52F1.Value * min(2 - (1 - P) * EmerBattPower, Train.CabinLight.Value)
         Panel.PanelLights = min(1, P + EmerBattPower) * Train.SF52F1.Value
         Panel.HeadlightsFull = UPIPower * Train.SF51F1.Value * RV["KRO11-12"] * max(0, Train.HeadlightsSwitch.Value - 1) + Train.EmergencyControls.Value * P
@@ -423,7 +415,7 @@ function TRAIN_SYSTEM:Think(dT, iter)
         Panel.DoorCloseL = min(1, UPIPower + self.DoorsControl) * Train.SF80F5.Value * S["RV"] * Train.BUKP.Active * Train.DoorClose.Value
         Panel.DoorBlockL = UPIPower * Train.DoorBlock.Value
         Panel.EmerBrakeL = PowerReserve * C(Train.Pneumatic.EmerBrakeWork == 1 or Train.Pneumatic.EmerBrakeWork == true) * BTB
-        Panel.EmerXodL = PowerReserve * abs(RV.KRRPosition) * (1 - Train.SD3.Value) * Train.BARS.Drive
+        Panel.EmerXodL = PowerReserve * abs(RV.KRRPosition) * (1 - Train.SD3.Value) * Train.BARS.Drive  -- FIXME Restore old BARS.Drive as separate field
         Panel.KAHl = UPIPower * Train.KAH.Value
         Panel.ALSl = UPIPower * Train.ALS.Value
         Panel.PRl = UPIPower * Train.Pr.Value * Train.SF70F3.Value

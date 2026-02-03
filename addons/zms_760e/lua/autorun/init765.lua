@@ -5,6 +5,118 @@ timer.Simple(0, function()
     }
 
     if CLIENT then
+        VVVF_GTOTBL = {
+            {
+                function(speed, state) return state > 0 end,
+                function(gtovol, speed) return gtovol * math.Clamp((5.4 - speed) / 5.4, 0, 1) end,
+                0
+            }, {
+                function(speed, state) return speed < 5.5 and state > 0 end,
+                function(gtovol, speed) return gtovol * math.Clamp(speed, 0, 1) end,
+                0
+            }, {
+                function(speed, state) return speed > 5.5 and speed < 7.6 and state ~= 0 end,
+                function(gtovol, speed) return gtovol end,
+                6.5
+            }, {
+                function(speed, state) return speed > 7.6 and speed < 12.2 and state > 0 end,
+                function(gtovol, speed) return gtovol end,
+                12
+            }, {
+                function(speed, state) return speed > 12.2 and speed < 20.4 and state > 0 end,
+                function(gtovol, speed) return gtovol end,
+                17.775
+            }, {
+                function(speed, state) return speed > 20.4 and speed < 27.4 and state > 0 end,
+                function(gtovol, speed) return gtovol end,
+                28.883
+            }, {
+                function(speed, state) return speed > 27.4 and speed < 34.3 and state > 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 27.4) / (34.3 - 27.4), 1, 0) end,
+                30
+            }, {
+                function(speed, state) return speed > 33.9 and speed < 41.0 and state > 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 33.9) / (34.3 - 33.9), 0, 1) * Lerp((speed - 34.3) / (41 - 34.3), 1, 0) end,
+                33.9
+            }, {
+                function(speed, state) return speed > 38.0 and speed < 70.0 and state ~= 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 38.0) / (42.0 - 38.0), 0, 1) * Lerp((speed - 55.0) / (70.0 - 55.0), 1, 0) end,
+                55
+            }, {
+                function(speed, state) return speed > 12 and speed < 18 and state > 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 15) / (18 - 15), 1, 0) end,
+                15
+            }, {
+                function(speed, state) return speed > 20 and speed < 27 and state > 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 20.5) / (27 - 20.5), 1, 0) end,
+                22.638
+            }, {
+                function(speed, state) return speed > 27 and speed < 34.3 and state > 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 27) / (33.9 - 27), 0, 1) end,
+                35
+            }, {
+                function(speed, state) return speed > 33.9 and speed < 42 and state > 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 33.9) / (38 - 33.9), 0, 1) end,
+                40.2
+            }, {
+                function(speed, state) return speed > 7.5 and speed < 10 and state > 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 7.5) / (10 - 7.5), 1, 0) end,
+                7
+            }, {
+                function(speed, state) return speed > 5.4 and speed < 7.5 and state > 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 5.4) / (7.5 - 5.4), 1, 0) end,
+                6
+            }, {
+                function(speed, state) return speed > 41.5 and speed < 55 and state ~= 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 42) / (55 - 42), 1, 0) end,
+                50
+            }, {
+                function(speed, state) return speed > 55 and state ~= 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 55) / (65 - 55), 0, 1) end,
+                64
+            }, {
+                function(speed, state) return speed > 55 and speed < 90 and state ~= 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 55) / (70 - 55), 0, 1) * Lerp((speed - 70) / (90 - 70), 1, 0) end,
+                69
+            }, {
+                function(speed, state) return speed > 75 and speed < 120 and state ~= 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 75) / (85 - 75), 0, 1) * Lerp((speed - 105) / (120 - 105), 1, 0) end,
+                85
+            }, {
+                function(speed, state) return speed > 44.5 and speed < 48.5 and state < 0 end,
+                function(gtovol, speed) return gtovol end,
+                48
+            }, {
+                function(speed, state) return speed > 35 and speed < 44.5 and state < 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 34.8) / (35.3 - 34.8), 0, 1) end,
+                42
+            }, {
+                function(speed, state) return speed > 22.4 and speed < 35 and state < 0 end,
+                function(gtovol, speed) return gtovol end,
+                31.5
+            }, {
+                function(speed, state) return speed > 22.4 and speed < 35 and state < 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 26) / (35 - 26), 1, 0) end,
+                25.2
+            }, {
+                function(speed, state) return speed > 12.4 and speed < 22.4 and state < 0 end,
+                function(gtovol, speed) return gtovol end,
+                19.5
+            }, {
+                function(speed, state) return speed > 12.4 and speed < 22.4 and state < 0 end,
+                function(gtovol, speed) return gtovol end,
+                15.21
+            }, {
+                function(speed, state) return speed > 8 and speed < 12.4 and state < 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 8) / (10 - 8), 0, 1) end,
+                11.5
+            }, {
+                function(speed, state) return speed > 0 and speed < 12.4 and state < 0 end,
+                function(gtovol, speed) return gtovol * Lerp((speed - 8) / (12.4 - 8), 1, 0) end,
+                8
+            },
+        }
+
         local paths = {"models/metrostroi_train/81-765/", "models/metrostroi_train/81-760e/"}
         for _, path in ipairs(paths) do
             local files = file.Find(path .. "*.mdl", "GAME")

@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 -- 81-760Э «Чурá» by ZONT_ a.k.a. enabled person
--- Based on code by Cricket, Hell et al. (as legacy, to be re-implemented)
+-- Based on code by Cricket, Hell et al.
 --------------------------------------------------------------------------------
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
@@ -8,7 +8,7 @@ include("shared.lua")
 
 ENT.BogeyDistance = 650
 ENT.SyncTable = {
-    "EnableBVEmer", "Ticker", "KAH", "KAHk", "ALS", "ALSk", "BTB", "BTBk", "SD", "SDk", "FDepot", "PassScheme", "EnableBV",
+    "EnableBVEmer", "Ticker", "KAH", "KAHk", "ALS", "ALSk", "ABESD", "ABESDk", "SD", "SDk", "FDepot", "PassScheme", "EnableBV",
     "DisableBV", "Ring", "R_Program2", "R_Announcer", "R_Line", "R_Micro", "R_Emer", "R_Program1", "R_Program11", "R_ChangeRoute",
     "R_ToBack", "DoorSelectL", "DoorSelectR", "DoorBlock", "EmerBrakeAdd", "EmerBrakeRelease", "EmerBrake", "DoorClose", "AttentionMessage",
     "Attention", "AttentionBrake", "EmergencyBrake", "Pr", "OtklR", "GlassHeating", "Washer", "SC",
@@ -45,8 +45,8 @@ end
 --------------------------------------------------------------------------------
 function ENT:Initialize()
     self.Plombs = {
-        BTB = {true, "BTBk"},
-        BTBk = true,
+        ABESD = {true, "ABESDk"},
+        ABESDk = true,
         SD = {true, "SDk"},
         SDk = true,
         ALS = {true, "ALSk"},
@@ -80,7 +80,7 @@ function ENT:Initialize()
     self.InstructorsSeat4:SetColor(Color(0, 0, 0, 0))
     self.LightSensor = self:AddLightSensor(Vector(460, 0, -130), Angle(0, 90, 0))
     -- Create bogeys
-    self.FrontBogey = self:CreateBogey(Vector(297 + 20.8, 0, -70), Angle(0, 180, 0), true, "760F") --z=-90
+    self.FrontBogey = self:CreateBogey(Vector(297 + 20.8, 0, -70), Angle(0, 180, 0), true, "760F")
     self.RearBogey = self:CreateBogey(Vector(-338 + 20.8, 0, -70), Angle(0, 0, 0), false, "760")
     self.FrontBogey:SetNWBool("Async", true)
     self.RearBogey:SetNWBool("Async", true)
@@ -196,6 +196,9 @@ function ENT:Initialize()
     self.KeyMap[KEY_RALT] = self.KeyMap[KEY_LALT]
     self.KeyMap[KEY_RSHIFT] = self.KeyMap[KEY_LSHIFT]
     self.KeyMap[KEY_RCONTROL] = self.KeyMap[KEY_LCONTROL]
+
+    self.LeftDoorPositions = self.LeftDoorPositionsBAK
+    self.RightDoorPositions = self.RightDoorPositionsBAK
 
     -- Cross connections in train wires
     self.TrainWireCrossConnections = {
@@ -319,13 +322,8 @@ function ENT:Initialize()
     self.SpeedTimer = CurTime()
     self.WrenchMode = 0
     self.ALSVal = 0
-    self.door_pvz = false
-    self.door_add_1 = false
-    self.door_add_2 = false
-    self.door_k31 = false
-
-    self.LeftDoorPositions = self.LeftDoorPositionsBAK
-    self.RightDoorPositions = self.RightDoorPositionsBAK
+    self.Closet1Val = false
+    self.DoorK31 = false
 
     self:SetNW2String("Texture", "MosBrend")
     self:SetNW2String("texture", "MosBrend")
@@ -371,6 +369,8 @@ function ENT:InitializeSystemsServer()
     self.PpzWindshieldHeat = self.SF70F2
 end
 
+-- if map not supported
+-- TODO add "FL mode"
 function ENT:NonSupportTrigger()
     self.ALS:TriggerInput("Set", 1)
     self.ALSk:TriggerInput("Set", 0)
@@ -422,141 +422,6 @@ function ENT:CreateDoorTriggers()
     end
 end
 
-function ENT:CreateFence(pos, ang, a)
-    local ent = ents.Create("prop_ragdoll") --ents.Create("prop_physics")
-    if not IsValid(ent) then return end
-    ent:SetModel("models/metrostroi_train/81-760/81_760_fence_corrugated.mdl") --ent:SetModel("models/sligwolf/blue-x12/bluex12_train_socket.mdl")	
-    ent:SetPos(self:LocalToWorld(pos))
-    ent:SetAngles(self:GetAngles())
-    ent:Spawn()
-    ent:SetOwner(self:GetOwner())
-    ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
-    if CPPI and IsValid(self:CPPIGetOwner()) then ent:CPPISetOwner(self:CPPIGetOwner()) end
-    ent:GetPhysicsObject():SetMass(1)
-    table.insert(self.TrainEntities, ent)
-    return ent
-end
-
-function ENT:SetLightPower(index, power, brightness)
-    local lightData = self.Lights[index]
-    self.GlowingLights = self.GlowingLights or {}
-    self.LightBrightness = self.LightBrightness or {}
-    brightness = brightness or 1
-    -- Check if light already glowing
-    if (power and self.GlowingLights[index]) and (brightness == self.LightBrightness[index]) then return end
-    -- If light already glowing and only brightness changed
-    if (power and self.GlowingLights[index]) and (brightness ~= self.LightBrightness[index]) then
-        local light = self.GlowingLights[index]
-        if (lightData[1] == "glow") or (lightData[1] == "light") then
-            local brightness = brightness * (lightData.brightness or 0.5)
-            light:SetKeyValue("rendercolor", Format("%i %i %i", lightData[4].r * brightness, lightData[4].g * brightness, lightData[4].b * brightness))
-        end
-
-        if lightData[1] == "headlight" then
-            -- Set Brightness
-            local brightness = brightness * (lightData.brightness or 1.25)
-            light:SetKeyValue("lightcolor", Format("%i %i %i 255", lightData[4].r * brightness, lightData[4].g * brightness, lightData[4].b * brightness))
-        end
-
-        if lightData[1] == "dynamiclight" then
-            --light:SetKeyValue("brightness", brightness * (lightData.brightness or 2))
-            light:SetKeyValue("_light", Format("%i %i %i", lightData[4].r * brightness, lightData[4].g * brightness, lightData[4].b * brightness))
-        end
-
-        self.LightBrightness[index] = brightness
-        return
-    end
-
-    -- Turn off light
-    SafeRemoveEntity(self.GlowingLights[index])
-    self.GlowingLights[index] = nil
-    self.LightBrightness[index] = brightness
-    -- Create light
-    if (lightData[1] == "headlight") and power then
-        local light = ents.Create("env_projectedtexture")
-        light.DormantFix1 = true
-        light:SetTransmitWithParent(true)
-        light:SetParent(self)
-        light:SetPos(self:LocalToWorld(lightData[2]))
-        light:SetAngles(self:LocalToWorldAngles(lightData[3]))
-        -- Set parameters
-        light:SetKeyValue("enableshadows", lightData.shadows or 1)
-        light:SetKeyValue("farz", lightData.farz or 2048)
-        light:SetKeyValue("nearz", lightData.nearz or 16)
-        light:SetKeyValue("lightfov", lightData.fov or 120)
-        -- Set Brightness
-        local brightness = brightness * (lightData.brightness or 1.25)
-        light:SetKeyValue("lightcolor", Format("%i %i %i 255", lightData[4].r * brightness, lightData[4].g * brightness, lightData[4].b * brightness))
-        -- Turn light on
-        light:Spawn() --"effects/flashlight/caustics"
-        light:Input("SpotlightTexture", nil, nil, lightData.texture or "effects/flashlight001")
-        self.GlowingLights[index] = light
-    end
-
-    if (lightData[1] == "glow") and power then
-        local light = ents.Create("env_sprite")
-        light.DormantFix1 = true
-        light:SetTransmitWithParent(true)
-        light:SetParent(self)
-        light:SetLocalPos(lightData[2])
-        light:SetLocalAngles(lightData[3])
-        -- Set parameters
-        local brightness = brightness * (lightData.brightness or 0.5)
-        light:SetKeyValue("rendercolor", Format("%i %i %i", lightData[4].r * brightness, lightData[4].g * brightness, lightData[4].b * brightness))
-        light:SetKeyValue("rendermode", lightData.type or 3) -- 9: WGlow, 3: Glow
-        light:SetKeyValue("renderfx", 14)
-        light:SetKeyValue("model", lightData.texture or "sprites/glow1.vmt")
-        --      light:SetKeyValue("model", "sprites/light_glow02.vmt")
-        --      light:SetKeyValue("model", "sprites/yellowflare.vmt")
-        light:SetKeyValue("scale", lightData.scale or 1.0)
-        light:SetKeyValue("spawnflags", 1)
-        -- Turn light on
-        light:Spawn()
-        self.GlowingLights[index] = light
-    end
-
-    if (lightData[1] == "light") and power then
-        local light = ents.Create("env_sprite")
-        light.DormantFix1 = true
-        light:SetTransmitWithParent(true)
-        light:SetParent(self)
-        light:SetLocalPos(lightData[2])
-        light:SetLocalAngles(lightData[3])
-        -- Set parameters
-        local brightness = brightness * (lightData.brightness or 0.5)
-        light:SetKeyValue("rendercolor", Format("%i %i %i", lightData[4].r * brightness, lightData[4].g * brightness, lightData[4].b * brightness))
-        light:SetKeyValue("rendermode", lightData.type or 9) -- 9: WGlow, 3: Glow
-        light:SetKeyValue("renderfx", 14)
-        --      light:SetKeyValue("model", "sprites/glow1.vmt")
-        light:SetKeyValue("model", lightData.texture or "sprites/light_glow02.vmt")
-        --      light:SetKeyValue("model", "sprites/yellowflare.vmt")
-        light:SetKeyValue("scale", lightData.scale or 1.0)
-        --Size of Glow Proxy Geometry
-        light:SetKeyValue("spawnflags", 1)
-        -- Turn light on
-        light:Spawn()
-        self.GlowingLights[index] = light
-        self:SetNW2Entity("GlowingLights" .. index, self.GlowingLights[index])
-    end
-
-    if (lightData[1] == "dynamiclight") and power then
-        local light = ents.Create("light_dynamic")
-        light:SetParent(self)
-        -- Set position
-        light:SetLocalPos(lightData[2])
-        light:SetLocalAngles(lightData[3])
-        -- Set parameters
-        light:SetKeyValue("_light", Format("%i %i %i", lightData[4].r * brightness, lightData[4].g * brightness, lightData[4].b * brightness))
-        light:SetKeyValue("style", 0)
-        light:SetKeyValue("distance", lightData.distance or 300)
-        light:SetKeyValue("brightness", lightData.brightness or 2)
-        -- Turn light on
-        light:Spawn()
-        light:Fire("TurnOn", "", "0")
-        self.GlowingLights[index] = light
-    end
-end
-
 function ENT:TriggerLightSensor(coil, plate)
     self.ProstKos:TriggerSensor(plate)
 end
@@ -572,16 +437,15 @@ end
 function ENT:Think()
     local retVal = self.BaseClass.Think(self)
     local Panel = self.Panel
-    local power = self.Electric.UPIPower > 0
-    local power1 = self.Electric.BSPowered > 0
+    local powerUpi = self.Electric.UPIPower > 0
+    local powerBs = self.Electric.BSPowered > 0
     local powerReserve = self.Electric.PowerReserve > 0
     if self.Electric.Battery80V < 62 then self.Electric.Power = nil end
-    local state = math.abs(self.AsyncInverter.InverterFrequency / (11 + self.AsyncInverter.State * 5)) --(10+8*math.Clamp((self.AsyncInverter.State-0.4)/0.4,0,1)))
+    local state = math.abs(self.AsyncInverter.InverterFrequency / (11 + self.AsyncInverter.State * 5))
     self:SetPackedRatio("asynccurrent", math.Clamp(state * (state + self.AsyncInverter.State / 1), 0, 1) * math.Clamp(self.Speed / 6, 0, 1))
     self:SetPackedRatio("asyncstate", math.Clamp(self.AsyncInverter.State / 0.2 * math.abs(self.AsyncInverter.Current) / 100, 0, 1))
     self:SetPackedRatio("chopper", math.Clamp(self.Electric.Chopper > 0 and self.Electric.Iexit / 100 or 0, 0, 1))
     self:SetPackedRatio("Speed", self.Speed)
-    self:SetNW2Int("Wrench", self.WrenchMode)
     self:SetPackedRatio("Controller", self.KV765.VisualPosition)
     self:SetPackedRatio("KRO", (self.RV.KROPosition + 1) / 2)
     self:SetPackedRatio("KRR", (self.RV.KRRPosition + 1) / 2)
@@ -590,10 +454,11 @@ function ENT:Think()
     self:SetPackedBool("PowerOnLamp", Panel.PowerOnl > 0)
     self:SetPackedBool("PowerOffLamp", Panel.PowerOffl > 0)
     self:SetPackedBool("BatteryChargeLamp", Panel.BatteryChargel > 0)
+
     local fB, rB = self.FrontBogey, self.RearBogey
-    local validfB, validrB = IsValid(fB), IsValid(rB)
+    local fbValid, rbValid = IsValid(fB), IsValid(rB)
     for i = 1, 4 do
-        self:SetPackedBool("TR" .. i, self.BUV.Pant or i <= 2 and validfB and fB.DisableContactsManual or i > 2 and validrB and rB.DisableContactsManual)
+        self:SetPackedBool("TR" .. i, self.BUV.Pant or i <= 2 and fbValid and fB.DisableContactsManual or i > 2 and rbValid and rB.DisableContactsManual)
     end
 
     for k, cfg in pairs(self.PakToggles or {}) do
@@ -603,16 +468,16 @@ function ENT:Think()
         end
     end
 
-    self:SetPackedBool("SK1", self.EmergencyValveTimer and CurTime() - self.EmergencyValveTimer < 1)
-    if self.Pneumatic.EmergencyValve and not self.EmergencyValveTimer then
-        self.EmergencyValveTimer = CurTime()
-    elseif not self.Pneumatic.EmergencyValve and self.EmergencyValveTimer and CurTime() - self.EmergencyValveTimer > 1 then
-        self.EmergencyValveTimer = nil
+    self:SetPackedBool("ASHook", self.AsHookTimer and CurTime() < self.AsHookTimer)
+    if self.Pneumatic.EmergencyValve and not self.AsHookTimer then
+        self.AsHookTimer = CurTime() + 1
+    elseif not self.Pneumatic.EmergencyValve and self.AsHookTimer and CurTime() >= self.AsHookTimer then
+        self.AsHookTimer = nil
     end
 
-    --self:SetPackedBool("PSNWork",power and self.BUV.PSN > 0)
-    self:SetPackedBool("WorkBeep", power1)
+    self:SetPackedBool("WorkBeep", powerBs)
     self:SetPackedBool("WorkCabVent", Panel.CabVent > 0)
+
     if Panel.CabVent > 0 then
         if not self.VentTimer then self.VentTimer = CurTime() end
     elseif self.VentTimer then
@@ -631,11 +496,12 @@ function ENT:Think()
     end
 
     self:SetPackedRatio("VentTimer", self.VentTimer or 0)
-    self:SetPackedBool("BUKPRing", power and self.BUKP.State == 5 and self.BUKP.ErrorRinging)
-    self:SetPackedBool("CallRing", power and self.BUKP.State == 5 and self.BUKP.CallRing)
-    self:SetPackedBool("RingEnabled", power and self.BUKP.Ring)
+    self:SetPackedBool("BUKPRing", powerUpi and self.BUKP.State == 5 and self.BUKP.ErrorRinging)
+    self:SetPackedBool("CallRing", powerUpi and self.BUKP.State == 5 and self.BUKP.CallRing)
+    self:SetPackedBool("RingEnabled", powerUpi and self.BUKP.Ring)
     self:SetPackedBool("WorkFan", Panel.WorkFan > 0)
     self:SetPackedBool("PanelLighting", Panel.PanelLights > 0)
+
     local HeadlightsPower = Panel.HeadlightsFull > 0 and 1 or Panel.HeadlightsHalf > 0 and 0.5 or 0
     self:SetPackedRatio("HeadlightsSwitch", self.HeadlightsSwitch.Value / 2)
     self:SetPackedBool("HeadlightsEnabled2", HeadlightsPower > 0.5)
@@ -646,6 +512,7 @@ function ENT:Think()
     self:SetPackedBool("BacklightsEnabled", Panel.RedLights > 0)
     self:SetLightPower(3, Panel.RedLights > 0, 0.8)
     self:SetLightPower(4, Panel.RedLights > 0, 0.8)
+
     local cablight = Panel.CabLight == 1 and 0.25 or Panel.CabLight == 2 and 0.8 or 0
     local cabl = cablight > 0
     self:SetLightPower(10, cabl, cablight)
@@ -657,18 +524,14 @@ function ENT:Think()
     self:SetLightPower(11, passl, passlight)
     self:SetLightPower(12, passl, passlight)
     self:SetLightPower(13, passl, passlight)
-    self:SetPackedBool("SalonLighting1", Panel.SalonLighting1 > 0) --power1 and self.BUV.MainLights and self.SF44.Value*self.Battery.Value > 0)
-    self:SetPackedBool("SalonLighting2", Panel.SalonLighting2 > 0) --power1 and self.BUV.MainLights and self.SF43.Value*self.Battery.Value > 0)
-
-    self:SetNW2Bool("BISpeedLimitBlink", power and (self.BARS.BINoFreq > 0 or self.BARS.NoFreq) and self.BARS.Active == 1)
+    self:SetPackedBool("SalonLighting1", Panel.SalonLighting1 > 0)
+    self:SetPackedBool("SalonLighting2", Panel.SalonLighting2 > 0)
 
     for idx = 1, 8 do
         self:SetNW2Bool("DoorButtonLed" .. idx, self.Electric.BSPowered > 0 and self.BUD.OpenButton[idx] and true)
     end
 
-    self:SetNW2Bool("BIForward", power and self.SpeedSign == 1 and self.BARS.Speed > 0.2)
-    self:SetNW2Bool("BIBack", power and self.SpeedSign == -1 and self.BARS.Speed > 0.2)
-    self:SetNW2Bool("MfduLamp", power and self.BUKP.State ~= 0)
+    self:SetNW2Bool("MfduLamp", powerUpi and self.BUKP.State ~= 0)
     self:SetNW2Bool("DoorsClosed", powerReserve and self.BUKP.DoorClosed)
     self:SetNW2Bool("HVoltage", powerReserve and not self.BUKP.HVBad)
     self:SetNW2Bool("DoorLeftLamp", Panel.DoorLeftL > 0)
@@ -684,18 +547,13 @@ function ENT:Think()
     self:SetNW2Bool("WasherLamp", Panel.Washerl > 0)
     self:SetNW2Bool("WiperLamp", Panel.Wiperl > 0)
     self:SetNW2Bool("WiperPower", Panel.WiperPower > 0)
-    self:SetNW2Bool("AccelRateLamp", power and self.BUKP.Slope)
-    self:SetNW2Bool("RS", power and self.BARS.F6)
-    self:SetNW2Bool("DoorAlarm", self.IK.DoorAlarm)
+    self:SetNW2Bool("AccelRateLamp", powerUpi and self.BUKP.Slope)
     self:SetNW2Bool("EmergencyControlsLamp", Panel.EmergencyControlsl > 0)
     self:SetNW2Bool("EmergencyDoorsLamp", Panel.EmergencyDoorsl > 0)
     self:SetNW2Bool("GlassHeatingLamp", Panel.GlassHeatingl > 0)
-    self:SetPackedBool("AnnPlay", power1)
-    self:SetPackedBool("AnnPlayHead", power1)
     self:SetNW2Bool("DoorCloseLamp", Panel.DoorCloseL > 0)
     self:SetNW2Bool("DoorBlockLamp", Panel.DoorBlockL > 0)
-    self:SetPackedRatio("CabinLight",self.CabinLight.Value / 2)
-    self:SetPackedBool("AppLights", Panel.AppLights > 0)
+    self:SetPackedRatio("CabinLight", self.CabinLight.Value / 2)
     self:SetPackedRatio("LV", Panel.LV / 150)
     self:SetPackedRatio("HV", (self.SF42F2.Value * self.Electric.BSPowered > 0.5 and self.Electric.Main750V or 0) / 1000)
     self:SetPackedRatio("IVO", 0.5 + self.BUV.IVO / 150)
@@ -704,12 +562,10 @@ function ENT:Think()
     self:SetPackedBool("CabinDoorRight", self.CabinDoorRight)
     self:SetPackedBool("CabinWindowLeft", self.CabinWindowLeft)
     self:SetPackedBool("CabinWindowRight", self.CabinWindowRight)
-    self:SetPackedBool("CabinDoorRightLimit", self.door_add_1 or self.Chair or self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) and IsValid(self.InstructorsSeat3:GetDriver()))
-    self:SetPackedBool("door_pvz", self.door_pvz)
-    self:SetPackedBool("door_add_1", self.door_add_1)
-    self:SetPackedBool("door_add_2", self.door_add_2)
-    self:SetPackedBool("door_k31", self.door_k31)
-    self:SetPackedBool("cab_chair_add", self.Chair or self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) and IsValid(self.InstructorsSeat3:GetDriver()))
+    self:SetPackedBool("CabinDoorRightLimit", self.Closet1Val or self.Chair or self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) and IsValid(self.InstructorsSeat3:GetDriver()))
+    self:SetPackedBool("Closet1Val", self.Closet1Val)
+    self:SetPackedBool("DoorK31", self.DoorK31)
+    self:SetPackedBool("CabChairAdd", self.Chair or self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) and IsValid(self.InstructorsSeat3:GetDriver()))
     self:SetPackedBool("CompressorWork", self.Pneumatic.Compressor and CurTime() - self.Pneumatic.Compressor > 0)
 
     if self.FrontTrain ~= self.PrevFrontTrain then
@@ -729,8 +585,8 @@ function ENT:Think()
 
     for i = 1, 8 do
         if i == 1 or i == 4 or i == 5 or i == 8 then
-            self:SetPackedBool("BC" .. i, math.max(self.Pneumatic.BrakeCylinderPressure, (i < 5 and (validfB and fB.DisableParking and 0 or 1) or i > 4 and (validrB and rB.DisableParking and 0 or 1)) * (3.8 - self.Pneumatic.ParkingBrakePressure) / 2) <= 0.1)
-            self:SetPackedRatio("DPBTPressure" .. i, math.max(self.Pneumatic.BrakeCylinderPressure, (i < 5 and (validfB and fB.DisableParking and 0 or 1) or i > 4 and (validrB and rB.DisableParking and 0 or 1)) * (3.8 - self.Pneumatic.ParkingBrakePressure) / 2))
+            self:SetPackedBool("BC" .. i, math.max(self.Pneumatic.BrakeCylinderPressure, (i < 5 and (fbValid and fB.DisableParking and 0 or 1) or i > 4 and (rbValid and rB.DisableParking and 0 or 1)) * (3.8 - self.Pneumatic.ParkingBrakePressure) / 2) <= 0.1)
+            self:SetPackedRatio("DPBTPressure" .. i, math.max(self.Pneumatic.BrakeCylinderPressure, (i < 5 and (fbValid and fB.DisableParking and 0 or 1) or i > 4 and (rbValid and rB.DisableParking and 0 or 1)) * (3.8 - self.Pneumatic.ParkingBrakePressure) / 2))
         else
             self:SetPackedBool("BC" .. i, self.Pneumatic.BrakeCylinderPressure <= 0.1)
             self:SetPackedRatio("DPBTPressure" .. i, self.Pneumatic.BrakeCylinderPressure)
@@ -738,7 +594,7 @@ function ENT:Think()
     end
 
     self.AsyncInverter:TriggerInput("Speed", self.Speed)
-    if validfB and validrB and not self.IgnoreEngine then
+    if fbValid and rbValid and not self.IgnoreEngine then
         local A = self.AsyncInverter.Torque
         local add = 1
         if math.abs(self:GetAngles().pitch) > 4 then add = math.min((math.abs(self:GetAngles().pitch) - 4) / 2, 1) end
@@ -747,7 +603,7 @@ function ENT:Think()
         rB.MotorForce = (40000 + 5000 * (A < 0 and 1 or 0)) * add
         rB.Reversed = self.BUV.Reverser > 0.5 -->
 
-        -- These corrections are required to beat source engine friction at very low values of motor power
+        -- These corrections are required to beat source engine friction at very low values of motor powerUpi
         local P = math.max(0, 0.04449 + 1.06879 * math.abs(A) - 0.465729 * A ^ 2)
         if math.abs(A) > 0.4 then P = math.abs(A) end
         if math.abs(A) < 0.05 then P = 0 end
@@ -790,37 +646,6 @@ function ENT:OnCouple(train, isfront)
         self.RearAutoCouple = false
     end
 
-    if not isfront then
-        local ent = train:GetNW2Entity("TrainEntity")
-        local s = train ~= ent.RearCouple and "Fence1" or "Fence"
-        local a2 = train ~= ent.RearCouple and -1 or 1
-        if not IsValid(self.Fence) and not IsValid(ent[s]) and ent:GetClass():find("76") and (ent:GetClass()[19] == "a" or ent:GetClass()[19] == "e") and (not ent:GetClass():find("760") or a2 == 1) then
-            local pos1, pos2 = self:GetPos(), ent:GetPos()
-            local b1, b2 = -self:GetForward(), -ent:GetForward() * a2
-            local min = 3
-            local pos
-            for i = 475, 490, 0.001 do
-                if (pos1 + b1 * i):Distance(pos2 + b2 * i) < min then
-                    min = (pos1 + b1 * i):Distance(pos2 + b2 * i)
-                    pos = pos1 + b1 * i
-                end
-            end
-
-            pos = pos and self:WorldToLocal(pos)
-            self.Fence = self:CreateFence(Vector(pos, 0, 0), Angle(0, 0, 0), -1)
-            ent[s] = self.Fence
-            table.insert(ent.TrainEntities, ent[s])
-            local bone1, bone2 = 0, 1
-            local bonen1, bonen2 = self.Fence:GetPhysicsObjectNum(bone1), self.Fence:GetPhysicsObjectNum(bone2)
-            bonen1:SetPos(ent:LocalToWorld(Vector(a2 == -1 and 464.37 or -464.07, 0, 0)))
-            bonen2:SetPos(self:LocalToWorld(Vector(-464.07, 0, 0)))
-            bonen1:SetAngles(ent:LocalToWorldAngles(Angle(0, 90 * (1 - a2), 90)))
-            bonen2:SetAngles(self:LocalToWorldAngles(Angle(0, 0, -90)))
-            constraint.Weld(self.Fence, self, bone2, 0, 0, 1, false)
-            constraint.Weld(self.Fence, ent, bone1, 0, 0, 1, false)
-        end
-    end
-
     self.BaseClass.OnCouple(self, train, isfront)
 end
 
@@ -833,7 +658,6 @@ function ENT:OnDecouple(isfront)
 
     self:OnConnectDisconnect()
     if self.OnDecoupled then self:OnDecoupled() end
-    if not isfront and IsValid(self.Fence) then self.Fence:Remove() end
 end
 
 function ENT:OnButtonPress(button, ply)
@@ -873,23 +697,16 @@ function ENT:OnButtonPress(button, ply)
         self.IGLA3:TriggerInput("Set", 1)
     end
 
-    if button == "K31Cap" then self.door_k31 = not self.door_k31 end
+    if button == "K31Cap" then self.DoorK31 = not self.DoorK31 end
     if button == "Chair" and not (self.InstructorsSeat3 and IsValid(self.InstructorsSeat3) and IsValid(self.InstructorsSeat3:GetDriver())) then self.Chair = not self.Chair end
-    if button == "PassengerDoor" and not self.door_pvz and not self.door_add_2 then
+    if button == "PassengerDoor" then
         self.PassengerDoor = not self.PassengerDoor
     end
 
-    -- if button == "Door_pvz" and not self.CabinDoorLeft then --[[self:PlayOnce("door_cab_m_"..(self.door_pvz and "open" or "close"),"")]]
-    --     self.door_pvz = not self.door_pvz
-    -- end
-
-    if button == "Door_add_1" then --[[self:PlayOnce("door_cab_m_"..(self.door_add_1 and "open" or "close"),"")]]
-        self.door_add_1 = not self.door_add_1
+    if button == "Closet1" then --[[self:PlayOnce("door_cab_m_"..(self.Closet1Val and "open" or "close"),"")]]
+        self.Closet1Val = not self.Closet1Val
     end
 
-    -- if button == "Door_add_2" and not self.PassengerDoor and not self.door_pvz then --[[self:PlayOnce("door_cab_m_"..(self.door_add_2 and "open" or "close"),"")]]
-    --     self.door_add_2 = not self.door_add_2
-    -- end
 
     if button == "CabinDoorLeft" and (self.CabinDoorLeft or self.SF80F3.Value == 0 or self.Speed < 20) then --[[self:PlayOnce("door_cab_l_"..(self.CabinDoorLeft and "open" or "close"),"")]]
         self.CabinDoorLeft = not self.CabinDoorLeft

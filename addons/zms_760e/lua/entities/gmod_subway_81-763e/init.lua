@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 -- 81-763Э «Чурá» by ZONT_ a.k.a. enabled person
--- Based on code by Cricket, Hell et al. (as legacy, to be re-implemented)
+-- Based on code by Cricket, Hell et al.
 --------------------------------------------------------------------------------
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
@@ -43,6 +43,9 @@ function ENT:Initialize()
         [KEY_PAD_6] = "PneumaticBrakeSet6",
         [KEY_PAD_7] = "PneumaticBrakeSet7",
     }
+
+    self.LeftDoorPositions = self.LeftDoorPositionsBAK
+    self.RightDoorPositions = self.RightDoorPositionsBAK
 
     -- Cross connections in train wires
     self.TrainWireCrossConnections = {
@@ -98,11 +101,8 @@ function ENT:Initialize()
 
     self.CouchCapL = false
     self.CouchCapR = false
-    self.door_k31 = false
+    self.DoorK31 = false
     self.NormalMass = 19000
-
-    self.LeftDoorPositions = self.LeftDoorPositionsBAK
-    self.RightDoorPositions = self.RightDoorPositionsBAK
 
     self:SetNW2String("Texture", "MosBrend")
     self:SetNW2String("texture", "MosBrend")
@@ -151,23 +151,6 @@ function ENT:CreateDoorTriggers()
     end
 end
 
-function ENT:CreateFence(pos, ang, a)
-    local ent = ents.Create("prop_ragdoll")
-    if not IsValid(ent) then return end
-    local pos = pos or Vector(0, 0, 0)
-    local ang = ang or Angle(0, 0, 0)
-    ent:SetPos(self:LocalToWorld(pos))
-    ent:SetModel("models/metrostroi_train/81-760/81_760_fence_corrugated.mdl")
-    ent:SetAngles(self:GetAngles())
-    ent:Spawn()
-    ent:SetOwner(self:GetOwner())
-    ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
-    if CPPI and IsValid(self:CPPIGetOwner()) then ent:CPPISetOwner(self:CPPIGetOwner()) end
-    ent:GetPhysicsObject():SetMass(1)
-    table.insert(self.TrainEntities, ent)
-    return ent
-end
-
 function ENT:TrainSpawnerUpdate()
 end
 
@@ -183,7 +166,7 @@ function ENT:Think()
 
     self:SetPackedBool("CouchCapR", self.CouchCapR)
     self:SetPackedBool("CouchCapL", self.CouchCapL)
-    self:SetPackedBool("door_k31", self.door_k31)
+    self:SetPackedBool("DoorK31", self.DoorK31)
     self:SetPackedRatio("LV", Panel.LV / 150)
     self:SetPackedRatio("HV", self.Electric.Main750V / 1000)
     local fB, rB = self.FrontBogey, self.RearBogey
@@ -200,7 +183,6 @@ function ENT:Think()
     self:SetPackedBool("SalonLighting1", Panel.SalonLighting1 > 0)
     self:SetPackedBool("SalonLighting2", Panel.SalonLighting2 > 0)
     self:SetPackedBool("AnnPlay", power)	
-    self:SetNW2Bool("DoorAlarm", self.IK.DoorAlarm)
     self:SetPackedRatio("BL", self.Pneumatic.BrakeLinePressure / 16.0)
     self:SetPackedRatio("TL", self.Pneumatic.TrainLinePressure / 16.0)
     self:SetPackedRatio("BC", math.min(3.8, self.Pneumatic.BrakeCylinderPressure) / 6.0)
@@ -251,36 +233,6 @@ function ENT:OnCouple(train, isfront)
         self.RearAutoCouple = false
     end
 
-    local ent = train:GetNW2Entity("TrainEntity")
-    local a, a2 = isfront and -1 or 1, train ~= ent.RearCouple and -1 or 1
-    local fence = isfront and "Fence1" or "Fence"
-    local s = train ~= ent.RearCouple and "Fence1" or "Fence"
-    if not IsValid(self[fence]) and not IsValid(ent[s]) and ent:GetClass():find("76") and (ent:GetClass()[19] == "a" or ent:GetClass()[19] == "e") and not ent:GetClass():find("760") then
-        local pos1, pos2 = self:GetPos(), ent:GetPos()
-        local b1, b2 = -self:GetForward() * a, -ent:GetForward() * a2
-        local min = 1
-        local pos
-        for i = 475, 490, 0.001 do
-            if (pos1 + b1 * i):Distance(pos2 + b2 * i) < min then
-                min = (pos1 + b1 * i):Distance(pos2 + b2 * i)
-                pos = pos1 + b1 * i
-            end
-        end
-
-        pos = pos and self:WorldToLocal(pos)
-        self[fence] = self:CreateFence(Vector(pos, 0, 0), Angle(0, 0, 0), -a)
-        ent[s] = self[fence]
-        table.insert(ent.TrainEntities, ent[s])
-        local bone1, bone2 = 0, 1
-        local bonen1, bonen2 = self[fence]:GetPhysicsObjectNum(bone1), self[fence]:GetPhysicsObjectNum(bone2)
-        bonen1:SetPos(ent:LocalToWorld(Vector(a2 == -1 and 464.37 or -464.07, 0, 0)))
-        bonen2:SetPos(self:LocalToWorld(Vector(a == -1 and 464.37 or -464.07, 0, 0)))
-        bonen1:SetAngles(ent:LocalToWorldAngles(a * Angle(0, 90 * (1 - a2), 90 * a)))
-        bonen2:SetAngles(self:LocalToWorldAngles(a * Angle(0, 90 * (1 - a), -90 * a)))
-        constraint.Weld(self[fence], self, bone2, 0, 0, 1, false)
-        constraint.Weld(self[fence], ent, bone1, 0, 0, 1, false)
-    end
-
     self.BaseClass.OnCouple(self, train, isfront)
 end
 
@@ -293,7 +245,7 @@ function ENT:OnDecouple(isfront)
 
     self:OnConnectDisconnect()
     if self.OnDecoupled then self:OnDecoupled() end
-    local fence = isfront and "Fence1" or "Fence"
+    local fence = isfront and "FenceF" or "FenceR"
     if IsValid(self[fence]) then self[fence]:Remove() end
 end
 
@@ -305,7 +257,7 @@ function ENT:OnButtonPress(button, ply)
 
     if button == "CouchCapL" then self.CouchCapL = not self.CouchCapL end
     if button == "CouchCapR" then self.CouchCapR = not self.CouchCapR end
-    if button == "K31Cap" then self.door_k31 = not self.door_k31 end
+    if button == "K31Cap" then self.DoorK31 = not self.DoorK31 end
     if string.StartsWith(button, "SalonDoor") then
         local idx = tonumber(string.sub(button, 10))
         if idx and IsValid(ply) and self.BUD then self.BUD:OpenDoorMenu(ply, idx) end

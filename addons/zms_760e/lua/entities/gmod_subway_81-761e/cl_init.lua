@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------
 -- 81-761Э «Чурá» by ZONT_ a.k.a. enabled person
--- Based on code by Cricket, Hell et al. (as legacy, to be re-implemented)
+-- Based on code by Cricket, Hell et al.
+-- Logic of 81-720A Experimental engines sounds by fixinit75
+-- located at ExperimentalAsync method, permission granted for this addon
 --------------------------------------------------------------------------------
 include("shared.lua")
 ENT.ClientProps = {}
@@ -310,39 +312,6 @@ ENT.ButtonMap["Power"] = {
     }
 }
 
-ENT.ButtonMap["Battery"] = {
-    pos = Vector(452.46, 22, 50),
-    ang = Angle(0, -90, 180),
-    width = 80,
-    height = 80,
-    scale = 0.0625,
-    hideseat = 0.2,
-    buttons = {
-        {
-            ID = "BatteryStub",
-            x = 0,
-            y = 0,
-            w = 80,
-            h = 80,
-            tooltip = "Батарея (неисп.)",
-            model = {
-                var = "Battery",
-                speed = 9,
-                vmin = 1,
-                vmax = 0,
-                model = "models/metrostroi_train/81-760/81_761_trihedral.mdl",
-                z = 1,
-                ang = Angle(0, -90, 0),
-                sndvol = 0.8,
-                snd = function(val) return val and "pak_on" or "pak_off" end,
-                sndmin = 80,
-                sndmax = 1e3 / 3,
-                sndang = Angle(-90, 0, 0),
-            }
-        },
-    }
-}
-
 ENT.ButtonMap["FrontPneumatic"] = {
     pos = Vector(426.0, -65.0, -57.7),
     ang = Angle(0, 0, 90),
@@ -447,7 +416,7 @@ ENT.ClientProps["RearTrain"] = {
 
 ENT.ClientSounds["RearBrakeLineIsolation"] = {{"RearBrake", function() return "disconnectvalve" end, 1, 1, 50, 1e3, Angle(-90, 0, 0)}}
 ENT.ClientSounds["RearTrainLineIsolation"] = {{"RearTrain", function() return "disconnectvalve" end, 1, 1, 50, 1e3, Angle(-90, 0, 0)}}
-ENT.ButtonMap["couch_capL"] = {
+ENT.ButtonMap["ClosetCapL"] = {
     pos = Vector(445.5, 63, 26),
     ang = Angle(0, -90, 90),
     width = 600,
@@ -466,7 +435,7 @@ ENT.ButtonMap["couch_capL"] = {
     }
 }
 
-ENT.ButtonMap["couch_capL_o"] = {
+ENT.ButtonMap["ClosetCapLop"] = {
     pos = Vector(264.6, 45.6, 20),
     ang = Angle(0, 0, 81),
     width = 600,
@@ -485,7 +454,7 @@ ENT.ButtonMap["couch_capL_o"] = {
     }
 }
 
-ENT.ButtonMap["couch_capR"] = {
+ENT.ButtonMap["ClosetCapR"] = {
     pos = Vector(445.5, -63, -49),
     ang = Angle(0, 90, -90),
     width = 720,
@@ -504,7 +473,7 @@ ENT.ButtonMap["couch_capR"] = {
     }
 }
 
-ENT.ButtonMap["boxR"] = {
+ENT.ButtonMap["BoxR"] = {
     pos = Vector(450.5, -62, -49),
     ang = Angle(0, 90, -90),
     width = 720,
@@ -526,15 +495,15 @@ ENT.ButtonMap["boxR"] = {
     }
 }
 
-ENT.ClientProps["stopkran"] = {
+ENT.ClientProps["Stopkran"] = {
     model = "models/metrostroi_train/81-760/81_760_crane_handle_red.mdl",
     pos = Vector(451.8, -35.4, -32.9),
     ang = Angle(180, 180, -90),
     hide = 2,
 }
+ENT.ClientSounds["EmergencyBrakeValve"] = {{"Stopkran", function() return "disconnectvalve" end, 1, 1, 50, 1e3, Angle(-90, 0, 0)}}
 
-ENT.ClientSounds["EmergencyBrakeValve"] = {{"stopkran", function() return "disconnectvalve" end, 1, 1, 50, 1e3, Angle(-90, 0, 0)}}
-ENT.ButtonMap["couch_capR_o"] = {
+ENT.ButtonMap["ClosetCapRop"] = {
     pos = Vector(264.6, -36, -54),
     ang = Angle(0, 0, -81),
     width = 720,
@@ -554,15 +523,15 @@ ENT.ButtonMap["couch_capR_o"] = {
 }
 
 for i = 0, 4 do
-    ENT.ClientProps["TrainNumberL" .. i] = {
+    local name = "TrainNumberL" .. i
+    ENT.ClientProps[name] = {
         model = "models/metrostroi_train/81-760/numbers/number_0.mdl",
         pos = Vector(0, 0, 0),
         ang = Angle(0, 90, 0),
         hide = 1.5,
         callback = function(ent) ent.WagonNumber = false end,
     }
-
-    ENT.ClientProps["TrainNumberR" .. i] = {
+    ENT.ClientProps[name] = {
         model = "models/metrostroi_train/81-760/numbers/number_0.mdl",
         pos = Vector(0, 0, 0),
         ang = Angle(0, -90, 0),
@@ -618,119 +587,119 @@ ENT.ClientProps["Salon"] = {
     hide = 2,
 }
 
-ENT.ClientProps["fan_kti"] = {
+ENT.ClientProps["KtiFan"] = {
     model = "models/metrostroi_train/81-760/81_760_fan_kti.mdl",
     pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 1,
 }
 
-ENT.ClientProps["fan_r"] = {
+ENT.ClientProps["RFan"] = {
     model = "models/metrostroi_train/81-760/81_760_fan_r.mdl",
     pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 1,
 }
 
-ENT.ClientProps["box_int_l"] = {
+ENT.ClientProps["BoxIntL"] = {
     model = "models/metrostroi_train/81-760/81_761a_box_int_l.mdl",
     pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 2,
 }
 
-ENT.ClientProps["box_int_r"] = {
+ENT.ClientProps["BoxIntR"] = {
     model = "models/metrostroi_train/81-760/81_761a_box_int_r.mdl",
     pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 2,
 }
 
-ENT.ClientProps["box_door_l"] = {
+ENT.ClientProps["BoxDoorL"] = {
     model = "models/metrostroi_train/81-760/81_761a_box_door_l.mdl",
     pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 2,
 }
 
-ENT.ClientProps["box_door_r"] = {
+ENT.ClientProps["BoxDoorR"] = {
     model = "models/metrostroi_train/81-760/81_761a_box_door_r.mdl",
     pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 2,
 }
 
-ENT.ClientProps["lamp1"] = {
+ENT.ClientProps["SalonLightsHalf"] = {
     model = "models/metrostroi_train/81-760/81_760_lamp_int_half.mdl",
     pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 2,
 }
 
-ENT.ClientProps["lamp2"] = {
+ENT.ClientProps["SalonLightsFull"] = {
     model = "models/metrostroi_train/81-760/81_761_lamp_int_full.mdl",
     pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 2,
 }
 
-ENT.ClientProps["volt_lv"] = {
+ENT.ClientProps["VmLv"] = {
     model = "models/metrostroi_train/81-760/81_760_arrow_electric.mdl",
     pos = Vector(448.42, 45, -8.82),
     ang = Angle(0, -90, 0),
     hide = 0.2,
 }
 
-ENT.ClientProps["ampermetr"] = {
+ENT.ClientProps["VmBs"] = {
     model = "models/metrostroi_train/81-760/81_760_arrow_electric.mdl",
     pos = Vector(448.42, 45.092, -12.94),
     ang = Angle(0, -90, 0),
     hide = 0.2,
 }
 
-ENT.ClientProps["volt_hv"] = {
+ENT.ClientProps["VmHv"] = {
     model = "models/metrostroi_train/81-760/81_760_arrow_electric.mdl",
     pos = Vector(457.55, -42.825, -27.43),
     ang = Angle(0, -90, 0),
     hide = 0.2,
 }
 
-ENT.ClientProps["brake_cylinder"] = {
+ENT.ClientProps["MnBc"] = {
     model = "models/metrostroi_train/81-760/81_761_arrow_nm.mdl",
     pos = Vector(455.09, -53.9, -21.3),
     ang = Angle(45.1, 90, 0),
     hideseat = 0.2,
 }
 
-ENT.ClientProps["train_line"] = {
+ENT.ClientProps["MnTl"] = {
     model = "models/metrostroi_train/81-760/81_761_arrow_nm.mdl",
     pos = Vector(455.07, -47.6, -21.3),
     ang = Angle(45.1, 90, 0),
     hideseat = 0.2,
 }
 
-ENT.ClientProps["brake_line"] = {
+ENT.ClientProps["MnBl"] = {
     model = "models/metrostroi_train/81-760/81_761_arrow_tm.mdl",
     pos = Vector(455.09, -47.6, -21.3),
     ang = Angle(45.1, 90, 0),
     hideseat = 0.2,
 }
 
-ENT.ClientProps["fence"] = {
+ENT.ClientProps["FenceR"] = {
     model = "models/metrostroi_train/81-760/81_760_fence_corrugated_platform.mdl",
     pos = Vector(-480.15, 0, 0),
     ang = Angle(0, 90, 0),
     hide = 2,
 }
 
-ENT.ClientProps["fence1"] = {
+ENT.ClientProps["FenceF"] = {
     model = "models/metrostroi_train/81-760/81_760_fence_corrugated_platform.mdl",
     pos = Vector(480.15, 0, 0),
     ang = Angle(0, -90, 0),
     hide = 2,
 }
 
-local pos = {
+local bs_pos = {
     [1] = Vector(-27.93, 40.5, -18.36),
     [2] = Vector(-27.93, -39.5, -18.36),
     [3] = Vector(27.93, 39.5, -18.36),
@@ -738,20 +707,17 @@ local pos = {
 }
 
 for i = 1, 8 do
-    ENT.ClientProps["brake_shoe" .. i] = {
+    local name = "BS" .. i
+    ENT.ClientProps[name] = {
         model = "models/metrostroi_train/81-760/81_760_brake_shoe.mdl",
         pos = Vector(0, 0, -78),
         ang = Angle(0, 180 - 180 * (i % 2), 0),
         hide = 0.5,
         callback = function(ent, cl_ent)
             local bogey = i <= 4 and ent:GetNW2Entity("FrontBogey") or i > 4 and ent:GetNW2Entity("RearBogey")
-            if not IsValid(bogey) then
-                ent:ShowHide("brake_shoe" .. i, false)
-                return
-            end
-
+            if not IsValid(bogey) then ent:ShowHide(name, false) return end
             cl_ent:SetParent(bogey)
-            cl_ent:SetPos(bogey:LocalToWorld(pos[i > 4 and i - 4 or i]))
+            cl_ent:SetPos(bogey:LocalToWorld(bs_pos[i > 4 and i - 4 or i]))
             local ang = bogey:GetAngles()
             cl_ent:SetAngles((i <= 2 or i > 4 and i <= 6) and Angle(-ang.x, 180 + ang.y, -ang.z) or ang)
         end,
@@ -759,34 +725,19 @@ for i = 1, 8 do
 end
 
 for i = 1, 4 do
-    ENT.ClientProps["TR" .. i] = {
+    local name = "TR" .. i
+    ENT.ClientProps[name] = {
         model = "models/metrostroi_train/81-760/81_760_pantograph.mdl",
-        pos = Vector(0, 0, -70),
+        pos = Vector(0, 0, 0),
         ang = Angle(0, 180 * (i % 2), 0),
         hide = 2,
         callback = function(ent, cl_ent)
-            local rearbogey, frontbogey = ent:GetNW2Entity("RearBogey"), ent:GetNW2Entity("FrontBogey")
-            if i <= 2 then
-                if not IsValid(frontbogey) then
-                    ent:ShowHide("TR" .. i, false)
-                    return
-                end
-
-                cl_ent:SetParent(frontbogey)
-                cl_ent:SetPos(frontbogey:GetPos())
-                local ang = frontbogey:GetAngles()
-                cl_ent:SetAngles(i % 2 == 1 and Angle(-ang.x, 180 + ang.y, -ang.z) or ang)
-            else
-                if not IsValid(rearbogey) then
-                    ent:ShowHide("TR" .. i, false)
-                    return
-                end
-
-                cl_ent:SetParent(rearbogey)
-                cl_ent:SetPos(rearbogey:GetPos())
-                local ang = rearbogey:GetAngles()
-                cl_ent:SetAngles(i % 2 == 1 and Angle(-ang.x, 180 + ang.y, -ang.z) or ang)
-            end
+            local bogey = i > 2 and ent:GetNW2Entity("RearBogey") or ent:GetNW2Entity("FrontBogey")
+            if not IsValid(bogey) then ent:ShowHide(name, false) return end
+            cl_ent:SetParent(bogey)
+            cl_ent:SetPos(bogey:GetPos())
+            local ang = bogey:GetAngles()
+            cl_ent:SetAngles(i % 2 == 1 and Angle(-ang.x, 180 + ang.y, -ang.z) or ang)
         end,
     }
 end
@@ -818,7 +769,7 @@ ENT.ButtonMap["GV"] = {
     }
 }
 
-ENT.ClientProps["gv_wrench"] = {
+ENT.ClientProps["GvWrench"] = {
     model = "models/metrostroi_train/reversor/reversor_classic.mdl",
     pos = Vector(-167.5, 49.47, -74.07),
     ang = Angle(-90, 180, 0),
@@ -906,7 +857,7 @@ ENT.ClientProps["K31"] = {
     hide = 0.5,
 }
 
-ENT.ClientProps["K31_cap"] = {
+ENT.ClientProps["K31cap"] = {
     model = "models/metrostroi_train/81-760/81_760_cap_k31.mdl",
     pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
@@ -920,16 +871,6 @@ for i = 0, 3 do
             pos = Vector(229.92 * i * (k == 0 and 1 or -1), 0, 0),
             ang = Angle(0, 180 + k * 180, 0),
             hide = 2,
-            callback = function(ent, cl_ent)
-                local tx = ent:GetNW2String("Texture", "")
-                tx = Metrostroi.Skins["train"][tx]
-                tx = tx and tx.textures and tx.textures.hull or nil
-                for k, v in pairs(cl_ent:GetMaterials() or {}) do
-                    if v == "models/metrostroi_train/81-760/hull" then
-                        cl_ent:SetSubMaterial(k - 1, tx or "models/metrostroi_train/81-760/hull_baklajan")
-                    end
-                end
-            end,
         }
     end
 end
@@ -937,7 +878,7 @@ end
 for k, tbl in ipairs({ENT.LeftDoorPositions or {}, ENT.RightDoorPositions or {}}) do
     for i, pos in ipairs(tbl) do
         local idx = (k - 1) * 4 + i
-                ENT.ButtonMap["DoorAddressOpen" .. idx] = {
+        ENT.ButtonMap["DoorAddressOpen" .. idx] = {
             pos = pos + Vector(k == 1 and -250 - 10 or 250 + 10, 0, 170) * 0.05,
             ang = Angle(0, k == 1 and 0 or -180, 90),
             width = 50, height = 50, scale = 0.05,
@@ -1090,97 +1031,52 @@ function ENT:Initialize()
 end
 
 function ENT:UpdateTextures()
-    self.Texture = self:GetNW2String("Texture", "760A")
+    self.Texture = self:GetNW2String("Texture", "MosBrend")
     self.PassTexture = self:GetNW2String("passtexture")
     self.CabinTexture = self:GetNW2String("cabtexture")
     self.Number = self:GetWagonNumber()
-
-    local tx = Metrostroi.Skins["train"][self.Texture]
-    tx = tx and tx.textures and tx.textures.hull or nil
-    if tx and tx ~= "models/metrostroi_train/81-760/hull_baklajan" then
-        for k, v in pairs(self:GetMaterials() or {}) do
-            if v == "models/metrostroi_train/81-760/hull_baklajan" or v == "models/metrostroi_train/81-760/hull" then
-                self:SetSubMaterial(k - 1, tx)
-            end
-        end
-    end
-
-    local Announcer = {}
-    for k, v in pairs(Metrostroi.AnnouncementsASNP or {}) do
-        if not v.riu then Announcer[k] = v.name or k end
-    end
-
     for i = 0, 4 do
         local num = tostring(self.Number)[i + 1]
         if not num or num == "" then num = "3" end
-        if IsValid(self.ClientEnts["TrainNumberL" .. i]) then
-            local number = self.ClientEnts["TrainNumberL" .. i]
-            number:SetPos(self:LocalToWorld(Vector(443.7 - i * 5.8, 68, -21)))
+        local number = self.ClientEnts["TrainNumberL" .. i]
+        if IsValid(number) then
+            number:SetPos(self:LocalToWorld(Vector(269 - i * 5.8, 68, -21)))
             number:SetAngles(self:LocalToWorldAngles(Angle(0, 90, 0)))
-            number:SetModel("models/metrostroi_train/81-760/numbers/number_" .. num .. ".mdl")
+            number:SetModel(Format("models/metrostroi_train/81-760/numbers/number_%s.mdl", num))
         end
-
-        if IsValid(self.ClientEnts["TrainNumberR" .. i]) then
-            local number = self.ClientEnts["TrainNumberR" .. i]
+        number = self.ClientEnts["TrainNumberR" .. i]
+        if IsValid(number) then
             number:SetPos(self:LocalToWorld(Vector(-443.7 + i * 5.8, -68, -21)))
             number:SetAngles(self:LocalToWorldAngles(Angle(0, -90, 0)))
-            number:SetModel("models/metrostroi_train/81-760/numbers/number_" .. num .. ".mdl")
+            number:SetModel(Format("models/metrostroi_train/81-760/numbers/number_%s.mdl", num))
         end
     end
-
     if not IsValid(self.RearBogey) then self.RearBogey = self:GetNW2Entity("RearBogey") end
     if not IsValid(self.FrontBogey) then self.FrontBogey = self:GetNW2Entity("FrontBogey") end
 end
 
-function ENT:IsNumberError()
-    local err = false
+function ENT:IsNumberBroken()
     for i = 0, 4 do
-        if IsValid(self.ClientEnts["TrainNumberL" .. i]) and (self.ClientEnts["TrainNumberL" .. i]:GetPos() == self:GetPos()) then
-            err = true
-            break
+        local ent = self.ClientEnts["TrainNumber" .. i]
+        if IsValid(ent) and (ent:GetPos() == self:GetPos()) then
+            return true
         end
-
-        if IsValid(self.ClientEnts["TrainNumberR" .. i]) and (self.ClientEnts["TrainNumberR" .. i]:GetPos() == self:GetPos()) then
-            err = true
-            break
+        ent = self.ClientEnts["TrainNumberL" .. i]
+        if IsValid(ent) and (ent:GetPos() == self:GetPos()) then
+            return true
         end
-    end
-    return err
-end
-
-local function PlyInTrain(ply, Train)
-    local val = ply.InMetrostroiTrain == Train
-    return val
-end
-
-local C_MinimizedShow = GetConVar("metrostroi_minimizedshow")
-local C_Optimization = GetConVar("760_optimization")
-local C_Optimization2 = GetConVar("760_optimization2")
-local C_ScreenshotMode = GetConVar("metrostroi_screenshotmode")
-function ENT:ShouldRenderClientEnts()
-    local ply = LocalPlayer()
-    local val = not self:IsDormant() and math.abs(LocalPlayer():GetPos().z - self:GetPos().z) < 500 and (system.HasFocus() or C_MinimizedShow:GetBool()) and (not Metrostroi or not Metrostroi.ReloadClientside)
-    if not C_ScreenshotMode:GetBool() then
-        if C_Optimization:GetBool() then
-            if not PlyInTrain(ply, self) then
-                val = false
-            end
-        elseif C_Optimization2:GetBool() then
-            if (CPPI and IsValid(self:CPPIGetOwner()) and self:CPPIGetOwner() ~= ply) and not PlyInTrain(ply, self) then val = false end
+        ent = self.ClientEnts["TrainNumberR" .. i]
+        if IsValid(ent) and (ent:GetPos() == self:GetPos()) then
+            return true
         end
     end
-    return val
+    return false
 end
 
 function ENT:ReInitBogeySounds(bogey)
     if not IsValid(bogey) then return end
-    -- Bogey-related sounds
-    bogey.SoundNames = {}
     bogey.EngineSNDConfig = {}
     bogey.MotorSoundType = bogey:GetNWInt("MotorSoundType", 2)
-    for k, v in pairs(bogey.EngineSNDConfig) do
-        bogey:SetSoundState(v[1], 0, 0)
-    end
 
     table.insert(bogey.EngineSNDConfig, {
         "ted1_720", --40
@@ -1262,30 +1158,7 @@ function ENT:ReInitBogeySounds(bogey)
         0.02
     })
 
-    bogey.SoundNames = {}
-    bogey.SoundNames["ted1_703"] = "subway_trains/bogey/engines/703/speed_8.wav"
-    bogey.SoundNames["ted2_703"] = "subway_trains/bogey/engines/703/speed_16.wav"
-    bogey.SoundNames["ted3_703"] = "subway_trains/bogey/engines/703/speed_24.wav"
-    bogey.SoundNames["ted4_703"] = "subway_trains/bogey/engines/703/speed_32.wav"
-    bogey.SoundNames["ted5_703"] = "subway_trains/bogey/engines/703/speed_40.wav"
-    bogey.SoundNames["ted6_703"] = "subway_trains/bogey/engines/703/speed_48.wav"
-    bogey.SoundNames["ted7_703"] = "subway_trains/bogey/engines/703/speed_56.wav"
-    bogey.SoundNames["ted8_703"] = "subway_trains/bogey/engines/703/speed_64.wav"
-    bogey.SoundNames["ted9_703"] = "subway_trains/bogey/engines/703/speed_72.wav"
-    bogey.SoundNames["ted10_703"] = "subway_trains/bogey/engines/703/speed_80.wav"
-    bogey.SoundNames["ted11_703"] = "subway_trains/bogey/engines/703/speed_88.wav"
-
-    bogey.SoundNames["ted1_717"] = "subway_trains/bogey/engines/717/engines_8.wav"
-    bogey.SoundNames["ted2_717"] = "subway_trains/bogey/engines/717/engines_16.wav"
-    bogey.SoundNames["ted3_717"] = "subway_trains/bogey/engines/717/engines_24.wav"
-    bogey.SoundNames["ted4_717"] = "subway_trains/bogey/engines/717/engines_32.wav"
-    bogey.SoundNames["ted5_717"] = "subway_trains/bogey/engines/717/engines_40.wav"
-    bogey.SoundNames["ted6_717"] = "subway_trains/bogey/engines/717/engines_48.wav"
-    bogey.SoundNames["ted7_717"] = "subway_trains/bogey/engines/717/engines_56.wav"
-    bogey.SoundNames["ted8_717"] = "subway_trains/bogey/engines/717/engines_64.wav"
-    bogey.SoundNames["ted9_717"] = "subway_trains/bogey/engines/717/engines_72.wav"
-    bogey.SoundNames["ted10_717"] = "subway_trains/bogey/engines/717/engines_80.wav"
-
+    bogey.SoundNames = bogey.SoundNames or {}
     bogey.SoundNames["ted1_720"] = "subway_trains/765/rumble/engines/engine_8.wav"
     bogey.SoundNames["ted2_720"] = "subway_trains/765/rumble/engines/engine_16.wav"
     bogey.SoundNames["ted3_720"] = "subway_trains/765/rumble/engines/engine_24.wav"
@@ -1344,22 +1217,22 @@ function ENT:Think()
     if self.Texture ~= self:GetNW2String("texture") then self:UpdateTextures() end
     if self.PassTexture ~= self:GetNW2String("passtexture") then self:UpdateTextures() end
     if self.CabinTexture ~= self:GetNW2String("cabtexture") then self:UpdateTextures() end
-    if self:IsNumberError() then self:UpdateTextures() end
+    if self:IsNumberBroken() then self:UpdateTextures() end
     local ValidfB, ValidrB = IsValid(self.FrontBogey), IsValid(self.RearBogey)
-    self:ShowHide("SK1", ValidfB)
+    self:ShowHide("ASHook", ValidfB)
     for i = 1, 4 do
         self:ShowHide("TR" .. i, i <= 2 and ValidfB or i >= 3 and ValidrB)
-        self:ShowHide("brake_shoe" .. i, ValidfB)
-        self:ShowHide("brake_shoe" .. (i + 4), ValidrB)
+        self:ShowHide("BS" .. i, ValidfB)
+        self:ShowHide("BS" .. (i + 4), ValidrB)
         self:Animate("TR" .. i, self:GetPackedBool("TR" .. i) and 1 or 0, 0, 1, 8, 0.5)
-        self:Animate("brake_shoe" .. i, self:GetPackedBool("BC" .. i) and 1 or 0, 1, 0.722, 32, 2)
-        self:Animate("brake_shoe" .. (i + 4), self:GetPackedBool("BC" .. (i + 4)) and 1 or 0, 1, 0.722, 32, 2)
+        self:Animate("BS" .. i, self:GetPackedBool("BC" .. i) and 1 or 0, 1, 0.722, 32, 2)
+        self:Animate("BS" .. (i + 4), self:GetPackedBool("BC" .. (i + 4)) and 1 or 0, 1, 0.722, 32, 2)
     end
 
     local RearTrain, FrontTrain = self:GetNW2Entity("RearTrain"), self:GetNW2Entity("FrontTrain")
-    self:ShowHide("fence", IsValid(RearTrain) and (RearTrain:GetClass():find("760") and false or (RearTrain:GetClass():find("761a") or RearTrain:GetClass():find("763a") or RearTrain:GetClass():find("761e") or RearTrain:GetClass():find("763e")) and (RearTrain:GetNW2Entity("RearTrain") == self and not IsValid(RearTrain.ClientEnts["fence"]) or RearTrain:GetNW2Entity("FrontTrain") == self and not IsValid(RearTrain.ClientEnts["fence1"])) and true))
-    self:ShowHide("fence1", IsValid(FrontTrain) and (FrontTrain:GetClass():find("760") and false or (FrontTrain:GetClass():find("761a") or FrontTrain:GetClass():find("763a") or FrontTrain:GetClass():find("761e") or FrontTrain:GetClass():find("763e")) and (FrontTrain:GetNW2Entity("RearTrain") == self and not IsValid(FrontTrain.ClientEnts["fence"]) or FrontTrain:GetNW2Entity("FrontTrain") == self and not IsValid(FrontTrain.ClientEnts["fence1"])) and true))
-    local fence, fence1 = self.ClientEnts["fence"], self.ClientEnts["fence1"]
+    self:ShowHide("FenceR", IsValid(RearTrain) and (RearTrain:GetClass():find("760") and false or (RearTrain:GetClass():find("761a") or RearTrain:GetClass():find("763a") or RearTrain:GetClass():find("761e") or RearTrain:GetClass():find("763e")) and (RearTrain:GetNW2Entity("RearTrain") == self and not IsValid(RearTrain.ClientEnts["FenceR"]) or RearTrain:GetNW2Entity("FrontTrain") == self and not IsValid(RearTrain.ClientEnts["FenceF"])) and true))
+    self:ShowHide("FenceF", IsValid(FrontTrain) and (FrontTrain:GetClass():find("760") and false or (FrontTrain:GetClass():find("761a") or FrontTrain:GetClass():find("763a") or FrontTrain:GetClass():find("761e") or FrontTrain:GetClass():find("763e")) and (FrontTrain:GetNW2Entity("RearTrain") == self and not IsValid(FrontTrain.ClientEnts["FenceR"]) or FrontTrain:GetNW2Entity("FrontTrain") == self and not IsValid(FrontTrain.ClientEnts["FenceF"])) and true))
+    local fence, fence1 = self.ClientEnts["FenceR"], self.ClientEnts["FenceF"]
     if IsValid(fence) and IsValid(RearTrain) then
         local a = 1
         if RearTrain:GetNW2Entity("RearTrain") == self then a = -1 end
@@ -1379,56 +1252,53 @@ function ENT:Think()
     end
 
     local speed = self:GetPackedRatio("Speed", 0)
-    if IsValid(self.ClientEnts["fan_kti"]) and self:GetPackedBool("WorkFan", false) then self.ClientEnts["fan_kti"]:SetPoseParameter("position", 1.0 - (speed > 10 and CurTime() % 0.5 * 2 or CurTime() % 1)) end
-    if IsValid(self.ClientEnts["fan_r"]) and self:GetPackedBool("WorkFan", false) then self.ClientEnts["fan_r"]:SetPoseParameter("position", 1.0 - (speed > 10 and CurTime() % 0.5 * 2 or CurTime() % 1)) end
+    if IsValid(self.ClientEnts["KtiFan"]) and self:GetPackedBool("WorkFan", false) then self.ClientEnts["KtiFan"]:SetPoseParameter("position", 1.0 - (speed > 10 and CurTime() % 0.5 * 2 or CurTime() % 1)) end
+    if IsValid(self.ClientEnts["RFan"]) and self:GetPackedBool("WorkFan", false) then self.ClientEnts["RFan"]:SetPoseParameter("position", 1.0 - (speed > 10 and CurTime() % 0.5 * 2 or CurTime() % 1)) end
     self:Animate("FrontBrake", self:GetNW2Bool("FbI") and 0 or 1, 0, 1, 3, false)
     self:Animate("FrontTrain", self:GetNW2Bool("FtI") and 0 or 1, 0, 1, 3, false)
     self:Animate("RearBrake", self:GetNW2Bool("RbI") and 0 or 1, 0, 1, 3, false)
     self:Animate("RearTrain", self:GetNW2Bool("RtI") and 0 or 1, 0, 1, 3, false)
     self:Animate("K23Valve", self:GetNW2Bool("K23") and 0 or 1, 0, 1, 3, false)
-    self:Animate("stopkran", self:GetPackedBool("EmergencyBrakeValve") and 1 or 0.5, 0, 1, 3, false)
-    if self.LastValue ~= self:GetPackedBool("GV") then
-        self.ResetTime = CurTime() + 1.5
-        self.LastValue = self:GetPackedBool("GV")
+    self:Animate("Stopkran", self:GetPackedBool("EmergencyBrakeValve") and 1 or 0.5, 0, 1, 3, false)
+    if self.LastGvState ~= self:GetPackedBool("GV") then
+        self.GvWrenchHide = CurTime() + 1.5
+        self.LastGvState = self:GetPackedBool("GV")
     end
 
-    self:Animate("gv_wrench", self:GetPackedBool("GV") and 0 or 1, 0, 0.51, 128, 1, false)
-    self:ShowHideSmooth("gv_wrench", CurTime() < self.ResetTime and 1 or 0.1)
-    self:Animate("volt_lv", self:GetPackedRatio("LV"), 0, 0.95, 16, 1)
-    self:Animate("volt_hv", self:GetPackedRatio("HV"), 0, 1, 16, 6)
-    self:Animate("ampermetr", self:GetPackedRatio("IVO"), 0, 1, 16, 1)
-    self:Animate("brake_line", self:GetPackedRatio("BL"), 0, 0.78, 256, 2)
-    self:Animate("train_line", self:GetPackedRatio("TL"), 0, 0.78, 256, 2)
-    self:Animate("brake_cylinder", self:GetPackedRatio("BC"), 0, 0.78, 256, 2)
-    local box_door_l = self:Animate("box_door_l", self:GetPackedBool("CouchCapL") and 1 or 0, 0, 1, 2, 2)
-    local box_door_r = self:Animate("box_door_r", self:GetPackedBool("CouchCapR") and 1 or 0, 0, 1, 2, 2)
-    self:HidePanel("couch_capL", box_door_l > 0)
-    self:HidePanel("couch_capR", box_door_r > 0)
-    self:HidePanel("couch_capL_o", box_door_l < 1)
-    self:HidePanel("couch_capR_o", box_door_r < 1)
-    self:HidePanel("PVZ", box_door_l == 0)
-    self:HidePanel("boxR", box_door_r == 0)
-    self:ShowHide("box_int_l", box_door_l > 0)
-    self:ShowHide("box_add", box_door_l > 0)
-    self:ShowHide("box_int_r", box_door_r > 0)
-    self:ShowHide("volt_hv", box_door_r > 0)
-    self:ShowHide("brake_cylinder", box_door_r > 0)
-    self:ShowHide("train_line", box_door_r > 0)
-    self:ShowHide("brake_line", box_door_r > 0)
-    self:ShowHide("volt_lv", box_door_l > 0)
-    self:ShowHide("ampermetr", box_door_l > 0)
-    self:ShowHide("stopkran", box_door_r > 0)
-    self:HidePanel("Power", box_door_l == 0)
-    local dT = self.DeltaTime
-    local dPdT = self:GetPackedRatio("BrakeCylinderPressure_dPdT")
-    self.ReleasedPdT = math.Clamp(self.ReleasedPdT + 10 * (-self:GetPackedRatio("BrakeCylinderPressure_dPdT", 0) - self.ReleasedPdT) * dT * 1.5, 0, 1)
-    local release1 = math.Clamp(self.ReleasedPdT, 0, 1) ^ 2
-    self:SetSoundState("release", release1, 1)
-    self:ShowHideSmooth("lamp1", self:Animate("LampsEmer", self:GetPackedBool("SalonLighting1") and 1 or 0, 0, 1, 5, false))
-    self:ShowHideSmooth("lamp2", self:Animate("LampsFull", self:GetPackedBool("SalonLighting2") and 1 or 0, 0, 1, 5, false))
-    local K31_cap = self:Animate("K31_cap", self:GetPackedBool("door_k31") and 1 or 0, 0, 1, 4, 0.5)
-    self:ShowHide("K31", K31_cap > 0)
-    self:HidePanel("K31", K31_cap < 1)
+    self:Animate("GvWrench", self:GetPackedBool("GV") and 0 or 1, 0, 0.51, 128, 1, false)
+    self:ShowHideSmooth("GvWrench", CurTime() < self.GvWrenchHide and 1 or 0.1)
+    self:Animate("VmLv", self:GetPackedRatio("LV"), 0, 0.95, 16, 1)
+    self:Animate("VmHv", self:GetPackedRatio("HV"), 0, 1, 16, 6)
+    self:Animate("VmBs", self:GetPackedRatio("IVO"), 0, 1, 16, 1)
+    self:Animate("MnBl", self:GetPackedRatio("BL"), 0, 0.78, 256, 2)
+    self:Animate("MnTl", self:GetPackedRatio("TL"), 0, 0.78, 256, 2)
+    self:Animate("MnBc", self:GetPackedRatio("BC"), 0, 0.78, 256, 2)
+    local BoxDoorL = self:Animate("BoxDoorL", self:GetPackedBool("CouchCapL") and 1 or 0, 0, 1, 2, 2)
+    local BoxDoorR = self:Animate("BoxDoorR", self:GetPackedBool("CouchCapR") and 1 or 0, 0, 1, 2, 2)
+    self:HidePanel("ClosetCapL", BoxDoorL > 0)
+    self:HidePanel("ClosetCapR", BoxDoorR > 0)
+    self:HidePanel("ClosetCapLop", BoxDoorL < 1)
+    self:HidePanel("ClosetCapRop", BoxDoorR < 1)
+    self:HidePanel("PVZ", BoxDoorL == 0)
+    self:HidePanel("BoxR", BoxDoorR == 0)
+    self:ShowHide("BoxIntL", BoxDoorL > 0)
+    self:ShowHide("BoxAdd", BoxDoorL > 0)
+    self:ShowHide("BoxIntR", BoxDoorR > 0)
+    self:ShowHide("VmHv", BoxDoorR > 0)
+    self:ShowHide("MnBc", BoxDoorR > 0)
+    self:ShowHide("MnTl", BoxDoorR > 0)
+    self:ShowHide("MnBl", BoxDoorR > 0)
+    self:ShowHide("VmLv", BoxDoorL > 0)
+    self:ShowHide("VmBs", BoxDoorL > 0)
+    self:ShowHide("Stopkran", BoxDoorR > 0)
+    self:HidePanel("Power", BoxDoorL == 0)
+
+    self:ShowHideSmooth("SalonLightsHalf", self:Animate("LampsEmer", self:GetPackedBool("SalonLighting1") and 1 or 0, 0, 1, 5, false))
+    self:ShowHideSmooth("SalonLightsFull", self:Animate("LampsFull", self:GetPackedBool("SalonLighting2") and 1 or 0, 0, 1, 5, false))
+
+    local K31cap = self:Animate("K31cap", self:GetPackedBool("DoorK31") and 1 or 0, 0, 1, 4, 0.5)
+    self:ShowHide("K31", K31cap > 0)
+    self:HidePanel("K31", K31cap < 1)
     self:Animate("K31", self:GetPackedBool("K31") and 0 or 1, 0, 1, 16, 0.5)
 
     -- LEGACY, to be removed
@@ -1458,7 +1328,6 @@ function ENT:Think()
                     self[randvalKey] = math.random(0, 1)
                 end
 
-                if state > 0 and doorstate then end
                 self.DoorStates[id] = state ~= 1 and state ~= 0
             end
 
@@ -1495,6 +1364,7 @@ function ENT:Think()
     end
 
     local dT = self.DeltaTime
+
     self.FrontLeak = math.Clamp(self.FrontLeak + 10 * (-self:GetPackedRatio("FrontLeak") - self.FrontLeak) * dT, 0, 1)
     self.RearLeak = math.Clamp(self.RearLeak + 10 * (-self:GetPackedRatio("RearLeak") - self.RearLeak) * dT, 0, 1)
     self:SetSoundState("front_isolation", self.FrontLeak, 0.9 + 0.2 * self.FrontLeak)
@@ -1502,10 +1372,10 @@ function ENT:Think()
     local parking_brake = math.max(0, -self:GetPackedRatio("ParkingBrakePressure_dPdT", 0))
     self.ParkingBrake = self.ParkingBrake + (parking_brake - self.ParkingBrake) * dT * 10
     self:SetSoundState("parking_brake", self.ParkingBrake, 1.4)
-    local dPdT = self:GetPackedRatio("BrakeCylinderPressure_dPdT")
     self.ReleasedPdT = math.Clamp(self.ReleasedPdT + 10 * (-self:GetPackedRatio("BrakeCylinderPressure_dPdT", 0) - self.ReleasedPdT) * dT * 1.5, 0, 1)
     local release1 = math.Clamp(self.ReleasedPdT, 0, 1) ^ 2
     self:SetSoundState("release", release1, 1)
+
     local state = self:GetPackedBool("CompressorWork")
     if self.CompressorVol < 1 and state then
         self.CompressorVol = math.min(1, self.CompressorVol + (self.CompressorVol < 0.2 and 0.1 or 0.2) * dT)
@@ -1515,40 +1385,35 @@ function ENT:Think()
 
     self:SetSoundState("compressor", self.CompressorVol / 6, 0.8 + 0.2 * self.CompressorVol)
     self.PreviousCompressorState = state
-    local speed = self:GetPackedRatio("Speed", 0)
     local rollingi = math.min(1, self.TunnelCoeff + math.Clamp((self.StreetCoeff - 0.82) / 0.5, 0, 1))
     local rollings = math.max(self.TunnelCoeff * 0.6, self.StreetCoeff)
-    local tunstreet = rollingi + rollings * 0.2
-    local speed = self:GetPackedRatio("Speed", 0)
+    local rolling_total = rollingi + rollings * 0.2
     local rol10 = math.Clamp(speed / 25, 0, 1) * (1 - math.Clamp((speed - 25) / 8, 0, 1))
     local rol45 = math.Clamp((speed - 23) / 8, 0, 1) * (1 - math.Clamp((speed - 50) / 8, 0, 1))
-    local rol45p = Lerp((speed - 25) / 25, 0.8, 1)
     local rol60 = math.Clamp((speed - 50) / 8, 0, 1) * (1 - math.Clamp((speed - 65) / 5, 0, 1))
-    local rol60p = Lerp((speed - 50) / 15, 0.8, 1)
     local rol70 = math.Clamp((speed - 65) / 5, 0, 1)
-    local rol70p = Lerp((speed - 65) / 25, 0.8, 1.2)
     self:SetSoundState("rolling_10", rollingi * rol10, 1)
     self:SetSoundState("rolling_45", rollingi * rol45, 1)
     self:SetSoundState("rolling_60", rollingi * rol60, 1)
     self:SetSoundState("rolling_70", rollingi * rol70, 1)
 
-    local rol10 = math.Clamp(speed / 15, 0, 1) * (1 - math.Clamp((speed - 18) / 35, 0, 1))
-    local rol10p = Lerp((speed - 15) / 14, 0.6, 0.78)
-    local rol40 = math.Clamp((speed - 18) / 35, 0, 1) * (1 - math.Clamp((speed - 55) / 40, 0, 1))
-    local rol40p = Lerp((speed - 15) / 66, 0.6, 1.3)
-    local rol70 = math.Clamp((speed - 55) / 20, 0, 1)
-    local rol70p = Lerp((speed - 55) / 27, 0.78, 1.15)
-    self:SetSoundState("rolling_low", rol10 * rollings, rol10p)
-    self:SetSoundState("rolling_medium2", rol40 * rollings, rol40p)
-    self:SetSoundState("rolling_high2", rol70 * rollings, rol70p)
-    local state = self:GetPackedRatio("asynccurrent")
-    local strength = self:GetPackedRatio("asyncstate") * (1 - math.Clamp((speed - 23) / 23, 0, 1)) * 0.5
+    local rol10h = math.Clamp(speed / 15, 0, 1) * (1 - math.Clamp((speed - 18) / 35, 0, 1))
+    local rol10ph = Lerp((speed - 15) / 14, 0.6, 0.78)
+    local rol40h = math.Clamp((speed - 18) / 35, 0, 1) * (1 - math.Clamp((speed - 55) / 40, 0, 1))
+    local rol40ph = Lerp((speed - 15) / 66, 0.6, 1.3)
+    local rol70h = math.Clamp((speed - 55) / 20, 0, 1)
+    local rol70ph = Lerp((speed - 55) / 27, 0.78, 1.15)
+    self:SetSoundState("rolling_low", rol10h * rollings, rol10ph)
+    self:SetSoundState("rolling_medium2", rol40h * rollings, rol40ph)
+    self:SetSoundState("rolling_high2", rol70h * rollings, rol70ph)
 
     local asyncType = self:GetNW2Int("VVVFSound", 1)
     if asyncType == 1 then
-        self:SetSoundState("async1", tunstreet * math.Clamp(state / 0.26 + 0.2, 0, 1) * strength, 1)
+        local asyncState = self:GetPackedRatio("asynccurrent")
+        local strength = self:GetPackedRatio("asyncstate") * (1 - math.Clamp((speed - 23) / 23, 0, 1)) * 0.5
+        self:SetSoundState("async1", rolling_total * math.Clamp(asyncState / 0.26 + 0.2, 0, 1) * strength, 1)
     else
-        self:ExperimentalAsync(asyncType, tunstreet, speed)
+        self:ExperimentalAsync(asyncType, rolling_total, speed)
     end
 
     local work = self:GetPackedBool("AnnPlay")
@@ -1557,262 +1422,90 @@ function ENT:Think()
     end
 end
 
-function ENT:ExperimentalAsync(asyncType, tunstreet, speed)
+function ENT:ExperimentalAsync(asyncType, rolling_total, speed)
     if asyncType == 5 then  -- Hitachi GTO
-        local vvvfamps = self:GetPackedRatio("asynccurrent")
-        local vvvfvol = math.Clamp(vvvfamps, 0, 1)
-        local vvvfmode = self:GetPackedRatio("asyncstate")
-        self:SetSoundState("vvvf1", vvvfvol * math.Clamp((5.4 - speed) / 5.4, 0, 1), 1)
-        if vvvfmode > 0 then
-            self:SetSoundState("vvvf1", vvvfvol * math.Clamp((5.4 - speed) / 5.4, 0, 1), 1)
-        else
-            self:SetSoundState("vvvf1", 0, 1)
-        end
-
-        if speed < 5.5 and vvvfmode > 0 then
-            self:SetSoundState("vvvf2", vvvfvol * math.Clamp(speed, 0, 1), 1)
-        else
-            self:SetSoundState("vvvf2", 0, 1)
-        end
-
-        if speed > 5.5 and speed < 7.6 and vvvfmode ~= 0 then
-            self:SetSoundState("vvvf3", vvvfvol, speed / 6.5)
-        else
-            self:SetSoundState("vvvf3", 0, speed / 6.5)
-        end
-
-        if speed > 7.6 and speed < 12.2 and vvvfmode > 0 then
-            self:SetSoundState("vvvf4", vvvfvol, speed / 12)
-        else
-            self:SetSoundState("vvvf4", 0, speed / 12)
-        end
-
-        if speed > 12.2 and speed < 20.4 and vvvfmode > 0 then
-            self:SetSoundState("vvvf5", vvvfvol, speed / 17.775)
-        else
-            self:SetSoundState("vvvf5", 0, speed / 17.775)
-        end
-
-        if speed > 20.4 and speed < 27.4 and vvvfmode > 0 then
-            self:SetSoundState("vvvf6", vvvfvol, speed / 28.883)
-        else
-            self:SetSoundState("vvvf6", 0, speed / 28.883)
-        end
-
-        if speed > 27.4 and speed < 34.3 and vvvfmode > 0 then
-            self:SetSoundState("vvvf7", vvvfvol * Lerp((speed - 27.4) / (34.3 - 27.4), 1, 0), speed / 30)
-        else
-            self:SetSoundState("vvvf7", 0, speed / 30)
-        end
-
-        if speed > 33.9 and speed < 41.0 and vvvfmode > 0 then
-            self:SetSoundState("vvvf8", vvvfvol * Lerp((speed - 33.9) / (34.3 - 33.9), 0, 1) * Lerp((speed - 34.3) / (41 - 34.3), 1, 0), speed / 33.9)
-        else
-            self:SetSoundState("vvvf8", 0, speed / 33.9)
-        end
-
-        if speed > 38.0 and speed < 70.0 and vvvfmode ~= 0 then
-            self:SetSoundState("vvvf9", vvvfvol * Lerp((speed - 38.0) / (42.0 - 38.0), 0, 1) * Lerp((speed - 55.0) / (70.0 - 55.0), 1, 0), speed / 55)
-        else
-            self:SetSoundState("vvvf9", 0, speed / 55)
-        end
-
-        if speed > 12 and speed < 18 and vvvfmode > 0 then
-            self:SetSoundState("vvvf10", vvvfvol * Lerp((speed - 15) / (18 - 15), 1, 0), speed / 15)
-        else
-            self:SetSoundState("vvvf10", 0, speed / 15)
-        end
-
-        if speed > 20 and speed < 27 and vvvfmode > 0 then
-            self:SetSoundState("vvvf11", vvvfvol * Lerp((speed - 20.5) / (27 - 20.5), 1, 0), speed / 22.638)
-        else
-            self:SetSoundState("vvvf11", 0, speed / 22.638)
-        end
-
-        if speed > 27 and speed < 34.3 and vvvfmode > 0 then
-            self:SetSoundState("vvvf12", vvvfvol * Lerp((speed - 27) / (33.9 - 27), 0, 1), speed / 35)
-        else
-            self:SetSoundState("vvvf12", 0, speed / 35)
-        end
-
-        if speed > 33.9 and speed < 42 and vvvfmode > 0 then
-            self:SetSoundState("vvvf13", vvvfvol * Lerp((speed - 33.9) / (38 - 33.9), 0, 1), speed / 40.2)
-        else
-            self:SetSoundState("vvvf13", 0, speed / 40.2)
-        end
-
-        if speed > 7.5 and speed < 10 and vvvfmode > 0 then
-            self:SetSoundState("vvvf14", vvvfvol * Lerp((speed - 7.5) / (10 - 7.5), 1, 0), speed / 7)
-        else
-            self:SetSoundState("vvvf14", 0, speed / 7)
-        end
-
-        if speed > 5.4 and speed < 7.5 and vvvfmode > 0 then
-            self:SetSoundState("vvvf15", vvvfvol * Lerp((speed - 5.4) / (7.5 - 5.4), 1, 0), speed / 6)
-        else
-            self:SetSoundState("vvvf15", 0, speed / 6)
-        end
-
-        if speed > 41.5 and speed < 55 and vvvfmode ~= 0 then
-            self:SetSoundState("vvvf16", vvvfvol * Lerp((speed - 42) / (55 - 42), 1, 0), speed / 50)
-        else
-            self:SetSoundState("vvvf16", 0, speed / 50)
-        end
-
-        if speed > 55 and vvvfmode ~= 0 then
-            self:SetSoundState("vvvf17", vvvfvol * Lerp((speed - 55) / (65 - 55), 0, 1), speed / 64)
-        else
-            self:SetSoundState("vvvf17", 0, speed / 64)
-        end
-
-        if speed > 55 and speed < 90 and vvvfmode ~= 0 then
-            self:SetSoundState("vvvf18", vvvfvol * Lerp((speed - 55) / (70 - 55), 0, 1) * Lerp((speed - 70) / (90 - 70), 1, 0), speed / 69)
-        else
-            self:SetSoundState("vvvf18", 0, speed / 69)
-        end
-
-        if speed > 75 and speed < 120 and vvvfmode ~= 0 then
-            self:SetSoundState("vvvf19", vvvfvol * Lerp((speed - 75) / (85 - 75), 0, 1) * Lerp((speed - 105) / (120 - 105), 1, 0), speed / 85)
-        else
-            self:SetSoundState("vvvf19", 0, speed / 85)
-        end
-
-        if speed > 44.5 and speed < 48.5 and vvvfmode < 0 then
-            self:SetSoundState("vvvf21", vvvfvol, speed / 48)
-        else
-            self:SetSoundState("vvvf21", 0, speed / 48)
-        end
-
-        if speed > 35 and speed < 44.5 and vvvfmode < 0 then
-            self:SetSoundState("vvvf22", vvvfvol * Lerp((speed - 34.8) / (35.3 - 34.8), 0, 1), speed / 42)
-        else
-            self:SetSoundState("vvvf22", 0, speed / 42)
-        end
-
-        if speed > 22.4 and speed < 35 and vvvfmode < 0 then
-            self:SetSoundState("vvvf23", vvvfvol, speed / 31.5)
-        else
-            self:SetSoundState("vvvf23", 0, speed / 31.5)
-        end
-
-        if speed > 22.4 and speed < 35 and vvvfmode < 0 then
-            self:SetSoundState("vvvf24", vvvfvol * Lerp((speed - 26) / (35 - 26), 1, 0), speed / 25.2)
-        else
-            self:SetSoundState("vvvf24", 0, speed / 25.2)
-        end
-
-        if speed > 12.4 and speed < 22.4 and vvvfmode < 0 then
-            self:SetSoundState("vvvf25", vvvfvol, speed / 19.5)
-        else
-            self:SetSoundState("vvvf25", 0, speed / 19.5)
-        end
-
-        if speed > 12.4 and speed < 22.4 and vvvfmode < 0 then
-            self:SetSoundState("vvvf26", vvvfvol, speed / 15.21)
-        else
-            self:SetSoundState("vvvf26", 0, speed / 15.21)
-        end
-
-        if speed > 8 and speed < 12.4 and vvvfmode < 0 then
-            self:SetSoundState("vvvf27", vvvfvol * Lerp((speed - 8) / (10 - 8), 0, 1), speed / 11.5)
-        else
-            self:SetSoundState("vvvf27", 0, speed / 11.5)
-        end
-
-        if speed > 0 and speed < 12.4 and vvvfmode < 0 then
-            self:SetSoundState("vvvf28", vvvfvol * Lerp((speed - 8) / (12.4 - 8), 1, 0), speed / 8)
-        else
-            self:SetSoundState("vvvf28", 0, speed / 8)
+        local gtoamps = self:GetPackedRatio("asynccurrent")
+        local gtovol = math.Clamp(gtoamps, 0, 1)
+        local state = self:GetPackedRatio("asyncstate")
+        self:SetSoundState("gto1", gtovol * math.Clamp((5.4 - speed) / 5.4, 0, 1), 1)
+        for idx, val in ipairs(VVVF_GTOTBL) do
+            if idx >= 20 then idx = idx + 1 end
+            local name = "gto" .. idx
+            local condition, expression, speedVal = unpack(val)
+            if condition(speed, state) then
+                self:SetSoundState(name, expression(gtovol, speed), speedVal > 0 and (speed / speedVal) or 1)
+            else
+                self:SetSoundState(name, 0, speedVal > 0 and (speed / speedVal) or 1)
+            end
         end
 
     elseif asyncType == 2 then  -- Alstom ONIX
-        local state = self:GetPackedRatio("asynccurrent") --^1.5--RealTime()%2.5/2	
-        --if self:GetNW2Bool("FirstONIX",0) == true then
+        local state = self:GetPackedRatio("asynccurrent")
         local strength = self:GetPackedRatio("asyncstate") * math.Clamp((self:GetNW2Bool("FirstONIX", 0) == true and (speed - 24) or (speed - 9)) / 1, 0, 1) * (1 - math.Clamp((speed - 23) / 23, 0, 1)) * 0.5
         local strengthls = self:GetPackedRatio("asyncstate") * (1 - math.Clamp((self:GetNW2Bool("FirstONIX", 0) == true and (speed - 23.9) or (speed - 8.9)) / 1, 0, 1)) * 0.5
-        --else
-        -- local strength = self:GetPackedRatio("asyncstate")*(math.Clamp((speed-9)/1,0,1))*(1-math.Clamp((speed-23)/23,0,1))*0.5
-        --local strengthls = self:GetPackedRatio("asyncstate")*(1-math.Clamp((speed-8.9)/1,0,1))*0.5
-        --end
-        self:SetSoundState("KATP", tunstreet * math.Clamp(state / 0.26 + 0.2, 0, 1) * strength, 1) --+math.Clamp(state,0,1)*0.1)
-        self:SetSoundState("KATP_lowspeed", tunstreet * math.Clamp(state / 0.26 + 0.2, 0, 1) * strengthls, 1) --+math.Clamp(state,0,1)*0.1)
-        self:SetSoundState("chopper_onix", tunstreet * self:GetPackedRatio("chopper"), 1)
+        self:SetSoundState("KATP", rolling_total * math.Clamp(state / 0.26 + 0.2, 0, 1) * strength, 1)
+        self:SetSoundState("KATP_lowspeed", rolling_total * math.Clamp(state / 0.26 + 0.2, 0, 1) * strengthls, 1)
+        self:SetSoundState("chopper_onix", rolling_total * self:GetPackedRatio("chopper"), 1)
 
     elseif asyncType == 3 then  -- КАТП-1
-        --local state = (RealTime()%4/3)^1.5
-        --local strength = 1--self:GetPackedRatio("asyncstate")*(1-math.Clamp((speed-15)/15,0,1))
-        local state = self:GetPackedRatio("asynccurrent") --^1.5--RealTime()%2.5/2	
+        local state = self:GetPackedRatio("asynccurrent")
         local strength = self:GetPackedRatio("asyncstate") * (1 - math.Clamp((speed - 23) / 23, 0, 1)) * 0.5
-        self:SetSoundState("ONIX", tunstreet * math.Clamp(state / 0.26 + 0.2, 0, 1) * strength, 1) --+math.Clamp(state,0,1)*0.1)
-        self:SetSoundState("chopper_katp", tunstreet * self:GetPackedRatio("chopper"), 1)
+        self:SetSoundState("ONIX", rolling_total * math.Clamp(state / 0.26 + 0.2, 0, 1) * strength, 1)
+        self:SetSoundState("chopper_katp", rolling_total * self:GetPackedRatio("chopper"), 1)
         if self:GetNW2Bool("HSEngines", 0) == true then
-            self:SetSoundState("async_p2", tunstreet * (math.Clamp((speed - 8) / 5, 0, 1) * 0.1 + math.Clamp((speed - 25) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 30) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 36)
-            self:SetSoundState("async_p2_1", tunstreet * (math.Clamp((speed - 3) / 5, 0, 1) * 0.1 + math.Clamp((speed - 5) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 7) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 12)
-            self:SetSoundState("async_p3", tunstreet * (math.Clamp((speed - 13) / 5, 0, 1) * 0.1 + math.Clamp((speed - 23) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 35) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 42)
-            self:SetSoundState("async_p3_1", tunstreet * (math.Clamp((speed - 32) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 40) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 49)
+            self:SetSoundState("hs35533_p2", rolling_total * (math.Clamp((speed - 8) / 5, 0, 1) * 0.1 + math.Clamp((speed - 25) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 30) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 36)
+            self:SetSoundState("hs35533_p2_1", rolling_total * (math.Clamp((speed - 3) / 5, 0, 1) * 0.1 + math.Clamp((speed - 5) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 7) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 12)
+            self:SetSoundState("hs35533_p3", rolling_total * (math.Clamp((speed - 13) / 5, 0, 1) * 0.1 + math.Clamp((speed - 23) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 35) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 42)
+            self:SetSoundState("hs35533_p3_1", rolling_total * (math.Clamp((speed - 32) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 40) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 49)
         end
 
     elseif asyncType == 4 then  -- КАТП-3
-        local state = self:GetPackedRatio("asynccurrent") --^1.5--RealTime()%2.5/2	
+        local state = self:GetPackedRatio("asynccurrent")
         local strength = self:GetPackedRatio("asyncstate") * math.Clamp((speed - 9) / 1, 0, 1) * (1 - math.Clamp((speed - 23) / 23, 0, 1)) * 0.5
         local strengthls = self:GetPackedRatio("asyncstate") * (1 - math.Clamp((speed - 8.9) / 1, 0, 1)) * 0.5
-        self:SetSoundState("KATP", tunstreet * math.Clamp(state / 0.26 + 0.2, 0, 1) * strength, 1) --+math.Clamp(state,0,1)*0.1)
-        self:SetSoundState("KATP_lowspeed", tunstreet * math.Clamp(state / 0.26 + 0.2, 0, 1) * strengthls, 1) --+math.Clamp(state,0,1)*0.1)
-        self:SetSoundState("chopper_katp", tunstreet * self:GetPackedRatio("chopper"), 1)
+        self:SetSoundState("KATP", rolling_total * math.Clamp(state / 0.26 + 0.2, 0, 1) * strength, 1)
+        self:SetSoundState("KATP_lowspeed", rolling_total * math.Clamp(state / 0.26 + 0.2, 0, 1) * strengthls, 1)
+        self:SetSoundState("chopper_katp", rolling_total * self:GetPackedRatio("chopper"), 1)
 
     elseif asyncType == 6 then  -- Hitachi IGBT
-        local state = self:GetPackedRatio("asynccurrent") --^1.5--RealTime()%2.5/2
+        local state = self:GetPackedRatio("asynccurrent")
         local strength = self:GetPackedRatio("asyncstate") * (1 - math.Clamp((speed - 15) / 15, 0, 1))
-        --self:SetSoundState("Hitachi", tunstreet*math.Clamp((state)/0.3+0.2,0,1)*strength, 0.6+math.Clamp(state,0,1)*0.4)
-        --self:SetSoundState("Hitachi",tunstreet*math.Clamp((state-0.75)/0.05,0,1)*strength, 0.6+math.Clamp((state-0.8)/0.2,0,1)*0.14)
-        self:SetSoundState("Hitachi", tunstreet * math.Clamp(state / 0.26, 0, 1) * strength, 1)
-        --self:SetSoundState("Hitachi2", tunstreet*(math.Clamp((speed-20)/5,0,1)*0.1+math.Clamp((speed-25)/10,0,1)*1.5)*(1-math.Clamp((speed-30)/12,0,1))*self:GetPackedRatio("asyncstate"), speed/36)
-        --self:SetSoundState("Hitachi2_2", tunstreet*(math.Clamp((speed-20)/5,0,1)*0.1+math.Clamp((speed-25)/10,0,1)*1.5)*(1-math.Clamp((speed-25)/12,0,1))*self:GetPackedRatio("asyncstate"), speed/36)
-        self:SetSoundState("Hitachi2_2", tunstreet * (math.Clamp((speed - 18) / 5, 0, 1) * 0.1 + math.Clamp((speed - 23) / 10, 0, 1) * 1.5) * (1 - math.Clamp((speed - 23) / 10, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 23)
-        --self:SetSoundState("Hitachi2", tunstreet*(math.Clamp((speed-27)/5,0,1)*0.1+math.Clamp((speed-22)/10,0,1)*2.2)*(1-math.Clamp((speed-20)/12,0,1))*self:GetPackedRatio("asyncstate"), (speed/30)*2.8)
-        self:SetSoundState("Hitachi2", tunstreet * (math.Clamp((speed - 32) / 5, 0, 1) * 0.1 + math.Clamp((speed - 27) / 10, 0, 1) * 2.2) * (1 - math.Clamp((speed - 25) / 12, 0, 1)) * self:GetPackedRatio("asyncstate"), (speed / 33) * 0.8)
-        self:SetSoundState("Hitachi2_1", tunstreet * (math.Clamp((speed - 31) / 5, 0, 1) * 0.1 + math.Clamp((speed - 25) / 10, 0, 1) * 2) * (1 - math.Clamp((speed - 23) / 12, 0, 1)) * self:GetPackedRatio("asyncstate"), (speed / 30) * 0.95)
-        --self:SetSoundState("Hitachi2_1", tunstreet*(math.Clamp((speed-20)/5,0,1)*0.1+math.Clamp((speed-27)/10,0,1)*2.5)*(1-math.Clamp((speed-30)/12,0,1))*self:GetPackedRatio("asyncstate"), speed/36)
-        --self:SetSoundState("Hitachi2", tunstreet*math.Clamp(math.max(0,(state)/0.3+0.2),0,1)*strength, 0.55+math.Clamp(state,0,1)*0.45)
-        --self:SetSoundState("Hitachi2", tunstreet*math.Clamp(math.max(0,(state-0.7)/0.1),0,1)*strength, 1)
-        --self:SetSoundState("Hitachi2", tunstreet*math.Clamp((state-0.415)/0.1,0,1)*(1-math.Clamp((state-1.1)/0.3,0,0.5))*strength, 0.48+math.Clamp(state,0,1)*1)
-        self:SetSoundState("battery_off_loop", --[[ self:GetPackedBool("BattPressed") and 1 or 0 ]] 1, 1)
-        --self:SetSoundState("async_p2", tunstreet*(math.Clamp((speed-5)/5,0,1)*0.1+math.Clamp((speed-14)/10,0,1)*0.9)*(1-math.Clamp((speed-27)/4,0,1))*self:GetPackedRatio("asyncstate"), speed/36)
-        --self:SetSoundState("async_p2", tunstreet*(math.Clamp((speed-8)/5,0,1)*0.1+math.Clamp((speed-17)/10,0,1)*0.9)*(1-math.Clamp((speed-30)/4,0,1))*self:GetPackedRatio("asyncstate"), speed/36)
-        self:SetSoundState("async_p2", tunstreet * (math.Clamp((speed - 8) / 5, 0, 1) * 0.1 + math.Clamp((speed - 25) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 30) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 36)
-        self:SetSoundState("async_p2_1", tunstreet * (math.Clamp((speed - 3) / 5, 0, 1) * 0.1 + math.Clamp((speed - 5) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 7) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 12)
-        self:SetSoundState("async_p3", tunstreet * (math.Clamp((speed - 13) / 5, 0, 1) * 0.1 + math.Clamp((speed - 23) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 36) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 42)
-        self:SetSoundState("async_p3_1", tunstreet * (math.Clamp((speed - 32) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 40) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 49)
-        self:SetSoundState("engine_loud", tunstreet * math.Clamp((speed - 20) / 15, 0, 1) * (1 - math.Clamp((speed - 40) / 40, 0, 0.6)) * self:GetPackedRatio("asyncstate"), speed / 20)
-        self:SetSoundState("chopper_hitachi", tunstreet * self:GetPackedRatio("chopper"), 1)
+        self:SetSoundState("Hitachi", rolling_total * math.Clamp(state / 0.26, 0, 1) * strength, 1)
+        self:SetSoundState("Hitachi2_2", rolling_total * (math.Clamp((speed - 18) / 5, 0, 1) * 0.1 + math.Clamp((speed - 23) / 10, 0, 1) * 1.5) * (1 - math.Clamp((speed - 23) / 10, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 23)
+        self:SetSoundState("Hitachi2", rolling_total * (math.Clamp((speed - 32) / 5, 0, 1) * 0.1 + math.Clamp((speed - 27) / 10, 0, 1) * 2.2) * (1 - math.Clamp((speed - 25) / 12, 0, 1)) * self:GetPackedRatio("asyncstate"), (speed / 33) * 0.8)
+        self:SetSoundState("Hitachi2_1", rolling_total * (math.Clamp((speed - 31) / 5, 0, 1) * 0.1 + math.Clamp((speed - 25) / 10, 0, 1) * 2) * (1 - math.Clamp((speed - 23) / 12, 0, 1)) * self:GetPackedRatio("asyncstate"), (speed / 30) * 0.95)
+        self:SetSoundState("battery_off_loop", 1, 1)
+        self:SetSoundState("hs35533_p2", rolling_total * (math.Clamp((speed - 8) / 5, 0, 1) * 0.1 + math.Clamp((speed - 25) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 30) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 36)
+        self:SetSoundState("hs35533_p2_1", rolling_total * (math.Clamp((speed - 3) / 5, 0, 1) * 0.1 + math.Clamp((speed - 5) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 7) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 12)
+        self:SetSoundState("hs35533_p3", rolling_total * (math.Clamp((speed - 13) / 5, 0, 1) * 0.1 + math.Clamp((speed - 23) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 36) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 42)
+        self:SetSoundState("hs35533_p3_1", rolling_total * (math.Clamp((speed - 32) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 40) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 49)
+        self:SetSoundState("engine_loud", rolling_total * math.Clamp((speed - 20) / 15, 0, 1) * (1 - math.Clamp((speed - 40) / 40, 0, 0.6)) * self:GetPackedRatio("asyncstate"), speed / 20)
+        self:SetSoundState("chopper_hitachi", rolling_total * self:GetPackedRatio("chopper"), 1)
 
     elseif asyncType == 7 then  -- Hitachi VFI-HD1420F
-        local state = self:GetPackedRatio("asynccurrent") --^1.5--RealTime()%2.5/2
+        local state = self:GetPackedRatio("asynccurrent")
         local strength = self:GetPackedRatio("asyncstate") * (1 - math.Clamp((speed - 15) / 15, 0, 1))
-        self:SetSoundState("test_async_start", tunstreet * math.Clamp(state / 0.3 + 0.2, 0, 0.7) * strength, 0.6 + math.Clamp(state, 0, 1) * 0.4)
-        self:SetSoundState("test_async1_n", tunstreet * math.Clamp(state / 0.3 + 0.2, 0, 1) * strength, 0.6 + math.Clamp(state, 0, 1) * 0.4)
-        self:SetSoundState("test_async1_2_n", tunstreet * math.Clamp((state - 0.75) / 0.05, 0, 1) * strength, 0.6 + math.Clamp((state - 0.8) / 0.2, 0, 1) * 0.14)
-        self:SetSoundState("test_async1_3_n", tunstreet * math.Clamp((state - 0.7) / 0.1, 0, 1) * strength, 0.87)
-        self:SetSoundState("test_async2_n", tunstreet * math.Clamp(math.max(0, state / 0.3 + 0.2), 0, 1) * strength, 0.55 + math.Clamp(state, 0, 1) * 0.45)
-        self:SetSoundState("test_async3_n", tunstreet * math.Clamp(math.max(0, (state - 0.7) / 0.1), 0, 1) * strength, 1)
-        self:SetSoundState("test_async3_2_n", tunstreet * math.Clamp((state - 0.415) / 0.1, 0, 1) * (1 - math.Clamp((state - 1.1) / 0.3, 0, 0.5)) * strength, 0.48 + math.Clamp(state, 0, 1) * 0.72)
-        --self:SetSoundState("async_p2_n", tunstreet*(math.Clamp((speed-5)/5,0,1)*0.1+math.Clamp((speed-14)/10,0,1)*0.9)*(1-math.Clamp((speed-27)/4,0,1))*self:GetPackedRatio("asyncstate"), speed/36)
-        --self:SetSoundState("async_p3_n", tunstreet*(math.Clamp((speed-7)/5,0,1)*0.1+math.Clamp((speed-17)/10,0,1)*0.9)*(1-math.Clamp((speed-30)/4,0,1))*self:GetPackedRatio("asyncstate"), speed/42)
-        self:SetSoundState("async_p2_n", tunstreet * (math.Clamp((speed - 8) / 5, 0, 1) * 0.1 + math.Clamp((speed - 25) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 30) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 36)
-        self:SetSoundState("async_p2_1_n", tunstreet * (math.Clamp((speed - 3) / 5, 0, 1) * 0.1 + math.Clamp((speed - 5) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 7) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 12)
-        self:SetSoundState("async_p3_n", tunstreet * (math.Clamp((speed - 13) / 5, 0, 1) * 0.1 + math.Clamp((speed - 23) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 36) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 42)
-        self:SetSoundState("async_p3_1_n", tunstreet * (math.Clamp((speed - 32) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 40) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 49)
-        self:SetSoundState("engine_loud", tunstreet * math.Clamp((speed - 20) / 15, 0, 1) * (1 - math.Clamp((speed - 40) / 40, 0, 0.6)) * self:GetPackedRatio("asyncstate"), speed / 20)
-        --self:SetSoundState("engine_loud", tunstreet*math.Clamp((speed-10)/15,0,1)*(1-math.Clamp((speed-30)/40,0,0.6))*self:GetPackedRatio("asyncstate"), speed/20)
-        self:SetSoundState("chopper_hitachi", tunstreet * self:GetPackedRatio("chopper"), 1)
+        self:SetSoundState("vfi_start", rolling_total * math.Clamp(state / 0.3 + 0.2, 0, 0.7) * strength, 0.6 + math.Clamp(state, 0, 1) * 0.4)
+        self:SetSoundState("vfi1_n", rolling_total * math.Clamp(state / 0.3 + 0.2, 0, 1) * strength, 0.6 + math.Clamp(state, 0, 1) * 0.4)
+        self:SetSoundState("vfi1_2_n", rolling_total * math.Clamp((state - 0.75) / 0.05, 0, 1) * strength, 0.6 + math.Clamp((state - 0.8) / 0.2, 0, 1) * 0.14)
+        self:SetSoundState("vfi1_3_n", rolling_total * math.Clamp((state - 0.7) / 0.1, 0, 1) * strength, 0.87)
+        self:SetSoundState("vfi2_n", rolling_total * math.Clamp(math.max(0, state / 0.3 + 0.2), 0, 1) * strength, 0.55 + math.Clamp(state, 0, 1) * 0.45)
+        self:SetSoundState("vfi3_n", rolling_total * math.Clamp(math.max(0, (state - 0.7) / 0.1), 0, 1) * strength, 1)
+        self:SetSoundState("vfi3_2_n", rolling_total * math.Clamp((state - 0.415) / 0.1, 0, 1) * (1 - math.Clamp((state - 1.1) / 0.3, 0, 0.5)) * strength, 0.48 + math.Clamp(state, 0, 1) * 0.72)
+        self:SetSoundState("hs35533_p2_n", rolling_total * (math.Clamp((speed - 8) / 5, 0, 1) * 0.1 + math.Clamp((speed - 25) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 30) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 36)
+        self:SetSoundState("hs35533_p2_1_n", rolling_total * (math.Clamp((speed - 3) / 5, 0, 1) * 0.1 + math.Clamp((speed - 5) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 7) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 12)
+        self:SetSoundState("hs35533_p3_n", rolling_total * (math.Clamp((speed - 13) / 5, 0, 1) * 0.1 + math.Clamp((speed - 23) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 36) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 42)
+        self:SetSoundState("hs35533_p3_1_n", rolling_total * (math.Clamp((speed - 32) / 10, 0, 1) * 0.9) * (1 - math.Clamp((speed - 40) / 4, 0, 1)) * self:GetPackedRatio("asyncstate"), speed / 49)
+        self:SetSoundState("engine_loud", rolling_total * math.Clamp((speed - 20) / 15, 0, 1) * (1 - math.Clamp((speed - 40) / 40, 0, 0.6)) * self:GetPackedRatio("asyncstate"), speed / 20)
+        self:SetSoundState("chopper_hitachi", rolling_total * self:GetPackedRatio("chopper"), 1)
 
     elseif asyncType == 8 then  -- Experimental for 765
-        local state = self:GetPackedRatio("asynccurrent") --^1.5--RealTime()%2.5/2	
+        local state = self:GetPackedRatio("asynccurrent")
         local strength = self:GetPackedRatio("asyncstate") * math.Clamp((speed - 13) / 1, 0, 1) * (1 - math.Clamp((speed - 28) / 28, 0, 1)) * 0.5
         local strengthls = self:GetPackedRatio("asyncstate") * (1 - math.Clamp((speed - 12.9) / 1, 0, 1)) * 0.7
-        self:SetSoundState("async1", tunstreet * math.Clamp(state / 0.26 + 0.2, 0, 1) * strength, 1) --+math.Clamp(state,0,1)*0.1)
-        self:SetSoundState("KATP_lowspeed", tunstreet * math.Clamp(state / 0.26 + 0.2, 0, 1) * strengthls, 1) --+math.Clamp(state,0,1)*0.1)
-        self:SetSoundState("chopper_katp", tunstreet * self:GetPackedRatio("chopper"), 1)
+        self:SetSoundState("async1", rolling_total * math.Clamp(state / 0.26 + 0.2, 0, 1) * strength, 1)
+        self:SetSoundState("KATP_lowspeed", rolling_total * math.Clamp(state / 0.26 + 0.2, 0, 1) * strengthls, 1)
+        self:SetSoundState("chopper_katp", rolling_total * self:GetPackedRatio("chopper"), 1)
     end
 end
 
@@ -1837,10 +1530,6 @@ function ENT:DrawPost(special)
             surface.DrawTexturedRectRotated(1920, 256, 3840, 512, 0)
         end)
     end
-end
-
-function ENT:OnButtonPressed(button)
-    if button == "ShowHelp" then RunConsoleCommand("metrostroi_train_manual") end
 end
 
 local dist = {}

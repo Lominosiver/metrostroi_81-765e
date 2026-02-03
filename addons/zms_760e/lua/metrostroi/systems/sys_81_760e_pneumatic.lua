@@ -36,7 +36,7 @@ function TRAIN_SYSTEM:Initialize(is722)
     self.Train:LoadSystem("AK", "Relay", "AK-11B")
     self.Train:LoadSystem("UAVA", "Relay", "Switch")
     self.Train:LoadSystem("EmergencyBrakeValve", "Relay", "Switch")
-    self.Train:LoadSystem("stopkran", "Relay", "Switch")
+    self.Train:LoadSystem("Stopkran", "Relay", "Switch")
     self.Train:LoadSystem("DriverValveTLDisconnect", "Relay", "Switch", {
         normally_closed = true --кран нм
     })
@@ -437,7 +437,7 @@ function TRAIN_SYSTEM:Think(dT)
 
     self.Train:SetPackedRatio("EmergencyBrakeValve_dPdT", -leak)
     local leak = 0
-    if self.Train.stopkran.Value > 0.5 then
+    if self.Train.Stopkran.Value > 0.5 then
         leak = self:equalizePressure(dT, "BrakeLinePressure", 0.0, 2.2 * wagc, false, false, 1)
         self.Leak = true
     end
