@@ -945,6 +945,41 @@ ENT.Spawner = {
             return CISConfig
         end
     },
+    {
+        "BLIK:Logo",
+        "Логотип БЛ-ИК",
+        "List",
+        function()
+            local tbl = { ["-"] = "Нет" }  -- FIXME translation
+            if not Metrostroi.Skins or not Metrostroi.Skins["765logo"] then return tbl end
+            for k, v in pairs(Metrostroi.Skins["765logo"]) do
+                tbl[k] = v.name or k
+            end
+            return tbl
+        end,
+        "-",
+        function(ent, val)
+            ent:SetNW2String("BLIK:Logo", val)
+        end,
+        function(self, sl)
+            local val = self:GetOptionData(self:GetSelectedID())
+            local cfg = Metrostroi.Skins and Metrostroi.Skins["765logo"] and Metrostroi.Skins["765logo"][val]
+            local d = val == "-" or not cfg or not isfunction(cfg.anim)
+            local a = sl["BLIK:Anim"]
+            if d then a:SetValue(false) end
+            a:SetDisabled(d)
+            a.Disable = d
+
+            if not cfg or not cfg.defaults then return end
+            for k,v in pairs(cfg.defaults) do
+                local id = sl[k].ID
+                if id and sl[id] then
+                    sl[id](v, true)
+                end
+            end
+        end
+    },
+    { "BLIK:Anim", "Анимация БЛ-ИК", "Boolean" },
     { "SarmatBeep", "Звук теста аппаратуры от \"Сармат\"", "Boolean" },
     { "AnnouncerClicks", "Звук клика в оповещениях", "Boolean" },
     { "HornType", "Тифон", "List", { "Стандартный", "Случайный", "Тип 1", "Тип 2", "81-765" }, 5 },
@@ -989,14 +1024,7 @@ ENT.Spawner = {
     {"HSEngines", "Spawner.720a.HSEngines", "Boolean"},
     {"FirstONIX", "Spawner.720a.FirstONIX", "Boolean"},
     {"AddressDoors", "Индивид. открытие дверей (765.2)", "Boolean", false},
-    {"BLIK:Type", "Лого БЛ-ИК", "List", {"Нет", "Пиво"}, 1, nil, function(self, sl)
-        local d = self:GetSelectedID() == 1
-        local a = sl["BLIK:Anim"]
-        if d then a:SetValue(false) end
-        a:SetDisabled(d)
-        a.Disable = d
-    end},
-    {"BLIK:Anim", "Анимация БЛ-ИК", "Boolean"},
+    {"ForgivefulBars", "БАРС прощает ошибки", "Boolean", true},
     {"KdLongerDelay", "Задержка контроля дверей", "Boolean", false},
     {"BreakRedChance", "Шанс сломать габ. огни", "Slider", 0, 0, 35, 0, function(ent, val, rot, i)
         if ent.SA1 then

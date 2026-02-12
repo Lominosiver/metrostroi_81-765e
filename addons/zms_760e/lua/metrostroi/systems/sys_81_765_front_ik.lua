@@ -101,13 +101,18 @@ else
             end
 
             if not self.NextDrawBl or CurTime() >= self.NextDrawBl then
-                self.NextDrawBl = CurTime() + blFt
+                local logo = Wag:GetNW2String("BLIK:Logo")
+                local repo = Metrostroi.Skins["765logo"]
+                local cfg = logo ~= "-" and logo ~= "" and repo and repo[logo] or nil
+                if cfg and not isstring(cfg.path) then cfg = nil end
+                local anim = Wag:GetNW2Bool("BLIK:Anim", false) and cfg and isfunction(cfg.anim)
+                self.NextDrawBl = CurTime() + (anim and blFt or 2)
                 if Wag:ShouldDrawPanel("BLIK") then
                     render.PushRenderTarget(self.Train.BLIK, 0, 0, scw_bl, sch_bl)
                     render.Clear(0, 0, 0, 0)
                     cam.Start2D()
                         if power then
-                            self:DrawBl()
+                            self:DrawBl(cfg, anim)
                         end
                     cam.End2D()
                     render.PopRenderTarget()
@@ -206,15 +211,21 @@ else
         draw.SimpleText(self.BnmDisplText, "BNMIK", scw_bnm / 2, sch_bnm / 2 + 18, self.Color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
-    local pivo = Material("zxc765/PIVO_logo_lt.png", "smooth ignorez")
-    function TRAIN_SYSTEM:DrawBl()
-        local typ = self.Train:GetNW2Int("BLIK:Type", 1)
-        local anim = self.Train:GetNW2Bool("BLIK:Anim", false)
-        if typ == 2 then
-            local rot = anim and 360 * (CurTime() % 15) / 15 or 0
-            surface.SetMaterial(pivo)
-            surface.SetDrawColor(255, 255, 255)
-            surface.DrawTexturedRectRotated(scw_bl / 2, sch_bl / 2, scw_bl - 64, sch_bl - 64, rot)
+    local function defaultRender(_, mat, w, h)
+        surface.SetMaterial(mat)
+        surface.SetDrawColor(255, 255, 255)
+        surface.DrawTexturedRectRotated(w / 2, h / 2, w - 64, h - 64, 0)
+    end
+
+    function TRAIN_SYSTEM:DrawBl(cfg, anim)
+        if cfg then
+            if not self.BlMat then self.BlMat = {} end
+            local mat = self.BlMat[cfg.path]
+            if not mat then mat = Material(cfg.path, cfg.params or "smooth ignorez") end
+            self.BlMat[cfg.path] = mat
+            local fnc = anim and cfg.anim or cfg.static or defaultRender
+            fnc(self, mat, scw_bl, sch_bl)
+            -- TODO else draw error msg
         end
     end
 end

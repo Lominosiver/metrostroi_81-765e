@@ -2917,14 +2917,14 @@ pos = Vector(428, -52, -60),
 
 ENT.ClientProps["FrontBrake"] = {
     model = "models/metrostroi_train/81-760/81_760_crane_k23.mdl",
-    pos = Vector(446.3, -50.62, -66.14),
+    pos = Vector(445.8, -50.62, -66.4),
     ang = Angle(0, 90, 0),
     hide = 2,
 }
 
 ENT.ClientProps["FrontTrain"] = {
     model = "models/metrostroi_train/81-760/81_760_crane_k23.mdl",
-    pos = Vector(436.3, -53.57, -64.13),
+    pos = Vector(435.95, -53.57, -64.3),
     ang = Angle(0, 90, 0),
     hide = 2,
 }
@@ -3404,13 +3404,6 @@ table.insert(ENT.ClientProps, {
 
 ENT.ClientProps["NmTmRear"] = {
     model = "models/metrostroi_train/81-760/81_760a_crane_nm_tm.mdl",
-    pos = Vector(0, 0, 0),
-    ang = Angle(0, 0, 0),
-    hide = 2,
-}
-
-ENT.ClientProps["NmTm"] = {
-    model = "models/metrostroi_train/81-765/crane_nm_tm.mdl",
     pos = Vector(0, 0, 0),
     ang = Angle(0, 0, 0),
     hide = 2,
